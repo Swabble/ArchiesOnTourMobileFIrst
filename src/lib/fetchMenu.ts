@@ -41,70 +41,11 @@ async function fetchRemoteMenu(): Promise<MenuItem[]> {
   const res = await fetch(apiUrl, { signal: controller.signal });
   clearTimeout(timeout);
 
-  try {
-    const res = await fetch(url, {
-      signal: controller.signal,
-      headers: { Accept: 'text/tab-separated-values,text/csv;q=0.9,text/plain;q=0.8' }
-    });
-    const contentType = res.headers.get('content-type') ?? '';
-    const body = await res.text();
-
-    console.info(LOG_PREFIX, 'Menu response received', {
-      status: res.status,
-      headers: Object.fromEntries(res.headers.entries()),
-      contentType,
-      preview: body.slice(0, 120)
-    });
-    emitDebug({ contentType });
-
-    if (!res.ok) {
-      console.warn(LOG_PREFIX, 'Menu request failed, using fallback', res.status);
-      emitDebug({
-        status: 'error',
-        source: 'fallback',
-        usedFallback: true,
-        message: `Request failed with status ${res.status}`
-      });
-      return FALLBACK_ITEMS;
-    }
-
-    if (isHtmlPayload(contentType, body)) {
-      console.warn(LOG_PREFIX, 'Received HTML payload instead of CSV/TSV, aborting parse');
-      emitDebug({
-        status: 'error',
-        source: 'fallback',
-        usedFallback: true,
-        message: 'Received HTML response'
-      });
-      return FALLBACK_ITEMS;
-    }
-
-    lastDelimiter = undefined;
-    lastHeaders = undefined;
-    const items = parseCsv(body);
-    const parsedCount = items.length;
-
-    if (!parsedCount) {
-      console.warn(LOG_PREFIX, 'Parsed menu is empty, falling back');
-      emitDebug({
-        status: 'error',
-        usedFallback: true,
-        delimiter: lastDelimiter,
-        headers: lastHeaders,
-        parsedCount: 0,
-        source: 'fallback',
-        message: 'Empty export payload'
-      });
-      return FALLBACK_ITEMS;
-    }
-
-    emitDebug({
-      status: 'success',
-      delimiter: lastDelimiter,
-      headers: lastHeaders,
-      parsedCount,
-      usedFallback: false,
-      source: 'remote'
+  const payload = await res
+    .json()
+    .catch((err) => {
+      console.warn(LOG_PREFIX, 'Menu API JSON parse failed', err);
+      return {};
     });
 
   const items = Array.isArray((payload as { items?: MenuItem[] }).items)
