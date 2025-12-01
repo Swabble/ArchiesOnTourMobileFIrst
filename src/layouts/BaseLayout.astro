@@ -1,4 +1,11 @@
 ---
+import '../styles/tokens.css';
+import '../styles/layout.css';
+import '../styles/components.css';
+import '../styles/utilities.css';
+import '../lib/scrollReveal.ts';
+import '../lib/zoomGuard.ts';
+
 const { title = 'Archie on Tour – Foodtruck Catering', description = 'Foodtruck Catering für Firmen-Events, Festivals und private Feiern.' } = Astro.props;
 ---
 <!doctype html>
@@ -16,12 +23,6 @@ const { title = 'Archie on Tour – Foodtruck Catering', description = 'Foodtruc
     />
     <link rel="manifest" href="/site.webmanifest" />
     <link rel="icon" href="/favicon.ico" />
-    <link rel="stylesheet" href="/src/styles/tokens.css" />
-    <link rel="stylesheet" href="/src/styles/layout.css" />
-    <link rel="stylesheet" href="/src/styles/components.css" />
-    <link rel="stylesheet" href="/src/styles/utilities.css" />
-    <script type="module" src="/src/lib/scrollReveal.ts"></script>
-    <script type="module" src="/src/lib/zoomGuard.ts"></script>
   </head>
   <body>
     <slot />
