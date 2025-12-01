@@ -1,0 +1,76 @@
+<section id="anfrage" class="section">
+  <div class="container">
+    <h2>Anfrage</h2>
+    <p>Schicken Sie uns die wichtigsten Eckdaten. Wir melden uns schnellstmöglich.</p>
+    <form id="inquiry-form" class="card form">
+      <div class="form__grid">
+        {[
+          { id: 'company', label: 'Firma', type: 'text', required: true },
+          { id: 'contact', label: 'Ansprechpartner*in', type: 'text', required: true },
+          { id: 'email', label: 'E-Mail', type: 'email', required: true },
+          { id: 'phone', label: 'Telefon', type: 'tel', required: true },
+          { id: 'date', label: 'Datum', type: 'date', required: true },
+          { id: 'city', label: 'Ort', type: 'text', required: true },
+          { id: 'people', label: 'Personenanzahl', type: 'number', required: true },
+          { id: 'event', label: 'Art der Veranstaltung', type: 'text', required: true }
+        ].map((field) => (
+          <div class="form__field">
+            <label for={field.id}>{field.label}</label>
+            <input id={field.id} name={field.id} type={field.type} required={field.required} />
+            <div class="error" id={`${field.id}-error`}></div>
+          </div>
+        ))}
+      </div>
+      <div class="form__field">
+        <label for="message">Nachricht</label>
+        <textarea id="message" name="message" rows="4"></textarea>
+        <div class="error" id="message-error"></div>
+      </div>
+      <div id="inquiry-success" class="form__success is-hidden">
+        Vielen Dank für Ihre Anfrage! Bitte füllen Sie nun den Vertrag aus.
+      </div>
+      <div class="form__actions">
+        <button type="submit" class="btn btn-primary">Absenden</button>
+        <button type="reset" class="btn btn-secondary">Zurücksetzen</button>
+      </div>
+    </form>
+  </div>
+  <div id="contract-modal" class="contract-modal-overlay" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="contract-modal">
+      <button id="contract-close" class="btn btn-secondary" aria-label="Schließen">Schließen</button>
+      <h3>Vertragsdaten (Demo)</h3>
+      <form id="contract-form" class="form">
+        <div class="form__grid">
+          <div class="form__field">
+            <label for="contract-name">Name</label>
+            <input id="contract-name" name="contract-name" />
+            <div class="error" id="contract-name-error"></div>
+          </div>
+          <div class="form__field">
+            <label for="contract-email">E-Mail</label>
+            <input id="contract-email" name="contract-email" type="email" />
+            <div class="error" id="contract-email-error"></div>
+          </div>
+          <div class="form__field">
+            <label for="contract-date">Eventdatum</label>
+            <input id="contract-date" name="contract-date" type="date" />
+            <div class="error" id="contract-date-error"></div>
+          </div>
+        </div>
+        <div class="form__field">
+          <label>Stromversorgung</label>
+          <div class="form__actions">
+            <label><input type="radio" name="power" value="16A" /> 16A</label>
+            <label><input type="radio" name="power" value="32A" /> 32A</label>
+          </div>
+          <div class="error" id="power-error"></div>
+        </div>
+        <div class="form__actions">
+          <button type="submit" class="btn btn-primary">Vertrag senden (Demo)</button>
+        </div>
+        <div id="contract-success" class="form__success is-hidden">Vertrag wurde übermittelt (Demo).</div>
+      </form>
+    </div>
+  </div>
+</section>
+<script type="module" src="/src/lib/forms.ts" defer></script>

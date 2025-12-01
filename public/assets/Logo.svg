@@ -1,0 +1,11 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Archie on Tour Logo">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop stop-color="#ff715b" offset="0%" />
+      <stop stop-color="#ffb347" offset="100%" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="#0f1115" />
+  <path d="M120 360L256 120l136 240" fill="none" stroke="url(#g)" stroke-width="36" stroke-linecap="round" stroke-linejoin="round" />
+  <circle cx="256" cy="256" r="44" fill="white" opacity="0.16" />
+</svg>

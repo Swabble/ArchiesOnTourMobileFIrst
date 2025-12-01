@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=1600&q=80",
+    "thumbnail": "https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=600&q=60",
+    "alt": "Burger auf rustikalem Brett"
+  },
+  {
+    "url": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1600&q=80",
+    "thumbnail": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=60",
+    "alt": "Foodtruck Crew bei der Arbeit"
+  },
+  {
+    "url": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1600&q=80",
+    "thumbnail": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=600&q=60",
+    "alt": "Frische Bowls und Toppings"
+  }
+]

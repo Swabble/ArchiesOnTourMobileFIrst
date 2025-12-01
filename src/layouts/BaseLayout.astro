@@ -1,0 +1,29 @@
+---
+const { title = 'Archie on Tour – Foodtruck Catering', description = 'Foodtruck Catering für Firmen-Events, Festivals und private Feiern.' } = Astro.props;
+---
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="stylesheet" href="/src/styles/tokens.css" />
+    <link rel="stylesheet" href="/src/styles/layout.css" />
+    <link rel="stylesheet" href="/src/styles/components.css" />
+    <link rel="stylesheet" href="/src/styles/utilities.css" />
+    <script type="module" src="/src/lib/scrollReveal.ts"></script>
+    <script type="module" src="/src/lib/zoomGuard.ts"></script>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

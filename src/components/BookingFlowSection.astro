@@ -1,0 +1,18 @@
+<section id="ablauf" class="section">
+  <div class="container">
+    <h2>Ablauf der Buchung</h2>
+    <div class="steps">
+      {[
+        'Anfrage senden',
+        'Menü & Details abstimmen',
+        'Angebot erhalten',
+        'Foodtruck kommt zu Ihrem Event'
+      ].map((step, index) => (
+        <div class="card">
+          <p class="price-pill">Schritt {index + 1}</p>
+          <h3>{step}</h3>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

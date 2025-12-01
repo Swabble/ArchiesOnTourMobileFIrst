@@ -1,0 +1,22 @@
+<section id="referenzen" class="section">
+  <div class="container">
+    <h2>Referenzen</h2>
+    <div class="cards">
+      {[""].map(() => (
+        <div class="card" aria-hidden="true">Firmenlogo</div>
+      ))}
+    </div>
+    <div class="cards" style="margin-top: var(--space-4);">
+      {[
+        { quote: 'Fantastisches Catering, reibungslose Kommunikation.', author: 'Event Managerin, Tech AG' },
+        { quote: 'Unsere Gäste waren begeistert von Qualität und Tempo.', author: 'HR Lead, Startup Hub' },
+        { quote: 'Flexibel, freundlich und super lecker – jederzeit wieder!', author: 'Marketing, Festival Crew' }
+      ].map((item) => (
+        <blockquote class="card">
+          <p>“{item.quote}”</p>
+          <footer>{item.author}</footer>
+        </blockquote>
+      ))}
+    </div>
+  </div>
+</section>

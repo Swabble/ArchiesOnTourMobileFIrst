@@ -1,0 +1,26 @@
+<header class="site-header" aria-label="Hauptnavigation">
+  <div class="container header__inner">
+    <a class="logo" href="#start" aria-label="Archie on Tour Startseite">
+      <img src="/assets/Logo.svg" alt="Archie Logo" width="36" height="36" />
+      <span>Archie on Tour</span>
+    </a>
+    <button class="nav__toggle" aria-expanded="false" aria-controls="nav-menu" aria-label="Navigation umschalten">
+      ☰
+    </button>
+    <nav>
+      <ul id="nav-menu" class="nav__list">
+        {['start', 'angebot', 'referenzen', 'galerie', 'ablauf', 'verfuegbarkeit', 'anfrage', 'ueber-uns'].map((id) => (
+          <li><a class="nav__link" href={`#${id}`}>{id.replace('-', ' ')}</a></li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+</header>
+<script>
+  const toggle = document.querySelector('.nav__toggle');
+  const list = document.querySelector('.nav__list');
+  toggle?.addEventListener('click', () => {
+    const isOpen = list?.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+</script>

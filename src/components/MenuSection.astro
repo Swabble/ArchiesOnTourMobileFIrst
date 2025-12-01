@@ -1,0 +1,10 @@
+<section id="menu" class="section" aria-live="polite">
+  <div class="container">
+    <h2>Unsere Produktauswahl</h2>
+    <p>Die Auswahl wird live aus Google Sheets geladen. Ohne API-Keys zeigen wir eine kleine Demo.</p>
+    <div id="menu-loading" class="card">Menü wird geladen …</div>
+    <div id="menu-error" class="card is-hidden">Fehler beim Laden der Daten. Es werden Fallback-Produkte angezeigt.</div>
+    <div id="menu-categories-container" class="menu-grid"></div>
+  </div>
+</section>
+<script type="module" src="/src/lib/fetchMenu.ts" defer></script>

@@ -1,0 +1,21 @@
+<section id="angebot" class="section">
+  <div class="container">
+    <h2>Unser Angebot</h2>
+    <p>Archie on Tour bringt Streetfood-Feeling auf Firmenfeiern, Festivals und private Events.</p>
+    <div class="cards">
+      {[
+        { title: 'Firmenfeiern', text: 'Mitarbeiterfeste, Sommerfeste und Jubiläen mit vielfältigen Menüs.' },
+        { title: 'Messen', text: 'Messestand-Catering mit schnellen Abläufen und aufmerksamem Service.' },
+        { title: 'Festivals', text: 'Robuste Infrastruktur, schnelle Ausgabe und flexible Tagespläne.' },
+        { title: 'Hochzeiten', text: 'Charmantes Foodtruck-Erlebnis für besondere Tage.' },
+        { title: 'Team-Events', text: 'Teambuilding mit Live-Cooking und individuellen Snacks.' },
+        { title: 'Private Feiern', text: 'Geburtstage, Gartenpartys und Vereinsfeste mit Signature-Burgern.' }
+      ].map((item) => (
+        <article class="card reveal">
+          <h3>{item.title}</h3>
+          <p>{item.text}</p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

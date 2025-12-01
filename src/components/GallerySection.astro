@@ -1,0 +1,29 @@
+<section id="galerie" class="section">
+  <div class="container">
+    <h2>Impressionen</h2>
+    <p>Einblicke in vergangene Events. Bei fehlender API zeigen wir Fallback-Bilder.</p>
+    <div id="gallery-loading" class="card">Galerie lädt …</div>
+    <div id="gallery-error" class="card is-hidden">Konnte keine Drive-Daten laden. Fallback aktiv.</div>
+    <div class="carousel-container">
+      <button class="carousel-nav carousel-nav-prev" aria-label="Vorheriges Bild">‹</button>
+      <div id="carousel-track" class="carousel-track" aria-live="polite"></div>
+      <button class="carousel-nav carousel-nav-next" aria-label="Nächstes Bild">›</button>
+      <div id="carousel-dots" class="carousel-dots" role="tablist"></div>
+    </div>
+  </div>
+  <div id="lightbox-overlay" class="lightbox-overlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="lightbox-content">
+      <button id="lightbox-close" class="btn btn-secondary" aria-label="Schließen">Schließen</button>
+      <div class="lightbox-body">
+        <img id="lightbox-image" class="lightbox-image" alt="" />
+        <p id="lightbox-caption" class="lightbox-caption"></p>
+        <p id="lightbox-counter" class="lightbox-counter"></p>
+        <div class="form__actions">
+          <button id="lightbox-prev" class="btn btn-secondary" aria-label="Vorheriges Bild">Zurück</button>
+          <button id="lightbox-next" class="btn btn-secondary" aria-label="Nächstes Bild">Weiter</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<script type="module" src="/src/lib/gallery.ts" defer></script>
