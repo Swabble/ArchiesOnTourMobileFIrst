@@ -53,6 +53,70 @@ function render(items: MenuItem[]) {
   });
 }
 
+const HEADER_MAP: Record<string, keyof MenuItem> = {
+  produkt: 'title',
+  titel: 'title',
+  name: 'title',
+  'preis in €': 'price',
+  preis: 'price',
+  beschreibung: 'description',
+  'einheit / größe': 'unit',
+  einheit: 'unit',
+  größe: 'unit',
+  hinweise: 'notes',
+  kategorie: 'category',
+  überkategorie: 'superCategory',
+  anzahl: 'quantity'
+};
+
+function mapRowToItem(row: Record<string, string>): MenuItem {
+  const item: Partial<MenuItem> = {};
+  Object.entries(row).forEach(([rawKey, value]) => {
+    const normalizedKey = rawKey.trim().toLowerCase();
+    const key = HEADER_MAP[normalizedKey] ?? (normalizedKey as keyof MenuItem);
+    if (key) item[key] = value?.trim();
+  });
+  return item as MenuItem;
+}
+
+function parseMatrix(headers: string[], rows: string[][]): MenuItem[] {
+  return rows
+    .map((columns) => {
+      const record: Record<string, string> = {};
+      headers.forEach((header, idx) => {
+        record[header] = columns[idx] ?? '';
+      });
+      return record;
+    })
+    .map(mapRowToItem)
+    .filter((item) => item.title || item.category);
+}
+
+function parseCsv(text: string): MenuItem[] {
+  const trimmed = text.trim();
+  if (!trimmed) return [];
+  const lines = trimmed.split(/\r?\n/).filter(Boolean);
+  const delimiter = lines[0].includes('\t') ? '\t' : lines[0].includes(';') ? ';' : ',';
+  const headers = lines[0].split(delimiter).map((h) => h.trim());
+  const rows = lines.slice(1).map((line) => line.split(delimiter));
+  return parseMatrix(headers, rows);
+}
+
+function parseJsonPayload(text: string): MenuItem[] {
+  try {
+    const parsed = JSON.parse(text);
+    if (Array.isArray(parsed)) return parsed.map(mapRowToItem);
+    if (Array.isArray(parsed?.values)) {
+      const [headerRow, ...dataRows] = parsed.values as string[][];
+      if (!headerRow) return [];
+      return parseMatrix(headerRow, dataRows);
+    }
+  } catch (err) {
+    console.warn('Menu JSON parse failed', err);
+  }
+  return [];
+}
+
 async function fetchRemoteMenu(): Promise<MenuItem[]> {
   const url = import.meta.env.PUBLIC_MENU_SHEET_URL;
   if (!url) return FALLBACK_ITEMS;
@@ -61,9 +125,15 @@ async function fetchRemoteMenu(): Promise<MenuItem[]> {
   const res = await fetch(url, { signal: controller.signal });
   clearTimeout(timeout);
   if (!res.ok) throw new Error('Menu fetch failed');
-  const data = await res.json();
-  if (Array.isArray(data)) return data as MenuItem[];
-  return FALLBACK_ITEMS;
+
+  const contentType = res.headers.get('content-type') ?? '';
+  const body = await res.text();
+
+  const items = contentType.includes('application/json')
+    ? parseJsonPayload(body)
+    : parseCsv(body);
+
+  return items.length ? items : FALLBACK_ITEMS;
 }
 
 async function init() {
