@@ -2,10 +2,10 @@ name: ArchiesOnTourMobileFIrst - Orchestration
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
 
 jobs:
   build:
     name: Call build workflow
-    uses: ./.github/workflows/ArchiesOnTourMobileFIrst-build.yml
+    uses: ./.github/workflows/ArchiesOnTourMobileFIrst-build.yaml
