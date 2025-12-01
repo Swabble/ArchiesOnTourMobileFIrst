@@ -1,6 +1,6 @@
 # Archie on Tour – Foodtruck Catering (Astro)
 
-Single-Page-Marketing-Site für den Foodtruck "Archie on Tour". Das Projekt ist mobile-first aufgebaut, statisch auslieferbar und nutzt optionale Integrationen für Google Sheets (Menü), Google Drive (Galerie) und Google Calendar (Verfügbarkeit).
+Single-Page-Marketing-Site für den Foodtruck "Archie on Tour". Das Projekt ist mobile-first aufgebaut, überwiegend statisch auslieferbar und nutzt optionale Integrationen für Google Sheets (Menü), Google Drive (Galerie) und Google Calendar (Verfügbarkeit). Eine serverseitige API-Route liefert das Menü aus und loggt Fetch-Daten für Debugging.
 
 ## Quickstart
 
@@ -46,4 +46,4 @@ Ohne gültige Keys greifen Fallback-Daten (Demo-Menü, Galerie-JSON, Beispielter
 
 ## Hosting-Hinweise
 
-Das Projekt erzeugt rein statische Assets und eignet sich für Netlify, Cloudflare Pages oder GitHub Pages. Setzen Sie lange Cache-Header für Assets (`public, max-age=31536000, immutable`) und kurze für HTML.
+Das Projekt erzeugt hauptsächlich statische Assets, benötigt für die Menü-API aber einen Server-/Serverless-Runtime (Astro Hybrid + Node-Adapter). Setzen Sie lange Cache-Header für Assets (`public, max-age=31536000, immutable`) und kurze für HTML.

@@ -1,3 +1,4 @@
+import { FALLBACK_ITEMS } from './menuParser';
 import type { MenuItem } from './menuTypes';
 
 const LOG_PREFIX = '[menu-fetch]';
@@ -8,7 +9,7 @@ type DebugSource = 'remote' | 'fallback';
 type DebugState = {
   enabled: boolean;
   status: DebugStatus;
-  source: DebugSource;
+source: DebugSource;
   contentType?: string;
   delimiter?: string;
   headers?: string[];
@@ -188,14 +189,22 @@ async function fetchRemoteMenu(): Promise<MenuItem[]> {
   emitDebug({ status: 'fetching', source: 'remote', usedFallback: false, message: 'Requesting menu' });
   const res = await fetch(url, { signal: controller.signal });
   clearTimeout(timeout);
-  if (!res.ok) throw new Error(`Menu fetch failed with status ${res.status}`);
 
-  const contentType = res.headers.get('content-type') ?? '';
-  const body = await res.text();
-  console.info(LOG_PREFIX, 'Fetched menu payload', {
+  const payload = await res
+    .json()
+    .catch((err) => {
+      console.warn(LOG_PREFIX, 'Menu API JSON parse failed', err);
+      return {};
+    });
+
+  const items = Array.isArray((payload as { items?: MenuItem[] }).items)
+    ? ((payload as { items?: MenuItem[] }).items as MenuItem[])
+    : [];
+
+  console.info(LOG_PREFIX, 'Menu API response received', {
     status: res.status,
-    contentType,
-    bodyPreview: body.slice(0, 200)
+    itemCount: items.length,
+    source: (payload as { source?: string }).source ?? 'unknown'
   });
   emitDebug({ contentType });
 
