@@ -1,0 +1,37 @@
+<div id="contract-modal" class="contract-modal-overlay" aria-hidden="true" role="dialog" aria-modal="true">
+  <div class="contract-modal">
+    <button id="contract-close" class="btn btn-secondary" aria-label="Schließen">Schließen</button>
+    <h3>Vertragsdaten (Demo)</h3>
+    <form id="contract-form" class="form">
+      <div class="form__grid">
+        <div class="form__field">
+          <label for="contract-name">Name</label>
+          <input id="contract-name" name="contract-name" />
+          <div class="error" id="contract-name-error"></div>
+        </div>
+        <div class="form__field">
+          <label for="contract-email">E-Mail</label>
+          <input id="contract-email" name="contract-email" type="email" />
+          <div class="error" id="contract-email-error"></div>
+        </div>
+        <div class="form__field">
+          <label for="contract-date">Eventdatum</label>
+          <input id="contract-date" name="contract-date" type="date" />
+          <div class="error" id="contract-date-error"></div>
+        </div>
+      </div>
+      <div class="form__field">
+        <label>Stromversorgung</label>
+        <div class="form__actions">
+          <label><input type="radio" name="power" value="16A" /> 16A</label>
+          <label><input type="radio" name="power" value="32A" /> 32A</label>
+        </div>
+        <div class="error" id="power-error"></div>
+      </div>
+      <div class="form__actions">
+        <button type="submit" class="btn btn-primary">Vertrag senden (Demo)</button>
+      </div>
+      <div id="contract-success" class="form__success is-hidden">Vertrag wurde übermittelt (Demo).</div>
+    </form>
+  </div>
+</div>
