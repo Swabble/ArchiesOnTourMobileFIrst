@@ -9,7 +9,7 @@ type DebugSource = 'remote' | 'fallback';
 type DebugState = {
   enabled: boolean;
   status: DebugStatus;
-source: DebugSource;
+  source: DebugSource;
   contentType?: string;
   delimiter?: string;
   headers?: string[];
@@ -21,30 +21,6 @@ source: DebugSource;
 
 const debugEnabled =
   typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('debugMenu') === '1';
-
-const FALLBACK_ITEMS: MenuItem[] = [
-  {
-    title: 'Signature Burger',
-    description: 'Rindfleisch-Patty, Cheddar, karamellisierte Zwiebeln, Haus-Sauce',
-    price: '11.90',
-    unit: 'pro Stück',
-    category: 'Burger'
-  },
-  {
-    title: 'Veggie Bowl',
-    description: 'Geröstetes Gemüse, Quinoa, Kräuter-Dip',
-    price: '10.50',
-    unit: 'pro Portion',
-    category: 'Bowls'
-  },
-  {
-    title: 'Hauslimonade',
-    description: 'Zitrone-Ingwer, wenig Zucker',
-    price: '3.90',
-    unit: '0,33l',
-    category: 'Getränke'
-  }
-];
 
 let lastDelimiter: string | undefined;
 let lastHeaders: string[] | undefined;
@@ -150,30 +126,53 @@ function parseCsv(text: string): MenuItem[] {
   return parseMatrix(headers, rows);
 }
 
-function parseJsonPayload(text: string): MenuItem[] {
+function normalizeSheetUrl(rawUrl: string): string {
   try {
-    const parsed = JSON.parse(text);
-    if (Array.isArray(parsed)) {
-      console.info(LOG_PREFIX, 'Parsing JSON array payload', { length: parsed.length });
-      lastHeaders = parsed[0] ? Object.keys(parsed[0]) : undefined;
-      return parsed.map(mapRowToItem);
+    const url = new URL(rawUrl);
+    const isSheet = url.hostname.includes('docs.google.com') && url.pathname.includes('/spreadsheets/');
+    if (!isSheet) return rawUrl;
+
+    const pathParts = url.pathname.split('/').filter(Boolean);
+    const dIndex = pathParts.indexOf('d');
+    const sheetId = dIndex >= 0 ? pathParts[dIndex + 1] : undefined;
+    const hashGid = url.hash.replace('#gid=', '') || undefined;
+    const gid = url.searchParams.get('gid') ?? hashGid ?? '0';
+
+    if (url.pathname.includes('/gviz/tq')) {
+      url.searchParams.set('tqx', 'out:csv');
+      if (gid) url.searchParams.set('gid', gid);
+      return url.toString();
     }
-    if (Array.isArray(parsed?.values)) {
-      const [headerRow, ...dataRows] = parsed.values as string[][];
-      if (!headerRow) return [];
-      console.info(LOG_PREFIX, 'Parsing JSON matrix payload', { rowCount: dataRows.length });
-      lastHeaders = headerRow;
-      return parseMatrix(headerRow, dataRows);
+
+    if (url.pathname.includes('/export')) {
+      url.searchParams.set('format', url.searchParams.get('format') ?? 'tsv');
+      if (gid) url.searchParams.set('gid', gid);
+      return url.toString();
     }
-  } catch (err) {
-    console.warn(LOG_PREFIX, 'Menu JSON parse failed', err);
+
+    if (sheetId) {
+      const exportUrl = new URL(`https://docs.google.com/spreadsheets/d/${sheetId}/export`);
+      exportUrl.searchParams.set('format', 'tsv');
+      exportUrl.searchParams.set('gid', gid);
+      return exportUrl.toString();
+    }
+  } catch (error) {
+    console.warn(LOG_PREFIX, 'Failed to normalize sheet URL', error);
   }
-  return [];
+
+  return rawUrl;
+}
+
+function isHtmlPayload(contentType: string, body: string): boolean {
+  const normalizedType = contentType.toLowerCase();
+  if (normalizedType.includes('text/html') || normalizedType.includes('application/xhtml+xml')) return true;
+  const trimmed = body.trimStart().toLowerCase();
+  return trimmed.startsWith('<!doctype') || trimmed.startsWith('<html');
 }
 
 async function fetchRemoteMenu(): Promise<MenuItem[]> {
-  const url = import.meta.env.PUBLIC_MENU_SHEET_URL;
-  if (!url) {
+  const rawUrl = import.meta.env.PUBLIC_MENU_SHEET_URL;
+  if (!rawUrl) {
     console.warn(LOG_PREFIX, 'PUBLIC_MENU_SHEET_URL is missing, using fallback items');
     emitDebug({
       status: 'error',
@@ -183,58 +182,92 @@ async function fetchRemoteMenu(): Promise<MenuItem[]> {
     });
     return FALLBACK_ITEMS;
   }
+
+  const url = normalizeSheetUrl(rawUrl);
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 8000);
   console.info(LOG_PREFIX, 'Fetching menu from', url);
   emitDebug({ status: 'fetching', source: 'remote', usedFallback: false, message: 'Requesting menu' });
-  const res = await fetch(url, { signal: controller.signal });
-  clearTimeout(timeout);
 
-  const payload = await res
-    .json()
-    .catch((err) => {
-      console.warn(LOG_PREFIX, 'Menu API JSON parse failed', err);
-      return {};
+  try {
+    const res = await fetch(url, {
+      signal: controller.signal,
+      headers: { Accept: 'text/tab-separated-values,text/csv;q=0.9,text/plain;q=0.8' }
+    });
+    const contentType = res.headers.get('content-type') ?? '';
+    const body = await res.text();
+
+    console.info(LOG_PREFIX, 'Menu response received', {
+      status: res.status,
+      headers: Object.fromEntries(res.headers.entries()),
+      contentType,
+      preview: body.slice(0, 120)
+    });
+    emitDebug({ contentType });
+
+    if (!res.ok) {
+      console.warn(LOG_PREFIX, 'Menu request failed, using fallback', res.status);
+      emitDebug({
+        status: 'error',
+        source: 'fallback',
+        usedFallback: true,
+        message: `Request failed with status ${res.status}`
+      });
+      return FALLBACK_ITEMS;
+    }
+
+    if (isHtmlPayload(contentType, body)) {
+      console.warn(LOG_PREFIX, 'Received HTML payload instead of CSV/TSV, aborting parse');
+      emitDebug({
+        status: 'error',
+        source: 'fallback',
+        usedFallback: true,
+        message: 'Received HTML response'
+      });
+      return FALLBACK_ITEMS;
+    }
+
+    lastDelimiter = undefined;
+    lastHeaders = undefined;
+    const items = parseCsv(body);
+    const parsedCount = items.length;
+
+    if (!parsedCount) {
+      console.warn(LOG_PREFIX, 'Parsed menu is empty, falling back');
+      emitDebug({
+        status: 'error',
+        usedFallback: true,
+        delimiter: lastDelimiter,
+        headers: lastHeaders,
+        parsedCount: 0,
+        source: 'fallback',
+        message: 'Empty export payload'
+      });
+      return FALLBACK_ITEMS;
+    }
+
+    emitDebug({
+      status: 'success',
+      delimiter: lastDelimiter,
+      headers: lastHeaders,
+      parsedCount,
+      usedFallback: false,
+      source: 'remote'
     });
 
-  const items = Array.isArray((payload as { items?: MenuItem[] }).items)
-    ? ((payload as { items?: MenuItem[] }).items as MenuItem[])
-    : [];
-
-  console.info(LOG_PREFIX, 'Menu API response received', {
-    status: res.status,
-    itemCount: items.length,
-    source: (payload as { source?: string }).source ?? 'unknown'
-  });
-  emitDebug({ contentType });
-
-  lastDelimiter = undefined;
-  lastHeaders = undefined;
-  const items = contentType.includes('application/json') ? parseJsonPayload(body) : parseCsv(body);
-
-  if (!items.length) {
-    console.warn(LOG_PREFIX, 'Parsed menu is empty, falling back');
+    return items;
+  } catch (err) {
+    console.warn(LOG_PREFIX, 'Menu fallback after error', err);
     emitDebug({
       status: 'error',
       usedFallback: true,
-      delimiter: lastDelimiter,
-      headers: lastHeaders,
-      parsedCount: 0,
-      source: 'fallback'
+      source: 'fallback',
+      message: err instanceof Error ? err.message : String(err)
     });
+    return FALLBACK_ITEMS;
+  } finally {
+    clearTimeout(timeout);
   }
-
-  const parsedCount = items.length;
-  emitDebug({
-    status: parsedCount ? 'success' : 'error',
-    delimiter: lastDelimiter,
-    headers: lastHeaders,
-    parsedCount,
-    usedFallback: !parsedCount,
-    source: parsedCount ? 'remote' : 'fallback'
-  });
-
-  return parsedCount ? items : FALLBACK_ITEMS;
 }
 
 async function init() {
