@@ -3,4 +3,7 @@ node_modules
 .env
 .cache
 .playwright-cache
+dist
+.astro
+src/env.d.ts
 

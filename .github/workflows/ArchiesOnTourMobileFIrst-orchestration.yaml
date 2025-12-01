@@ -1,0 +1,17 @@
+name: ArchiesOnTourMobileFIrst - Orchestration
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+jobs:
+  build:
+    name: Call build workflow
+    uses: ./.github/workflows/ArchiesOnTourMobileFIrst-build.yml
+
+  deploy:
+    name: Deploy to production
+    needs: build
+    uses: ./.github/workflows/deploy-now.yaml
+    with:
+      site-url: https://home-5019119322.app-ionos.space
+      branch-id: ${{ github.ref_name }}

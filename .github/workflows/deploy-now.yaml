@@ -1,0 +1,25 @@
+name: Deploy Now
+
+on:
+  workflow_call:
+    inputs:
+      site-url:
+        description: "Deployment URL for the site"
+        required: true
+        type: string
+      branch-id:
+        description: "Target branch identifier"
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy Now
+        uses: ionos-deploy-now/action@v2
+        with:
+          site-url: ${{ inputs['site-url'] }}
+          branch-id: ${{ inputs['branch-id'] }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
