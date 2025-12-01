@@ -1,0 +1,32 @@
+<section id="angebot" class="section">
+  <div class="container section__content reveal">
+    <div class="section__header">
+      <span class="section__eyebrow">Unser Angebot</span>
+      <h2 class="section__title">Archie on Tour für jeden Anlass</h2>
+      <p class="section__lead">
+        Ob Firmenfeier, Messeauftritt oder Festival – unser Foodtruck passt sich Ihrem Event an und
+        liefert ein nahtloses Erlebnis für Ihre Gäste.
+      </p>
+    </div>
+    <div class="cards">
+      {[
+        {
+          title: 'Firmenfeiern',
+          icon: '🏢',
+          copy: 'Schnelle, hochwertige Verpflegung für Mitarbeitende und Kunden – ohne lange Wartezeiten.',
+        },
+        { title: 'Messen & Roadshows', icon: '🚌', copy: 'Attention-Grabber mit leckerem Street Food, das Leads anzieht.' },
+        { title: 'Festivals', icon: '🎪', copy: 'Belastbare Crew mit hoher Ausgabekapazität für hungrige Besucher.' },
+        { title: 'Hochzeiten', icon: '💍', copy: 'Charmanter Foodtruck als Highlight für Abendessen oder Mitternachtssnack.' },
+        { title: 'Team-Events', icon: '🤝', copy: 'Gemeinsam genießen – unkomplizierte Planung, flexible Menüs.' },
+        { title: 'Private Feiern', icon: '🏡', copy: 'Rundes Gesamtpaket inklusive Service, Technik und Cleanup.' },
+      ].map((item) => (
+        <article class="card">
+          <div class="card__icon" aria-hidden="true">{item.icon}</div>
+          <h3>{item.title}</h3>
+          <p>{item.copy}</p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,30 @@
+<section id="referenzen" class="section">
+  <div class="container section__content reveal">
+    <div class="section__header">
+      <span class="section__eyebrow">Referenzen</span>
+      <h2 class="section__title">Von Teams geliebt</h2>
+      <p class="section__lead">Ausgewählte Partner:innen, die unseren Foodtruck bereits gebucht haben.</p>
+    </div>
+    <div class="references__logos logos">
+      {Array.from({ length: 6 }).map((_, idx) => (
+        <div class="card__badge" aria-label={`Logo Platzhalter ${idx + 1}`}>
+          Firmenlogo
+        </div>
+      ))}
+    </div>
+    <div class="cards" style="margin-top: var(--space-5)">
+      <article class="testimonial">
+        <p>„Super eingespieltes Team, die Ausgabe lief selbst im Peak reibungslos.“</p>
+        <strong>Event Lead · Tech Expo</strong>
+      </article>
+      <article class="testimonial">
+        <p>„Tolles Feedback vom Management. Besonders die vegetarischen Optionen waren top.“</p>
+        <strong>Office Managerin · SaaS Scale-up</strong>
+      </article>
+      <article class="testimonial">
+        <p>„Verlässliche Planung, freundlicher Service und richtig leckere Burger.“</p>
+        <strong>People & Culture · Agentur</strong>
+      </article>
+    </div>
+  </div>
+</section>

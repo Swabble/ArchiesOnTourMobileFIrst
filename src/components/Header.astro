@@ -1,0 +1,43 @@
+<header class="header">
+  <div class="container header__inner">
+    <a class="logo" href="#start" aria-label="Zur Startsektion">
+      <span class="logo__mark">A</span>
+      <span>Archie on Tour</span>
+    </a>
+    <button class="nav__toggle" aria-expanded="false" aria-controls="nav-menu" aria-label="Navigation umschalten">
+      ☰
+    </button>
+    <div class="nav__list-wrapper" id="nav-menu">
+      <ul class="nav__list">
+        <li><a href="#start">Start</a></li>
+        <li><a href="#angebot">Angebot</a></li>
+        <li><a href="#referenzen">Referenzen</a></li>
+        <li><a href="#galerie">Galerie</a></li>
+        <li><a href="#ablauf">Ablauf</a></li>
+        <li><a href="#verfuegbarkeit">Verfügbarkeit</a></li>
+        <li><a href="#anfrage">Anfrage</a></li>
+        <li><a href="#ueber-uns">Über uns</a></li>
+      </ul>
+    </div>
+  </div>
+  <script type="module" is:inline>
+    const toggle = document.querySelector('.nav__toggle');
+    const menu = document.querySelector('.nav__list-wrapper');
+    const links = menu?.querySelectorAll('a') ?? [];
+
+    const setOpen = (open) => {
+      if (!toggle || !menu) return;
+      toggle.setAttribute('aria-expanded', String(open));
+      menu.classList.toggle('open', open);
+    };
+
+    toggle?.addEventListener('click', () => {
+      const isOpen = menu?.classList.contains('open');
+      setOpen(!isOpen);
+    });
+
+    links.forEach((link) => {
+      link.addEventListener('click', () => setOpen(false));
+    });
+  </script>
+</header>

@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=1600&q=80",
+    "thumbnail": "https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=600&q=60",
+    "alt": "Foodtruck vor Abendhimmel"
+  },
+  {
+    "url": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1600&q=80",
+    "thumbnail": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=60",
+    "alt": "Frische Burger"
+  },
+  {
+    "url": "https://images.unsplash.com/photo-1504674900247-08c24b49f7c7?auto=format&fit=crop&w=1600&q=80",
+    "thumbnail": "https://images.unsplash.com/photo-1504674900247-08c24b49f7c7?auto=format&fit=crop&w=600&q=60",
+    "alt": "Foodtruck Team im Einsatz"
+  }
+]

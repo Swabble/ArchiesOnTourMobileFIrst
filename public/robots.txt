@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://archie-on-tour.example/sitemap-index.xml

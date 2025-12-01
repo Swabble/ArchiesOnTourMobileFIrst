@@ -1,0 +1,78 @@
+<section id="anfrage" class="section">
+  <div class="container section__content">
+    <div class="section__header">
+      <span class="section__eyebrow">Anfrage</span>
+      <h2 class="section__title">Catering anfragen</h2>
+      <p class="section__lead">Teilen Sie uns Eckdaten zu Ihrem Event mit – wir melden uns mit einem Vorschlag.</p>
+    </div>
+    <form id="inquiry-form" class="form">
+      <div class="form__grid">
+        <div class="form__field">
+          <label for="company">Firma</label>
+          <input id="company" name="company" type="text" required />
+          <span class="error" data-error-for="company"></span>
+        </div>
+        <div class="form__field">
+          <label for="contact">Ansprechpartner</label>
+          <input id="contact" name="contact" type="text" required />
+          <span class="error" data-error-for="contact"></span>
+        </div>
+        <div class="form__field">
+          <label for="email">E-Mail</label>
+          <input id="email" name="email" type="email" required />
+          <span class="error" data-error-for="email"></span>
+        </div>
+        <div class="form__field">
+          <label for="phone">Telefon</label>
+          <input id="phone" name="phone" type="tel" required />
+          <span class="error" data-error-for="phone"></span>
+        </div>
+        <div class="form__field">
+          <label for="date">Datum</label>
+          <input id="date" name="date" type="date" required />
+          <span class="error" data-error-for="date"></span>
+        </div>
+        <div class="form__field">
+          <label for="location">Ort</label>
+          <input id="location" name="location" type="text" required />
+          <span class="error" data-error-for="location"></span>
+        </div>
+        <div class="form__field">
+          <label for="attendees">Personenanzahl</label>
+          <input id="attendees" name="attendees" type="number" min="10" required />
+          <span class="error" data-error-for="attendees"></span>
+        </div>
+        <div class="form__field">
+          <label for="eventType">Art der Veranstaltung</label>
+          <select id="eventType" name="eventType" required>
+            <option value="">Bitte wählen</option>
+            <option>Firmenfeier</option>
+            <option>Messe</option>
+            <option>Hochzeit</option>
+            <option>Team-Event</option>
+            <option>Privatfeier</option>
+          </select>
+          <span class="error" data-error-for="eventType"></span>
+        </div>
+      </div>
+      <div class="form__field">
+        <label for="message">Nachricht</label>
+        <textarea id="message" name="message" placeholder="Details, Wünsche oder Zeitfenster"></textarea>
+      </div>
+      <div class="form__actions">
+        <button type="submit" class="btn btn-primary">Anfrage senden</button>
+        <p class="form__hint">Wir melden uns innerhalb von 24 Stunden.</p>
+      </div>
+      <div id="inquiry-success" class="form__success is-hidden">
+        Vielen Dank für Ihre Anfrage! Bitte füllen Sie nun den Vertrag aus.
+      </div>
+    </form>
+    <ContractModal />
+  </div>
+  <script type="module" is:inline>
+    import { initInquiryForm } from '../lib/forms';
+    import { initContractModal } from '../lib/forms';
+    const { openModal } = initContractModal();
+    initInquiryForm(openModal);
+  </script>
+</section>

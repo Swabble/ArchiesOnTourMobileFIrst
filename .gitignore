@@ -1,0 +1,8 @@
+node_modules
+.env
+.astro
+dist
+playwright-report
+blob-report
+coverage
+test-results

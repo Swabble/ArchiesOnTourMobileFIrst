@@ -1,0 +1,41 @@
+<section id="verfuegbarkeit" class="section">
+  <div class="container section__content">
+    <div class="section__header">
+      <span class="section__eyebrow">Kalender</span>
+      <h2 class="section__title">Verfügbarkeit prüfen</h2>
+      <p class="section__lead">
+        Live-Daten aus Google Calendar oder Demo-Termine, falls keine API-Konfiguration vorhanden ist.
+      </p>
+    </div>
+    <div class="calendar-layout">
+      <div
+        class="calendar"
+        data-calendar-id={import.meta.env.PUBLIC_CALENDAR_ID ?? 'demo-calendar'}
+      >
+        <div class="calendar__header">
+          <h3 class="calendar__month" id="calendar-month">Monat</h3>
+          <div class="calendar__controls">
+            <button class="calendar__button" id="calendar-prev" aria-label="Vorheriger Monat">‹</button>
+            <button class="calendar__button" id="calendar-next" aria-label="Nächster Monat">›</button>
+          </div>
+        </div>
+        <div class="calendar__status" id="calendar-status">Kalender wird geladen …</div>
+        <div class="calendar__weekdays">
+          {['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'].map((d) => (
+            <div class="calendar__weekday">{d}</div>
+          ))}
+        </div>
+        <div class="calendar__grid" id="calendar-grid" role="grid"></div>
+      </div>
+      <div class="calendar__events">
+        <h3>Termine</h3>
+        <div class="calendar__status" id="event-badge">0 Termine</div>
+        <ul class="calendar__events-list" id="calendar-events" role="list"></ul>
+      </div>
+    </div>
+  </div>
+  <script type="module" is:inline>
+    import { initAvailabilityCalendar } from '../lib/calendar';
+    initAvailabilityCalendar();
+  </script>
+</section>

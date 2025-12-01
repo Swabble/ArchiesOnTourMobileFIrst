@@ -1,0 +1,27 @@
+<section id="ablauf" class="section">
+  <div class="container section__content reveal">
+    <div class="section__header">
+      <span class="section__eyebrow">So läufts</span>
+      <h2 class="section__title">In vier Schritten zum Foodtruck</h2>
+    </div>
+    <div class="steps">
+      {[
+        'Anfrage senden',
+        'Menü & Details abstimmen',
+        'Angebot erhalten',
+        'Foodtruck kommt zum Event',
+      ].map((step, index) => (
+        <article class="card step">
+          <div class="card__badge" aria-hidden="true">{index + 1}</div>
+          <h3>{step}</h3>
+          <p>
+            {index === 0 && 'Formular ausfüllen, Wunschdatum und Personenanzahl angeben.'}
+            {index === 1 && 'Wir empfehlen passende Menüs und klären Logistik & Infrastruktur.'}
+            {index === 2 && 'Sie erhalten ein transparentes Angebot inkl. aller Leistungen.'}
+            {index === 3 && 'Wir reisen an, bauen auf und kümmern uns um glückliche Gäste.'}
+          </p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

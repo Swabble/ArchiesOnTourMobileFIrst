@@ -1,0 +1,19 @@
+<section id="menu" class="section">
+  <div class="container section__content">
+    <div class="section__header">
+      <span class="section__eyebrow">Menü</span>
+      <h2 class="section__title">Unsere Produktauswahl</h2>
+      <p class="section__lead">
+        Live aus Google Sheets oder als Fallback aus dem lokalen JSON. Kategorien, Add-ons und Preise
+        werden automatisch gruppiert.
+      </p>
+    </div>
+    <div id="menu-loading">Menü wird geladen …</div>
+    <div id="menu-error" class="is-hidden">Beim Laden ist ein Fehler aufgetreten. Wir zeigen eine gespeicherte Version.</div>
+    <div id="menu-categories-container" class="grid"></div>
+  </div>
+  <script type="module" is:inline>
+    import { initMenuSection } from '../lib/fetchMenu';
+    initMenuSection();
+  </script>
+</section>

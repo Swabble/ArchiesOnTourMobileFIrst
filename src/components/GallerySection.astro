@@ -1,0 +1,27 @@
+---
+import LightboxOverlay from './LightboxOverlay.astro';
+---
+<section id="galerie" class="section">
+  <div class="container section__content">
+    <div class="section__header">
+      <span class="section__eyebrow">Galerie</span>
+      <h2 class="section__title">Impressionen</h2>
+      <p class="section__lead">Bilder aus unseren Einsätzen – geladen aus Google Drive oder aus dem lokalen Fallback.</p>
+    </div>
+    <div id="gallery-loading">Galerie lädt …</div>
+    <div id="gallery-error" class="is-hidden">Bilder konnten nicht geladen werden, wir zeigen die Fallback-Galerie.</div>
+    <div class="carousel-container">
+      <div class="carousel-track-wrapper">
+        <div id="carousel-track" class="carousel-track"></div>
+        <button class="carousel-nav carousel-nav-prev" aria-label="Vorheriges Bild">‹</button>
+        <button class="carousel-nav carousel-nav-next" aria-label="Nächstes Bild">›</button>
+      </div>
+      <div id="carousel-dots" class="carousel-dots"></div>
+    </div>
+    <LightboxOverlay />
+  </div>
+  <script type="module" is:inline>
+    import { initGallery } from '../lib/gallery';
+    initGallery();
+  </script>
+</section>

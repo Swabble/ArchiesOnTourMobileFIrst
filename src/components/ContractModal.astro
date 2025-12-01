@@ -1,0 +1,82 @@
+<div id="contract-modal-overlay" class="contract-modal-overlay" aria-hidden="true" role="dialog" aria-modal="true">
+  <div class="contract-modal">
+    <button class="contract-modal__close" aria-label="Modal schließen">×</button>
+    <h3>Vertrag abschließen</h3>
+    <p>Bitte prüfen Sie die Angaben und bestätigen Sie die Rahmenbedingungen.</p>
+    <form id="contract-form" class="form">
+      <div class="contract-section">
+        <h4 class="contract-section__title">Vertragsparteien</h4>
+        <div class="form__grid">
+          <div class="form__field">
+            <label for="contract-company">Firma</label>
+            <input id="contract-company" name="company" type="text" required />
+            <span class="error" data-error-for="company"></span>
+          </div>
+          <div class="form__field">
+            <label for="contract-contact">Ansprechpartner</label>
+            <input id="contract-contact" name="contact" type="text" required />
+            <span class="error" data-error-for="contact"></span>
+          </div>
+        </div>
+      </div>
+      <div class="contract-section">
+        <h4 class="contract-section__title">Eventdetails</h4>
+        <div class="form__grid">
+          <div class="form__field">
+            <label for="contract-date">Datum</label>
+            <input id="contract-date" name="date" type="date" required />
+            <span class="error" data-error-for="date"></span>
+          </div>
+          <div class="form__field">
+            <label for="contract-location">Ort</label>
+            <input id="contract-location" name="location" type="text" required />
+            <span class="error" data-error-for="location"></span>
+          </div>
+        </div>
+        <div class="form__grid">
+          <div class="form__field">
+            <label for="contract-guests">Personenanzahl</label>
+            <input id="contract-guests" name="guests" type="number" min="10" required />
+            <span class="error" data-error-for="guests"></span>
+          </div>
+          <div class="form__field">
+            <label for="contract-type">Veranstaltung</label>
+            <input id="contract-type" name="eventType" type="text" required />
+            <span class="error" data-error-for="eventType"></span>
+          </div>
+        </div>
+      </div>
+      <div class="contract-section">
+        <h4 class="contract-section__title">Stromversorgung</h4>
+        <div class="form__radio-group">
+          <label>
+            <input type="radio" name="power" value="32A CEE" required /> 32A CEE vorhanden
+          </label>
+          <label>
+            <input type="radio" name="power" value="16A CEE" /> 16A CEE vorhanden
+          </label>
+          <label>
+            <input type="radio" name="power" value="Benötigt" /> Wir benötigen Stromanschluss
+          </label>
+          <span class="error" data-error-for="power"></span>
+        </div>
+      </div>
+      <div class="contract-section">
+        <h4 class="contract-section__title">Zusatzinfos</h4>
+        <div class="form__checkbox-group">
+          <label><input type="checkbox" name="agreeTerms" value="yes" required /> Ich bestätige die Storno- und Garantiebedingungen.</label>
+          <span class="error" data-error-for="agreeTerms"></span>
+        </div>
+        <div class="form__field">
+          <label for="contract-notes">Notizen</label>
+          <textarea id="contract-notes" name="notes" placeholder="Optionale Hinweise"></textarea>
+        </div>
+      </div>
+      <div class="form__actions">
+        <button type="submit" class="btn btn-primary">Vertrag senden</button>
+        <button type="button" class="btn btn-secondary" data-close-modal>Abbrechen</button>
+      </div>
+      <div id="contract-success" class="form__success is-hidden">Vertrag wurde übermittelt (Demo).</div>
+    </form>
+  </div>
+</div>
