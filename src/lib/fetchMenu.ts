@@ -2,6 +2,25 @@ import type { MenuItem } from './menuTypes';
 
 const LOG_PREFIX = '[menu-fetch]';
 
+type DebugStatus = 'idle' | 'fetching' | 'success' | 'error';
+type DebugSource = 'remote' | 'fallback';
+
+type DebugState = {
+  enabled: boolean;
+  status: DebugStatus;
+  source: DebugSource;
+  contentType?: string;
+  delimiter?: string;
+  headers?: string[];
+  parsedCount: number;
+  fallbackCount: number;
+  usedFallback: boolean;
+  message?: string;
+};
+
+const debugEnabled =
+  typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('debugMenu') === '1';
+
 const FALLBACK_ITEMS: MenuItem[] = [
   {
     title: 'Signature Burger',
@@ -25,6 +44,24 @@ const FALLBACK_ITEMS: MenuItem[] = [
     category: 'Getränke'
   }
 ];
+
+let lastDelimiter: string | undefined;
+let lastHeaders: string[] | undefined;
+
+let debugState: DebugState = {
+  enabled: debugEnabled,
+  status: 'idle',
+  source: 'remote',
+  parsedCount: 0,
+  fallbackCount: FALLBACK_ITEMS.length,
+  usedFallback: false
+};
+
+function emitDebug(update: Partial<DebugState>) {
+  if (!debugEnabled || typeof window === 'undefined') return;
+  debugState = { ...debugState, ...update } as DebugState;
+  window.dispatchEvent(new CustomEvent<DebugState>('menu:debug', { detail: debugState }));
+}
 
 function formatPrice(price: string | number) {
   const numeric = Number(String(price).replace(/[^0-9,.-]/g, '').replace(',', '.'));
@@ -104,8 +141,10 @@ function parseCsv(text: string): MenuItem[] {
   if (!trimmed) return [];
   const lines = trimmed.split(/\r?\n/).filter(Boolean);
   const delimiter = lines[0].includes('\t') ? '\t' : lines[0].includes(';') ? ';' : ',';
+  lastDelimiter = delimiter;
   console.info(LOG_PREFIX, 'Detected CSV delimiter', delimiter);
   const headers = lines[0].split(delimiter).map((h) => h.trim());
+  lastHeaders = headers;
   const rows = lines.slice(1).map((line) => line.split(delimiter));
   return parseMatrix(headers, rows);
 }
@@ -115,12 +154,14 @@ function parseJsonPayload(text: string): MenuItem[] {
     const parsed = JSON.parse(text);
     if (Array.isArray(parsed)) {
       console.info(LOG_PREFIX, 'Parsing JSON array payload', { length: parsed.length });
+      lastHeaders = parsed[0] ? Object.keys(parsed[0]) : undefined;
       return parsed.map(mapRowToItem);
     }
     if (Array.isArray(parsed?.values)) {
       const [headerRow, ...dataRows] = parsed.values as string[][];
       if (!headerRow) return [];
       console.info(LOG_PREFIX, 'Parsing JSON matrix payload', { rowCount: dataRows.length });
+      lastHeaders = headerRow;
       return parseMatrix(headerRow, dataRows);
     }
   } catch (err) {
@@ -133,11 +174,18 @@ async function fetchRemoteMenu(): Promise<MenuItem[]> {
   const url = import.meta.env.PUBLIC_MENU_SHEET_URL;
   if (!url) {
     console.warn(LOG_PREFIX, 'PUBLIC_MENU_SHEET_URL is missing, using fallback items');
+    emitDebug({
+      status: 'error',
+      source: 'fallback',
+      usedFallback: true,
+      message: 'PUBLIC_MENU_SHEET_URL missing'
+    });
     return FALLBACK_ITEMS;
   }
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 8000);
   console.info(LOG_PREFIX, 'Fetching menu from', url);
+  emitDebug({ status: 'fetching', source: 'remote', usedFallback: false, message: 'Requesting menu' });
   const res = await fetch(url, { signal: controller.signal });
   clearTimeout(timeout);
   if (!res.ok) throw new Error(`Menu fetch failed with status ${res.status}`);
@@ -149,16 +197,35 @@ async function fetchRemoteMenu(): Promise<MenuItem[]> {
     contentType,
     bodyPreview: body.slice(0, 200)
   });
+  emitDebug({ contentType });
 
-  const items = contentType.includes('application/json')
-    ? parseJsonPayload(body)
-    : parseCsv(body);
+  lastDelimiter = undefined;
+  lastHeaders = undefined;
+  const items = contentType.includes('application/json') ? parseJsonPayload(body) : parseCsv(body);
 
   if (!items.length) {
     console.warn(LOG_PREFIX, 'Parsed menu is empty, falling back');
+    emitDebug({
+      status: 'error',
+      usedFallback: true,
+      delimiter: lastDelimiter,
+      headers: lastHeaders,
+      parsedCount: 0,
+      source: 'fallback'
+    });
   }
 
-  return items.length ? items : FALLBACK_ITEMS;
+  const parsedCount = items.length;
+  emitDebug({
+    status: parsedCount ? 'success' : 'error',
+    delimiter: lastDelimiter,
+    headers: lastHeaders,
+    parsedCount,
+    usedFallback: !parsedCount,
+    source: parsedCount ? 'remote' : 'fallback'
+  });
+
+  return parsedCount ? items : FALLBACK_ITEMS;
 }
 
 async function init() {
@@ -170,6 +237,12 @@ async function init() {
     render(items.length ? items : FALLBACK_ITEMS);
   } catch (err) {
     console.warn(LOG_PREFIX, 'Menu fallback after error', err);
+    emitDebug({
+      status: 'error',
+      usedFallback: true,
+      source: 'fallback',
+      message: err instanceof Error ? err.message : String(err)
+    });
     error?.classList.remove('is-hidden');
     render(FALLBACK_ITEMS);
   }

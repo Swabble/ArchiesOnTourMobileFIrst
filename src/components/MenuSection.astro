@@ -5,6 +5,69 @@
     <div id="menu-loading" class="card">Menü wird geladen …</div>
     <div id="menu-error" class="card is-hidden">Fehler beim Laden der Daten. Es werden Fallback-Produkte angezeigt.</div>
     <div id="menu-categories-container" class="menu-grid"></div>
+    <div id="menu-debug-panel" class="card is-hidden menu-debug" role="status" aria-live="polite">
+      <h3>Debug Menu</h3>
+      <dl>
+        <div class="menu-debug__row">
+          <dt>Status</dt>
+          <dd data-debug="status">verborgen</dd>
+        </div>
+        <div class="menu-debug__row">
+          <dt>Content-Type</dt>
+          <dd data-debug="content-type">–</dd>
+        </div>
+        <div class="menu-debug__row">
+          <dt>Delimiter</dt>
+          <dd data-debug="delimiter">–</dd>
+        </div>
+        <div class="menu-debug__row">
+          <dt>Headers</dt>
+          <dd data-debug="headers">–</dd>
+        </div>
+        <div class="menu-debug__row">
+          <dt>Parsed Items</dt>
+          <dd data-debug="parsed-count">0</dd>
+        </div>
+        <div class="menu-debug__row">
+          <dt>Fallback Items</dt>
+          <dd data-debug="fallback-count">0</dd>
+        </div>
+      </dl>
+    </div>
   </div>
 </section>
 <script type="module" src="/src/lib/fetchMenu.ts" defer></script>
+<script>
+  const setupDebugPanel = () => {
+    const debugParam = new URLSearchParams(window.location.search).get('debugMenu');
+    const panel = document.getElementById('menu-debug-panel');
+    if (!panel || debugParam !== '1') return;
+
+    panel.classList.remove('is-hidden');
+
+    const statusEl = panel.querySelector('[data-debug="status"]');
+    const contentTypeEl = panel.querySelector('[data-debug="content-type"]');
+    const delimiterEl = panel.querySelector('[data-debug="delimiter"]');
+    const headersEl = panel.querySelector('[data-debug="headers"]');
+    const parsedCountEl = panel.querySelector('[data-debug="parsed-count"]');
+    const fallbackCountEl = panel.querySelector('[data-debug="fallback-count"]');
+
+    window.addEventListener('menu:debug', (event) => {
+      const detail = (event as CustomEvent).detail ?? {};
+      statusEl.textContent = detail.status ?? 'unbekannt';
+      if (detail.message) statusEl.textContent += ` (${detail.message})`;
+      contentTypeEl.textContent = detail.contentType ?? '–';
+      delimiterEl.textContent = detail.delimiter ?? '–';
+      headersEl.textContent = Array.isArray(detail.headers) && detail.headers.length
+        ? detail.headers.join(', ')
+        : '–';
+      parsedCountEl.textContent = String(detail.parsedCount ?? 0);
+      const fallbackLabel = detail.usedFallback ? `${detail.fallbackCount ?? 0} (aktiv)` : String(detail.fallbackCount ?? 0);
+      fallbackCountEl.textContent = fallbackLabel;
+    });
+  };
+
+  if (typeof window !== 'undefined') {
+    window.addEventListener('DOMContentLoaded', setupDebugPanel);
+  }
+</script>
