@@ -67,29 +67,101 @@ function goTo(next: number) {
 
 async function loadImages() {
   loadingBox?.classList.remove('is-hidden');
+  const debugBox = document.getElementById('gallery-debug');
+
   try {
     const apiKey = import.meta.env.PUBLIC_DRIVE_API_KEY;
     const folderId = import.meta.env.PUBLIC_GALLERY_FOLDER_ID;
+
+    console.log('[GALLERY DEBUG] API Key:', apiKey ? 'Present ✓' : 'Missing ✗');
+    console.log('[GALLERY DEBUG] Folder ID:', folderId ? 'Present ✓' : 'Missing ✗');
+
+    if (debugBox) {
+      debugBox.innerHTML = `
+        <strong>Gallery Debug Info:</strong><br>
+        API Key: ${apiKey ? '✓ Configured' : '✗ Missing'}<br>
+        Folder ID: ${folderId || '✗ Missing'}<br>
+      `;
+    }
+
     if (apiKey && folderId) {
       const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+mimeType+contains+'image/'and+trashed=false&fields=files(id,name,thumbnailLink,webContentLink)&supportsAllDrives=true&key=${apiKey}`;
+      console.log('[GALLERY DEBUG] Fetching from Drive API...');
+
       const res = await fetch(url);
-      if (!res.ok) throw new Error('Drive request failed');
+      console.log('[GALLERY DEBUG] Response status:', res.status);
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error('[GALLERY DEBUG] Drive API error:', errorText);
+        if (debugBox) {
+          debugBox.innerHTML += `Status: ${res.status} - ${res.statusText}<br>Error: ${errorText.substring(0, 200)}<br>`;
+        }
+        throw new Error(`Drive request failed: ${res.status}`);
+      }
+
       const data = await res.json();
-      state.images = (data.files || []).map((file: any) => ({
-        url: `${file.thumbnailLink?.split('=')[0]}=s1600`,
-        thumbnail: `${file.thumbnailLink?.split('=')[0]}=s600`,
-        alt: file.name || 'Galeriebild'
-      }));
+      console.log('[GALLERY DEBUG] Files found:', data.files?.length || 0);
+      console.log('[GALLERY DEBUG] Files:', data.files);
+
+      if (debugBox) {
+        debugBox.innerHTML += `Status: ${res.status} OK<br>Files found: ${data.files?.length || 0}<br>`;
+      }
+
+      state.images = (data.files || []).map((file: any) => {
+        const thumbnailLink = file.thumbnailLink;
+        const webContentLink = file.webContentLink;
+        console.log('[GALLERY DEBUG] Processing file:', file.name);
+        console.log('[GALLERY DEBUG] - thumbnailLink:', thumbnailLink);
+        console.log('[GALLERY DEBUG] - webContentLink:', webContentLink);
+
+        // Better URL handling with fallback
+        let url = webContentLink;
+        let thumbUrl = webContentLink;
+
+        if (thumbnailLink) {
+          const baseUrl = thumbnailLink.split('=')[0];
+          url = `${baseUrl}=s1600`;
+          thumbUrl = `${baseUrl}=s600`;
+        } else if (webContentLink) {
+          // If no thumbnailLink, try to construct from webContentLink
+          // Google Drive direct links format: https://drive.google.com/uc?id=FILE_ID
+          const fileId = file.id;
+          url = `https://drive.google.com/thumbnail?id=${fileId}&sz=w1600`;
+          thumbUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w600`;
+        }
+
+        console.log('[GALLERY DEBUG] - Final URL:', url);
+        console.log('[GALLERY DEBUG] - Final Thumbnail:', thumbUrl);
+
+        return {
+          url,
+          thumbnail: thumbUrl,
+          alt: file.name || 'Galeriebild'
+        };
+      });
+
+      if (debugBox && state.images.length > 0) {
+        debugBox.innerHTML += `<br><strong>Sample URLs:</strong><br>${state.images[0].thumbnail}<br>`;
+      }
     }
 
     if (!state.images.length) {
+      console.log('[GALLERY DEBUG] No images from API, using fallback');
+      if (debugBox) {
+        debugBox.innerHTML += 'Using fallback images from /data/gallery.json<br>';
+      }
       const fallback = await fetch('/data/gallery.json');
       state.images = await fallback.json();
     }
     renderCarousel();
   } catch (error) {
-    console.warn('Gallery fallback', error);
+    console.error('[GALLERY DEBUG] Error:', error);
     errorBox?.classList.remove('is-hidden');
+    const debugBox = document.getElementById('gallery-debug');
+    if (debugBox) {
+      debugBox.innerHTML += `<br><strong>Error:</strong> ${(error as Error).message}<br>Using fallback images.<br>`;
+    }
     const fallback = await fetch('/data/gallery.json');
     state.images = await fallback.json();
     renderCarousel();
