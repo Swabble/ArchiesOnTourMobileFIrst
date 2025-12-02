@@ -37,4 +37,22 @@
     </div>
   </div>
 </section>
+<style>
+  #verfuegbarkeit .btn-secondary {
+    background: var(--color-primary);
+    color: var(--color-corporate-white);
+    border-color: transparent;
+  }
+
+  #verfuegbarkeit .btn-secondary.is-active {
+    background: var(--color-corporate-black);
+    color: var(--color-corporate-white);
+    border-color: var(--color-corporate-black);
+  }
+
+  #verfuegbarkeit .btn-secondary:hover,
+  #verfuegbarkeit .btn-secondary:focus-visible {
+    filter: brightness(0.95);
+  }
+</style>
 <script type="module" src="/src/lib/calendar.ts" defer></script>
