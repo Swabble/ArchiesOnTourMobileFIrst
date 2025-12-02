@@ -1,7 +1,7 @@
 import type { } from './menuTypes';
 
 const overlay = document.getElementById('lightbox-overlay') as HTMLElement | null;
-const track = document.getElementById('carousel-track');
+const track = document.getElementById('carousel-track') as HTMLElement | null;
 const dots = document.getElementById('carousel-dots');
 const loadingBox = document.getElementById('gallery-loading');
 const errorBox = document.getElementById('gallery-error');
@@ -20,6 +20,34 @@ function setBodyScroll(disable: boolean) {
   document.body.classList.toggle('no-scroll', disable);
 }
 
+function highlightActive(index: number) {
+  if (!track || !dots) return;
+  const items = Array.from(track.querySelectorAll('.carousel-item')) as HTMLElement[];
+  items.forEach((item, itemIndex) => {
+    item.classList.toggle('center', itemIndex === index);
+  });
+  Array.from(dots.children).forEach((dot, dotIndex) => {
+    dot.classList.toggle('active', dotIndex === index);
+  });
+}
+
+function scrollToItem(index: number, smooth = true) {
+  if (!track) return;
+  const target = track.querySelector(`[data-index="${index}"]`) as HTMLElement | null;
+  if (!target) return;
+  const offset = target.offsetLeft - track.offsetLeft;
+  track.scrollTo({ left: offset, behavior: smooth ? 'smooth' : 'auto' });
+}
+
+function setActiveIndex(next: number, smooth = true) {
+  const total = state.images.length;
+  if (!total) return;
+  const normalized = ((next % total) + total) % total;
+  state.currentIndex = normalized;
+  highlightActive(normalized);
+  scrollToItem(normalized, smooth);
+}
+
 function renderCarousel() {
   if (!track || !dots) return;
   track.innerHTML = '';
@@ -27,17 +55,20 @@ function renderCarousel() {
   state.images.forEach((img, index) => {
     const item = document.createElement('button');
     item.className = 'carousel-item';
-    if (index === state.currentIndex) item.classList.add('center');
+    item.dataset.index = String(index);
     item.innerHTML = `<img src="${img.thumbnail}" alt="${img.alt}" loading="lazy" />`;
     item.addEventListener('click', () => openLightbox(index));
     track.appendChild(item);
 
     const dot = document.createElement('button');
-    dot.className = 'carousel-dot' + (index === state.currentIndex ? ' active' : '');
+    dot.className = 'carousel-dot';
     dot.setAttribute('aria-label', `Bild ${index + 1} von ${state.images.length}`);
-    dot.addEventListener('click', () => goTo(index));
+    dot.addEventListener('click', () => setActiveIndex(index));
     dots.appendChild(dot);
   });
+
+  highlightActive(state.currentIndex);
+  scrollToItem(state.currentIndex, false);
 }
 
 function openLightbox(index: number) {
@@ -60,9 +91,7 @@ function closeLightbox() {
 }
 
 function goTo(next: number) {
-  const total = state.images.length;
-  state.currentIndex = (next + total) % total;
-  renderCarousel();
+  setActiveIndex(next);
 }
 
 async function loadImages() {
@@ -181,6 +210,24 @@ function bindControls() {
   });
   window.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') closeLightbox();
+  });
+
+  track?.addEventListener('scroll', () => {
+    if (!track) return;
+    const items = Array.from(track.querySelectorAll('.carousel-item')) as HTMLElement[];
+    if (!items.length) return;
+    const center = track.scrollLeft + track.clientWidth / 2;
+    const nearestIndex = items.reduce((bestIndex, item, currentIndex) => {
+      const itemCenter = item.offsetLeft + item.clientWidth / 2;
+      const bestItem = items[bestIndex];
+      const bestCenter = bestItem.offsetLeft + bestItem.clientWidth / 2;
+      return Math.abs(itemCenter - center) < Math.abs(bestCenter - center) ? currentIndex : bestIndex;
+    }, 0);
+
+    if (nearestIndex !== state.currentIndex) {
+      state.currentIndex = nearestIndex;
+      highlightActive(nearestIndex);
+    }
   });
 }
 
