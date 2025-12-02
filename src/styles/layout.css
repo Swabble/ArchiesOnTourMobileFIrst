@@ -15,7 +15,7 @@ main::before {
   content: '';
   position: fixed;
   inset: 0;
-  background: var(--color-background) url('/assets/your-background.svg') center calc(50% + 25vh) / cover no-repeat fixed;
+  background: var(--color-background) url('/assets/your-background.svg') center top / cover no-repeat fixed;
   filter: saturate(1.05);
   z-index: -2;
 }
@@ -41,7 +41,7 @@ main::after {
 .section::before {
   content: '';
   position: absolute;
-  inset: var(--space-3);
+  inset: var(--space-2) var(--space-6);
   background: rgba(0, 0, 0, 0.5);
   border-radius: var(--radius-xl);
   backdrop-filter: blur(10px);

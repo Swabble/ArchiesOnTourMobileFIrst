@@ -80,6 +80,19 @@ header.site-header {
   margin-top: var(--hero-offset);
   scroll-margin-top: calc(var(--header-height) + var(--hero-offset));
   position: relative;
+  padding: var(--space-5) var(--space-4);
+  isolation: isolate;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: var(--space-2) var(--space-6);
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: var(--radius-xl);
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-soft);
+  z-index: -1;
 }
 
 .hero--with-logo::before {
