@@ -4,16 +4,85 @@
     <p>Archie on Tour bringt Streetfood-Feeling auf Firmenfeiern, Festivals und private Events.</p>
     <div class="cards">
       {[
-        { title: 'Firmenfeiern', text: 'Mitarbeiterfeste, Sommerfeste und Jubiläen mit vielfältigen Menüs.' },
-        { title: 'Messen', text: 'Messestand-Catering mit schnellen Abläufen und aufmerksamem Service.' },
-        { title: 'Festivals', text: 'Robuste Infrastruktur, schnelle Ausgabe und flexible Tagespläne.' },
-        { title: 'Hochzeiten', text: 'Charmantes Foodtruck-Erlebnis für besondere Tage.' },
-        { title: 'Team-Events', text: 'Teambuilding mit Live-Cooking und individuellen Snacks.' },
-        { title: 'Private Feiern', text: 'Geburtstage, Gartenpartys und Vereinsfeste mit Signature-Burgern.' }
+        {
+          icon: '🍽️',
+          title: 'Firmenfeiern',
+          features: [
+            'Bis zu 500 Personen',
+            'Region: Großraum & Umland',
+            'Live-Cooking für Gäste',
+            'Optionen für vegetarisch/vegan'
+          ]
+        },
+        {
+          icon: '🎪',
+          title: 'Messen & Gewerbeschauen',
+          features: [
+            'Schnelle Ausgabezeiten',
+            'Branding des Trucks möglich',
+            'Mehrsprachiges Service-Team',
+            'Perfekt für B2B-Networking'
+          ]
+        },
+        {
+          icon: '🎉',
+          title: 'Festivals & Straßenfeste',
+          features: [
+            'Hohe Durchlaufkapazität',
+            'Mehrere Standorte gleichzeitig',
+            'Flexibles Menüangebot',
+            'Erfahrung mit Großveranstaltungen'
+          ]
+        },
+        {
+          icon: '💒',
+          title: 'Hochzeiten',
+          features: [
+            'Elegante Präsentation',
+            'Individuelle Menügestaltung',
+            'Abstimmung auf Hochzeitsthema',
+            'Service für Abend- oder Mitternachtssnack'
+          ]
+        },
+        {
+          icon: '🏆',
+          title: 'Vereinsfeste & Stadtfeste',
+          features: [
+            'Familien- und kinderfreundliche Optionen',
+            'Attraktive Preisgestaltung',
+            'Lokale Verankerung',
+            'Flexible Betriebszeiten'
+          ]
+        },
+        {
+          icon: '🤝',
+          title: 'Team-Events',
+          features: [
+            'Gemeinsames Kocherlebnis',
+            'Workshops & Tastings',
+            'Anpassung an Allergien',
+            'Indoor & Outdoor möglich'
+          ]
+        },
+        {
+          icon: '🏡',
+          title: 'Private Events',
+          features: [
+            'Geburtstage & Jubiläen',
+            'Individuelle Menüs ab 40 Personen',
+            'Regionale Zutaten',
+            'Komplettes Service-Team'
+          ]
+        }
       ].map((item) => (
-        <article class="card reveal">
-          <h3>{item.title}</h3>
-          <p>{item.text}</p>
+        <article class="card reveal offer-card">
+          <div class="offer-card__icon">{item.icon}</div>
+          <h3 class="offer-card__title">{item.title}</h3>
+          <ul class="offer-card__features">
+            {item.features.map((feature) => (
+              <li>{feature}</li>
+            ))}
+          </ul>
         </article>
       ))}
     </div>
