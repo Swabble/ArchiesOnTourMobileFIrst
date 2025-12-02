@@ -1,4 +1,12 @@
+type CalendarView = 'day' | 'week' | 'month' | 'agenda';
+
 const monthFormatter = new Intl.DateTimeFormat('de-DE', { month: 'long', year: 'numeric' });
+const dayFormatter = new Intl.DateTimeFormat('de-DE', {
+  weekday: 'long',
+  day: '2-digit',
+  month: 'long',
+  year: 'numeric'
+});
 
 function formatDateKey(date: Date) {
   const year = date.getFullYear();
@@ -55,7 +63,7 @@ function renderGrid(
   }
 }
 
-function renderList(events: any[], list: HTMLElement) {
+function renderList(events: any[], list: HTMLElement, highlightDateKey?: string) {
   list.innerHTML = '';
   const sorted = [...events].sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
 
