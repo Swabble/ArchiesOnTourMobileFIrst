@@ -45,9 +45,7 @@ function renderGrid(events: any[], grid: HTMLElement, reference: Date) {
 
 function renderList(events: any[], list: HTMLElement) {
   list.innerHTML = '';
-  const sorted = [...events].sort(
-    (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime()
-  );
+  const sorted = [...events].sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
   sorted.forEach((evt) => {
     const item = document.createElement('article');
     item.className = 'card calendar__event';
@@ -63,53 +61,26 @@ function renderList(events: any[], list: HTMLElement) {
   });
 }
 
-function getDateRange(reference: Date, view: CalendarView) {
+function getDateRange(reference: Date) {
   const start = new Date(reference);
   const end = new Date(reference);
 
-  if (view === 'month') {
-    start.setDate(1);
-    start.setHours(0, 0, 0, 0);
-    end.setMonth(reference.getMonth() + 1, 0);
-    end.setHours(23, 59, 59, 999);
-  } else if (view === 'week') {
-    const day = reference.getDay();
-    const diff = (day + 6) % 7; // Monday as first day
-    start.setDate(reference.getDate() - diff);
-    start.setHours(0, 0, 0, 0);
-    end.setDate(start.getDate() + 6);
-    end.setHours(23, 59, 59, 999);
-  } else if (view === 'agenda') {
-    start.setHours(0, 0, 0, 0);
-    end.setDate(start.getDate() + 30);
-    end.setHours(23, 59, 59, 999);
-  } else {
-    start.setHours(0, 0, 0, 0);
-    end.setHours(23, 59, 59, 999);
-  }
+  start.setDate(1);
+  start.setHours(0, 0, 0, 0);
+  end.setMonth(reference.getMonth() + 1, 0);
+  end.setHours(23, 59, 59, 999);
 
   return { start, end };
 }
 
-function formatLabel(reference: Date, view: CalendarView) {
-  if (view === 'day') {
-    return dayFormatter.format(reference);
-  }
-  if (view === 'week') {
-    const { start, end } = getDateRange(reference, view);
-    return `${start.toLocaleDateString('de-DE')} – ${end.toLocaleDateString('de-DE')}`;
-  }
-  if (view === 'agenda') {
-    const { start, end } = getDateRange(reference, view);
-    return `Agenda: ${start.toLocaleDateString('de-DE')} – ${end.toLocaleDateString('de-DE')}`;
-  }
+function formatLabel(reference: Date) {
   return monthFormatter.format(reference);
 }
 
-async function fetchEvents(reference: Date, view: CalendarView) {
+async function fetchEvents(reference: Date) {
   const apiKey = import.meta.env.PUBLIC_DRIVE_API_KEY;
   const calendarId = import.meta.env.PUBLIC_CALENDAR_ID;
-  const { start, end } = getDateRange(reference, view);
+  const { start, end } = getDateRange(reference);
   if (!apiKey || !calendarId) {
     throw new Error('Calendar configuration fehlt');
   }
@@ -134,33 +105,26 @@ function init() {
   const status = document.getElementById('calendar-status');
   const monthLabel = document.getElementById('calendar-month');
   const weekdays = document.getElementById('calendar-weekdays');
-  const viewButtons = document.querySelectorAll<HTMLButtonElement>('[data-calendar-view]');
-  if (!grid || !list || !status || !monthLabel || !weekdays || viewButtons.length === 0) return;
+  if (!grid || !list || !status || !monthLabel || !weekdays) return;
   let reference = new Date();
   let view: CalendarView = 'month';
 
   async function load() {
     status.textContent = 'Kalender wird geladen …';
     status.style.display = 'inline-flex';
-    monthLabel.textContent = formatLabel(reference, view);
+    monthLabel.textContent = formatLabel(reference);
     try {
-      const events = await fetchEvents(reference, view);
-      if (view === 'month') {
-        weekdays.style.display = 'grid';
-        grid.style.display = 'grid';
-        renderGrid(events, grid, reference);
-      } else {
-        weekdays.style.display = 'none';
-        grid.style.display = 'none';
-        grid.innerHTML = '';
-      }
+      const events = await fetchEvents(reference);
+      weekdays.style.display = 'grid';
+      grid.style.display = 'grid';
+      renderGrid(events, grid, reference);
       renderList(events, list);
       status.textContent = '';
       status.style.display = 'none';
     } catch (err) {
       console.warn('Calendar Fehler', err);
-      grid.style.display = view === 'month' ? 'grid' : 'none';
-      weekdays.style.display = view === 'month' ? 'grid' : 'none';
+      grid.style.display = 'grid';
+      weekdays.style.display = 'grid';
       grid.innerHTML = '';
       list.innerHTML = '';
       status.textContent = 'Kalender konnte nicht geladen werden. Bitte API-Konfiguration prüfen.';
@@ -168,38 +132,13 @@ function init() {
     }
   }
 
-  function setView(next: CalendarView) {
-    view = next;
-    viewButtons.forEach((btn) => {
-      btn.classList.toggle('is-active', btn.dataset.calendarView === view);
-    });
-    load();
-  }
-
   function shiftReference(direction: number) {
-    if (view === 'month') {
-      reference = new Date(reference.getFullYear(), reference.getMonth() + direction, 1);
-    } else if (view === 'week') {
-      reference = new Date(reference.getFullYear(), reference.getMonth(), reference.getDate() + direction * 7);
-    } else if (view === 'agenda') {
-      reference = new Date(reference.getFullYear(), reference.getMonth(), reference.getDate() + direction * 30);
-    } else {
-      reference = new Date(reference.getFullYear(), reference.getMonth(), reference.getDate() + direction);
-    }
+    reference = new Date(reference.getFullYear(), reference.getMonth() + direction, 1);
     load();
   }
 
   document.getElementById('calendar-prev')?.addEventListener('click', () => shiftReference(-1));
   document.getElementById('calendar-next')?.addEventListener('click', () => shiftReference(1));
-
-  viewButtons.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const nextView = btn.dataset.calendarView as CalendarView | undefined;
-      if (nextView) {
-        setView(nextView);
-      }
-    });
-  });
 
   load();
 }
