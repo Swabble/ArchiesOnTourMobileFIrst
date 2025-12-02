@@ -9,6 +9,27 @@ function formatPrice(price: string | number) {
   return `${numeric.toLocaleString('de-DE', { minimumFractionDigits: 2 })} €`;
 }
 
+function updateJsonPanel(payload: unknown, meta?: { status?: number; source?: string; note?: string }) {
+  const panel = document.getElementById('menu-json-panel');
+  const pre = document.getElementById('menu-json-raw');
+  const summary = document.getElementById('menu-json-summary');
+  const metaRow = document.getElementById('menu-json-meta');
+  const wrapper = document.getElementById('menu-debug');
+  if (!panel || !pre || !summary || !metaRow || !wrapper) return;
+
+  const summaryParts = [] as string[];
+  if (meta?.status !== undefined) summaryParts.push(`Status ${meta.status}`);
+  if (meta?.source) summaryParts.push(`Quelle: ${meta.source}`);
+  if (meta?.note) summaryParts.push(meta.note);
+
+  summary.textContent = summaryParts.length ? summaryParts.join(' · ') : 'API-Antwort anzeigen';
+  metaRow.textContent = summaryParts.length ? summaryParts.join(' • ') : '';
+  pre.textContent = JSON.stringify(payload, null, 2);
+
+  panel.classList.remove('is-hidden');
+  wrapper.classList.remove('is-hidden');
+}
+
 function render(items: MenuItem[], source?: string, keepErrorVisible = false) {
   const container = document.getElementById('menu-categories-container');
   const loading = document.getElementById('menu-loading');
@@ -86,7 +107,13 @@ function render(items: MenuItem[], source?: string, keepErrorVisible = false) {
   });
 }
 
-async function fetchRemoteMenu(): Promise<{ items: MenuItem[]; source: string }> {
+async function fetchRemoteMenu(): Promise<{
+  items: MenuItem[];
+  source: string;
+  rawPayload: unknown;
+  ok: boolean;
+  status: number;
+}> {
   const apiUrl = '/api/menu.json';
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 8000);
@@ -112,17 +139,12 @@ async function fetchRemoteMenu(): Promise<{ items: MenuItem[]; source: string }>
     source
   });
 
-  if (!res.ok) {
-    throw new Error(`Menu API failed with status ${res.status}`);
-  }
-
-  if (!items.length) {
-    console.warn(LOG_PREFIX, 'Menu API returned no items, falling back');
-  }
-
   return {
     items: items.length ? items : FALLBACK_ITEMS,
-    source: items.length ? source : 'fallback'
+    source: items.length ? source : 'fallback',
+    rawPayload: payload,
+    ok: res.ok,
+    status: res.status
   };
 }
 
@@ -132,11 +154,26 @@ async function init() {
   loading?.classList.remove('is-hidden');
   try {
     const result = await fetchRemoteMenu();
-    render(result.items, result.source);
+    if (!result.ok) {
+      error?.classList.remove('is-hidden');
+    }
+    render(result.items, result.source, !result.ok);
+    updateJsonPanel(result.rawPayload, {
+      status: result.status,
+      source: result.source,
+      note: result.ok ? undefined : 'API-Fehler'
+    });
   } catch (err) {
     console.warn(LOG_PREFIX, 'Menu fallback after error', err);
     error?.classList.remove('is-hidden');
     render(FALLBACK_ITEMS, 'error-fallback', true);
+    updateJsonPanel(
+      {
+        error: err instanceof Error ? err.message : String(err),
+        fallback: FALLBACK_ITEMS
+      },
+      { note: 'Fallback nach Fehler' }
+    );
   }
 }
 

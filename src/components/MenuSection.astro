@@ -45,6 +45,21 @@
         </div>
       </div>
 
+      <div class="menu-debug card is-hidden" id="menu-debug" aria-live="polite">
+        <div class="menu-debug__header">
+          <div>
+            <p class="eyebrow">API-Daten</p>
+            <h3>Gesamte Menü-Antwort</h3>
+            <p class="menu-debug__hint">Hier siehst du die vollständige JSON-Antwort der /api/menu.json.</p>
+          </div>
+          <div class="menu-debug__meta" id="menu-json-meta"></div>
+        </div>
+        <details id="menu-json-panel" class="menu-json is-hidden" open>
+          <summary id="menu-json-summary">Antwort anzeigen</summary>
+          <pre id="menu-json-raw" class="menu-json__pre"></pre>
+        </details>
+      </div>
+
       <div id="menu-categories-container" class="menu-categories" aria-live="polite"></div>
     </div>
   </div>

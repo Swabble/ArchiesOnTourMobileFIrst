@@ -323,6 +323,57 @@ header.site-header {
   font-weight: 700;
 }
 
+.menu-debug {
+  background: #fff;
+  border: 1px dashed rgba(0, 0, 0, 0.08);
+  display: grid;
+  gap: var(--space-3);
+}
+
+.menu-debug__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.menu-debug__meta {
+  color: var(--color-text-subtle);
+  font-weight: 600;
+}
+
+.menu-debug__hint {
+  margin: 0;
+  color: var(--color-text-subtle);
+}
+
+.menu-json {
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.menu-json summary {
+  cursor: pointer;
+  font-weight: 700;
+  margin-bottom: var(--space-2);
+}
+
+.menu-json__pre {
+  margin: 0;
+  max-height: 320px;
+  overflow: auto;
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  font-family: 'Fira Code', 'SFMono-Regular', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  font-size: 0.9rem;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
 .menu-category-block {
   background: #fff;
   border-radius: var(--radius-xl);
