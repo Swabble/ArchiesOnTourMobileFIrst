@@ -1,15 +1,15 @@
+type CalendarView = 'day' | 'week' | 'month' | 'agenda';
+
 const monthFormatter = new Intl.DateTimeFormat('de-DE', { month: 'long', year: 'numeric' });
+const dayFormatter = new Intl.DateTimeFormat('de-DE', {
+  weekday: 'long',
+  day: '2-digit',
+  month: 'long',
+  year: 'numeric'
+});
 
 function formatDateKey(date: Date) {
   return date.toISOString().split('T')[0];
-}
-
-function sampleEvents(reference: Date) {
-  const base = new Date(reference.getFullYear(), reference.getMonth(), 5);
-  return [
-    { id: '1', title: 'Sommerfest', start: base, end: new Date(base.getFullYear(), base.getMonth(), base.getDate(), 18), location: 'Köln' },
-    { id: '2', title: 'Messecatering', start: new Date(base.getFullYear(), base.getMonth(), base.getDate() + 8), end: new Date(base.getFullYear(), base.getMonth(), base.getDate() + 8, 20), location: 'Düsseldorf' }
-  ];
 }
 
 function renderGrid(events: any[], grid: HTMLElement, reference: Date) {
@@ -45,7 +45,10 @@ function renderGrid(events: any[], grid: HTMLElement, reference: Date) {
 
 function renderList(events: any[], list: HTMLElement) {
   list.innerHTML = '';
-  events.forEach((evt) => {
+  const sorted = [...events].sort(
+    (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime()
+  );
+  sorted.forEach((evt) => {
     const item = document.createElement('article');
     item.className = 'card calendar__event';
     const start = new Date(evt.start);
@@ -60,12 +63,58 @@ function renderList(events: any[], list: HTMLElement) {
   });
 }
 
-async function fetchEvents(reference: Date) {
+function getDateRange(reference: Date, view: CalendarView) {
+  const start = new Date(reference);
+  const end = new Date(reference);
+
+  if (view === 'month') {
+    start.setDate(1);
+    start.setHours(0, 0, 0, 0);
+    end.setMonth(reference.getMonth() + 1, 0);
+    end.setHours(23, 59, 59, 999);
+  } else if (view === 'week') {
+    const day = reference.getDay();
+    const diff = (day + 6) % 7; // Monday as first day
+    start.setDate(reference.getDate() - diff);
+    start.setHours(0, 0, 0, 0);
+    end.setDate(start.getDate() + 6);
+    end.setHours(23, 59, 59, 999);
+  } else if (view === 'agenda') {
+    start.setHours(0, 0, 0, 0);
+    end.setDate(start.getDate() + 30);
+    end.setHours(23, 59, 59, 999);
+  } else {
+    start.setHours(0, 0, 0, 0);
+    end.setHours(23, 59, 59, 999);
+  }
+
+  return { start, end };
+}
+
+function formatLabel(reference: Date, view: CalendarView) {
+  if (view === 'day') {
+    return dayFormatter.format(reference);
+  }
+  if (view === 'week') {
+    const { start, end } = getDateRange(reference, view);
+    return `${start.toLocaleDateString('de-DE')} – ${end.toLocaleDateString('de-DE')}`;
+  }
+  if (view === 'agenda') {
+    const { start, end } = getDateRange(reference, view);
+    return `Agenda: ${start.toLocaleDateString('de-DE')} – ${end.toLocaleDateString('de-DE')}`;
+  }
+  return monthFormatter.format(reference);
+}
+
+async function fetchEvents(reference: Date, view: CalendarView) {
   const apiKey = import.meta.env.PUBLIC_DRIVE_API_KEY;
   const calendarId = import.meta.env.PUBLIC_CALENDAR_ID;
-  if (!apiKey || !calendarId) return sampleEvents(reference);
-  const timeMin = new Date(reference.getFullYear(), reference.getMonth(), 1).toISOString();
-  const timeMax = new Date(reference.getFullYear(), reference.getMonth() + 1, 0, 23, 59, 59).toISOString();
+  const { start, end } = getDateRange(reference, view);
+  if (!apiKey || !calendarId) {
+    throw new Error('Calendar configuration fehlt');
+  }
+  const timeMin = start.toISOString();
+  const timeMax = end.toISOString();
   const url = `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?key=${apiKey}&timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime`;
   const res = await fetch(url);
   if (!res.ok) throw new Error('Calendar fetch failed');
@@ -84,33 +133,72 @@ function init() {
   const list = document.getElementById('calendar-events');
   const status = document.getElementById('calendar-status');
   const monthLabel = document.getElementById('calendar-month');
-  if (!grid || !list || !status || !monthLabel) return;
+  const weekdays = document.getElementById('calendar-weekdays');
+  const viewButtons = document.querySelectorAll<HTMLButtonElement>('[data-calendar-view]');
+  if (!grid || !list || !status || !monthLabel || !weekdays || viewButtons.length === 0) return;
   let reference = new Date();
+  let view: CalendarView = 'month';
 
   async function load() {
     status.textContent = 'Kalender wird geladen …';
-    monthLabel.textContent = monthFormatter.format(reference);
+    status.style.display = 'inline-flex';
+    monthLabel.textContent = formatLabel(reference, view);
     try {
-      const events = await fetchEvents(reference);
-      renderGrid(events, grid, reference);
+      const events = await fetchEvents(reference, view);
+      if (view === 'month') {
+        weekdays.style.display = 'grid';
+        grid.style.display = 'grid';
+        renderGrid(events, grid, reference);
+      } else {
+        weekdays.style.display = 'none';
+        grid.style.display = 'none';
+        grid.innerHTML = '';
+      }
       renderList(events, list);
-      status.textContent = 'Live oder Demo-Kalender';
+      status.textContent = '';
+      status.style.display = 'none';
     } catch (err) {
-      console.warn('Calendar fallback', err);
-      const events = sampleEvents(reference);
-      renderGrid(events, grid, reference);
-      renderList(events, list);
-      status.textContent = 'Beispieltermine angezeigt';
+      console.warn('Calendar Fehler', err);
+      grid.style.display = view === 'month' ? 'grid' : 'none';
+      weekdays.style.display = view === 'month' ? 'grid' : 'none';
+      grid.innerHTML = '';
+      list.innerHTML = '';
+      status.textContent = 'Kalender konnte nicht geladen werden. Bitte API-Konfiguration prüfen.';
+      status.style.display = 'inline-flex';
     }
   }
 
-  document.getElementById('calendar-prev')?.addEventListener('click', () => {
-    reference = new Date(reference.getFullYear(), reference.getMonth() - 1, 1);
+  function setView(next: CalendarView) {
+    view = next;
+    viewButtons.forEach((btn) => {
+      btn.classList.toggle('is-active', btn.dataset.calendarView === view);
+    });
     load();
-  });
-  document.getElementById('calendar-next')?.addEventListener('click', () => {
-    reference = new Date(reference.getFullYear(), reference.getMonth() + 1, 1);
+  }
+
+  function shiftReference(direction: number) {
+    if (view === 'month') {
+      reference = new Date(reference.getFullYear(), reference.getMonth() + direction, 1);
+    } else if (view === 'week') {
+      reference = new Date(reference.getFullYear(), reference.getMonth(), reference.getDate() + direction * 7);
+    } else if (view === 'agenda') {
+      reference = new Date(reference.getFullYear(), reference.getMonth(), reference.getDate() + direction * 30);
+    } else {
+      reference = new Date(reference.getFullYear(), reference.getMonth(), reference.getDate() + direction);
+    }
     load();
+  }
+
+  document.getElementById('calendar-prev')?.addEventListener('click', () => shiftReference(-1));
+  document.getElementById('calendar-next')?.addEventListener('click', () => shiftReference(1));
+
+  viewButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const nextView = btn.dataset.calendarView as CalendarView | undefined;
+      if (nextView) {
+        setView(nextView);
+      }
+    });
   });
 
   load();
