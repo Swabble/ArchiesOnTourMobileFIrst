@@ -4,7 +4,8 @@
       <p class="eyebrow">Unsere Produktauswahl</p>
       <h2>Frisch, flexibel & bereit für euer Event</h2>
       <p class="section-lead">
-        Die Auswahl wird live aus Google Sheets geladen. Ohne API-Keys zeigen wir eine kleine Demo mit unseren Signature-Snacks.
+        Wir bauen das Menü dynamisch aus eurer Google-Drive-Vorlage auf. Sobald die Daten geladen sind, seht ihr hier übersichtlich
+        jede Kategorie als Karte mit Preis, Beschreibung und Hinweisen.
       </p>
     </div>
 
@@ -12,11 +13,54 @@
       <div class="menu-board__status">
         <div id="menu-loading" class="status-pill">Menü wird geladen …</div>
         <div id="menu-error" class="status-pill status-pill--error is-hidden">Fehler beim Laden der Daten. Es werden Fallback-Produkte angezeigt.</div>
+        <div id="menu-source" class="status-pill status-pill--muted is-hidden"></div>
       </div>
 
-      <div id="menu-categories-container" class="menu-grid" aria-live="polite"></div>
+      <div class="menu-intro">
+        <div class="menu-intro__text">
+          <h3>Ausgewählt, was bei Events wirklich funktioniert</h3>
+          <p>
+            Vom Klassiker bis zur Spezialität: Jedes Produkt erscheint als kompakte Karte. Wir gruppieren automatisch nach Kategorie
+            und zeigen Preis, Beschreibung sowie optionale Hinweise (z.&nbsp;B. Allergene oder Portionseinheiten).
+          </p>
+          <ul>
+            <li>Live-Daten aus Google Drive oder sichere Demo mit Fallback-Produkten</li>
+            <li>Automatisch gruppiert nach Kategorien – ideal zum schnellen Überfliegen</li>
+            <li>Preise in Euro formatiert, Einheiten und Notizen als Badges</li>
+          </ul>
+        </div>
+        <div id="menu-stats" class="menu-stats card is-hidden" aria-live="polite">
+          <div class="menu-stats__item">
+            <p class="menu-stats__label">Produkte</p>
+            <p id="menu-stat-count" class="menu-stats__value">–</p>
+          </div>
+          <div class="menu-stats__item">
+            <p class="menu-stats__label">Kategorien</p>
+            <p id="menu-stat-categories" class="menu-stats__value">–</p>
+          </div>
+          <div class="menu-stats__item">
+            <p class="menu-stats__label">Quelle</p>
+            <p id="menu-stat-source" class="menu-stats__value">–</p>
+          </div>
+        </div>
+      </div>
 
-      <div id="menu-debug" class="card debug-card">Loading debug info...</div>
+      <div class="menu-debug card is-hidden" id="menu-debug" aria-live="polite">
+        <div class="menu-debug__header">
+          <div>
+            <p class="eyebrow">API-Daten</p>
+            <h3>Gesamte Menü-Antwort</h3>
+            <p class="menu-debug__hint">Hier siehst du die vollständige JSON-Antwort der /api/menu.json.</p>
+          </div>
+          <div class="menu-debug__meta" id="menu-json-meta"></div>
+        </div>
+        <details id="menu-json-panel" class="menu-json is-hidden" open>
+          <summary id="menu-json-summary">Antwort anzeigen</summary>
+          <pre id="menu-json-raw" class="menu-json__pre"></pre>
+        </details>
+      </div>
+
+      <div id="menu-categories-container" class="menu-categories" aria-live="polite"></div>
     </div>
   </div>
 </section>
