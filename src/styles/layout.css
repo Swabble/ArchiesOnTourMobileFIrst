@@ -4,6 +4,10 @@
   padding: 0 var(--space-4);
 }
 
+main {
+  padding-top: 75vh;
+}
+
 .section {
   position: relative;
   margin: var(--space-7) auto;
