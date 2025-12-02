@@ -89,6 +89,13 @@
   #verfuegbarkeit .calendar__day {
     border: 1px solid rgba(15, 17, 21, 0.08);
     background: var(--color-corporate-white);
+    transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+  }
+
+  #verfuegbarkeit .calendar__day--active {
+    border-color: rgba(255, 113, 91, 0.5);
+    box-shadow: 0 12px 28px rgba(255, 113, 91, 0.22);
+    transform: translateY(-4px) scale(1.03);
   }
 
   #verfuegbarkeit .calendar__day-number {
