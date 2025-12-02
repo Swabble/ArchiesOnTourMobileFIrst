@@ -95,5 +95,15 @@
   #verfuegbarkeit .calendar__day-number {
     color: var(--color-text);
   }
+
+  #verfuegbarkeit .calendar__event {
+    transition: border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
+  }
+
+  #verfuegbarkeit .calendar__event--active {
+    border-color: rgba(255, 113, 91, 0.5);
+    box-shadow: 0 8px 24px rgba(255, 113, 91, 0.18);
+    transform: translateY(-2px);
+  }
 </style>
 <script type="module" src="/src/lib/calendar.ts" defer></script>

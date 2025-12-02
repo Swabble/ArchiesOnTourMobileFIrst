@@ -9,10 +9,28 @@ const dayFormatter = new Intl.DateTimeFormat('de-DE', {
 });
 
 function formatDateKey(date: Date) {
-  return date.toISOString().split('T')[0];
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
-function renderGrid(events: any[], grid: HTMLElement, reference: Date) {
+function normalizeDate(dateInput: { date?: string; dateTime?: string }) {
+  if (dateInput?.date) {
+    return new Date(`${dateInput.date}T00:00:00`);
+  }
+  if (dateInput?.dateTime) {
+    return new Date(dateInput.dateTime);
+  }
+  return new Date();
+}
+
+function renderGrid(
+  events: any[],
+  grid: HTMLElement,
+  reference: Date,
+  onDayHover: (dateKey?: string) => void
+) {
   grid.innerHTML = '';
   const firstDay = new Date(reference.getFullYear(), reference.getMonth(), 1);
   const offset = (firstDay.getDay() + 6) % 7;
@@ -39,16 +57,25 @@ function renderGrid(events: any[], grid: HTMLElement, reference: Date) {
       more.textContent = `+${matches.length - 3}`;
       cell.appendChild(more);
     }
+    cell.addEventListener('mouseenter', () => onDayHover(matches.length ? key : undefined));
+    cell.addEventListener('mouseleave', () => onDayHover(undefined));
     grid.appendChild(cell);
   }
 }
 
-function renderList(events: any[], list: HTMLElement) {
+function renderList(events: any[], list: HTMLElement, filterDateKey?: string) {
   list.innerHTML = '';
   const sorted = [...events].sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
-  sorted.forEach((evt) => {
+  const filteredCandidates = filterDateKey
+    ? sorted.filter((evt) => formatDateKey(new Date(evt.start)) === filterDateKey)
+    : sorted;
+  const filtered = filterDateKey && filteredCandidates.length > 0 ? filteredCandidates : sorted;
+  filtered.forEach((evt) => {
     const item = document.createElement('article');
     item.className = 'card calendar__event';
+    if (filterDateKey) {
+      item.classList.add('calendar__event--active');
+    }
     const start = new Date(evt.start);
     const end = new Date(evt.end);
     item.innerHTML = `
@@ -94,8 +121,8 @@ async function fetchEvents(reference: Date) {
     id: item.id,
     title: item.summary,
     location: item.location,
-    start: item.start?.date ? new Date(item.start.date) : new Date(item.start.dateTime),
-    end: item.end?.date ? new Date(item.end.date) : new Date(item.end.dateTime)
+    start: normalizeDate(item.start),
+    end: normalizeDate(item.end)
   }));
 }
 
@@ -107,7 +134,11 @@ function init() {
   const weekdays = document.getElementById('calendar-weekdays');
   if (!grid || !list || !status || !monthLabel || !weekdays) return;
   let reference = new Date();
-  let view: CalendarView = 'month';
+  let currentEvents: any[] = [];
+
+  function handleHover(dateKey?: string) {
+    renderList(currentEvents, list, dateKey);
+  }
 
   async function load() {
     status.textContent = 'Kalender wird geladen …';
@@ -115,9 +146,10 @@ function init() {
     monthLabel.textContent = formatLabel(reference);
     try {
       const events = await fetchEvents(reference);
+      currentEvents = events;
       weekdays.style.display = 'grid';
       grid.style.display = 'grid';
-      renderGrid(events, grid, reference);
+      renderGrid(events, grid, reference, handleHover);
       renderList(events, list);
       status.textContent = '';
       status.style.display = 'none';
