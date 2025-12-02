@@ -34,11 +34,17 @@ ${JSON.stringify(items.slice(0, 2), null, 2)}`;
     card.className = 'menu-card reveal';
     card.innerHTML = `
       <div class="menu-card__header">
-        <h3>${item.title}</h3>
+        <div class="menu-card__titles">
+          <p class="menu-card__category">${item.category || 'Klassiker'}</p>
+          <h3>${item.title}</h3>
+        </div>
         <span class="price-pill">${formatPrice(item.price)}</span>
       </div>
-      <p>${item.description ?? ''}</p>
-      ${item.unit ? `<p class="price-pill" aria-label="Einheit">${item.unit}</p>` : ''}
+      <p class="menu-card__description">${item.description ?? ''}</p>
+      <div class="menu-card__meta">
+        ${item.unit ? `<span class="tag">${item.unit}</span>` : ''}
+        ${item.notes ? `<span class="tag tag--muted">${item.notes}</span>` : ''}
+      </div>
     `;
     container.appendChild(card);
   });
