@@ -9,15 +9,26 @@ function formatPrice(price: string | number) {
   return `${numeric.toLocaleString('de-DE', { minimumFractionDigits: 2 })} €`;
 }
 
-function render(items: MenuItem[]) {
+function render(items: MenuItem[], source?: string) {
   const container = document.getElementById('menu-categories-container');
   const loading = document.getElementById('menu-loading');
   const error = document.getElementById('menu-error');
+  const debugBox = document.getElementById('menu-debug');
   if (!container || !loading || !error) return;
 
   loading.classList.add('is-hidden');
   container.innerHTML = '';
   console.info(LOG_PREFIX, `Rendering ${items.length} menu items`);
+
+  if (debugBox) {
+    debugBox.innerHTML = `<strong>Menu Debug Info:</strong>
+Data Source: ${source || 'unknown'}
+Items Found: ${items.length}
+
+Sample Items:
+${JSON.stringify(items.slice(0, 2), null, 2)}`;
+  }
+
   items.forEach((item) => {
     const card = document.createElement('article');
     card.className = 'menu-card reveal';
@@ -33,7 +44,7 @@ function render(items: MenuItem[]) {
   });
 }
 
-async function fetchRemoteMenu(): Promise<MenuItem[]> {
+async function fetchRemoteMenu(): Promise<{ items: MenuItem[]; source: string }> {
   const apiUrl = '/api/menu.json';
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 8000);
@@ -51,11 +62,12 @@ async function fetchRemoteMenu(): Promise<MenuItem[]> {
   const items = Array.isArray((payload as { items?: MenuItem[] }).items)
     ? ((payload as { items?: MenuItem[] }).items as MenuItem[])
     : [];
+  const source = (payload as { source?: string }).source ?? 'unknown';
 
   console.info(LOG_PREFIX, 'Menu API response received', {
     status: res.status,
     itemCount: items.length,
-    source: (payload as { source?: string }).source ?? 'unknown'
+    source
   });
 
   if (!res.ok) {
@@ -66,20 +78,29 @@ async function fetchRemoteMenu(): Promise<MenuItem[]> {
     console.warn(LOG_PREFIX, 'Menu API returned no items, falling back');
   }
 
-  return items.length ? items : FALLBACK_ITEMS;
+  return {
+    items: items.length ? items : FALLBACK_ITEMS,
+    source: items.length ? source : 'fallback'
+  };
 }
 
 async function init() {
   const loading = document.getElementById('menu-loading');
   const error = document.getElementById('menu-error');
+  const debugBox = document.getElementById('menu-debug');
   loading?.classList.remove('is-hidden');
   try {
-    const items = await fetchRemoteMenu();
-    render(items.length ? items : FALLBACK_ITEMS);
+    const result = await fetchRemoteMenu();
+    render(result.items, result.source);
   } catch (err) {
     console.warn(LOG_PREFIX, 'Menu fallback after error', err);
     error?.classList.remove('is-hidden');
-    render(FALLBACK_ITEMS);
+    if (debugBox) {
+      debugBox.innerHTML = `<strong>Menu Debug Info:</strong>
+Error: ${(err as Error).message}
+Using fallback items`;
+    }
+    render(FALLBACK_ITEMS, 'error-fallback');
   }
 }
 

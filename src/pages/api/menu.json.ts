@@ -161,13 +161,21 @@ export const GET: APIRoute = async ({ request }) => {
     headers: normalizeHeaders(request.headers)
   });
 
+  log(logger, 'info', 'Environment configuration', {
+    sheetUrl: sheetUrl ? '✓ Configured' : '✗ Missing',
+    driveFolderId: driveFolderId ? '✓ Configured' : '✗ Missing',
+    driveApiKey: driveApiKey ? '✓ Configured' : '✗ Missing'
+  });
+
   let result: FetchResult | null = null;
 
   if (sheetUrl) {
+    log(logger, 'info', 'Attempting to fetch from Google Sheet');
     result = await fetchSheet(sheetUrl, logger);
   }
 
   if ((!result || result.source !== 'sheet') && driveFolderId && driveApiKey) {
+    log(logger, 'info', 'Attempting to fetch from Google Drive folder');
     result = await fetchDriveWorkbook(driveFolderId, driveApiKey, logger);
   }
 
