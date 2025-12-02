@@ -136,3 +136,8 @@ export function bootstrapMenu() {
     window.addEventListener('DOMContentLoaded', init, { once: true });
   }
 }
+
+// Auto-initialize when loaded as a script
+if (typeof window !== 'undefined') {
+  bootstrapMenu();
+}
