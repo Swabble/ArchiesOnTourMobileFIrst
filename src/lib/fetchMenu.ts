@@ -21,12 +21,20 @@ function render(items: MenuItem[], source?: string) {
   console.info(LOG_PREFIX, `Rendering ${items.length} menu items`);
 
   if (debugBox) {
-    debugBox.innerHTML = `<strong>Menu Debug Info:</strong>
-Data Source: ${source || 'unknown'}
-Items Found: ${items.length}
-
-Sample Items:
-${JSON.stringify(items.slice(0, 2), null, 2)}`;
+    debugBox.innerHTML = `
+      <p class="debug-card__title">Menü erfolgreich geladen</p>
+      <dl class="debug-card__list">
+        <div class="debug-card__row">
+          <dt>Quelle</dt>
+          <dd>${source || 'unbekannt'}</dd>
+        </div>
+        <div class="debug-card__row">
+          <dt>Produkte</dt>
+          <dd>${items.length}</dd>
+        </div>
+      </dl>
+      <p class="debug-card__hint">Alle Produkte sind unten als Karten aufgeführt.</p>
+    `;
   }
 
   items.forEach((item) => {
@@ -102,9 +110,11 @@ async function init() {
     console.warn(LOG_PREFIX, 'Menu fallback after error', err);
     error?.classList.remove('is-hidden');
     if (debugBox) {
-      debugBox.innerHTML = `<strong>Menu Debug Info:</strong>
-Error: ${(err as Error).message}
-Using fallback items`;
+      debugBox.innerHTML = `
+        <p class="debug-card__title">Menü konnte nicht geladen werden</p>
+        <p class="debug-card__hint">${(err as Error).message}</p>
+        <p class="debug-card__hint">Es werden Ersatzprodukte angezeigt.</p>
+      `;
     }
     render(FALLBACK_ITEMS, 'error-fallback');
   }
