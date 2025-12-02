@@ -50,14 +50,15 @@ function render(items: MenuItem[], keepErrorVisible = false) {
     superHeader.innerHTML = `<h2 class="menu-supercategory-block__title">${superCategoryName}</h2>`;
     superSection.appendChild(superHeader);
 
-    const categoriesContainer = document.createElement('div');
-    categoriesContainer.className = 'menu-subcategories';
+    // Create a single card for the entire supercategory
+    const superCard = document.createElement('div');
+    superCard.className = 'menu-category-block';
 
     Object.entries(categories).forEach(([categoryName, categoryItems]) => {
       const categorySection = document.createElement('section');
-      categorySection.className = 'menu-category-block';
+      categorySection.className = 'menu-category-section';
       categorySection.innerHTML = `
-        <header class="menu-category-block__header">
+        <header class="menu-category-section__header">
           <h3>${categoryName}</h3>
         </header>
         <div class="menu-grid"></div>
@@ -81,10 +82,10 @@ function render(items: MenuItem[], keepErrorVisible = false) {
         grid?.appendChild(card);
       });
 
-      categoriesContainer.appendChild(categorySection);
+      superCard.appendChild(categorySection);
     });
 
-    superSection.appendChild(categoriesContainer);
+    superSection.appendChild(superCard);
     container.appendChild(superSection);
   });
 }
