@@ -72,9 +72,7 @@ function renderList(events: any[], list: HTMLElement, highlightDateKey?: string)
     item.className = 'card calendar__event';
 
     const eventDateKey = formatDateKey(new Date(evt.start));
-    if (highlightDateKey && eventDateKey === highlightDateKey) {
-      item.classList.add('calendar__event--active');
-    }
+    item.dataset.dateKey = eventDateKey;
 
     const start = new Date(evt.start);
     const end = new Date(evt.end);
@@ -85,6 +83,14 @@ function renderList(events: any[], list: HTMLElement, highlightDateKey?: string)
       <p>${evt.location ?? ''}</p>
     `;
     list.appendChild(item);
+  });
+}
+
+function highlightEvents(list: HTMLElement, highlightDateKey?: string) {
+  const hasHighlight = Boolean(highlightDateKey);
+  list.querySelectorAll<HTMLElement>('.calendar__event').forEach((item) => {
+    const matches = hasHighlight && item.dataset.dateKey === highlightDateKey;
+    item.classList.toggle('calendar__event--active', matches);
   });
 }
 
@@ -137,7 +143,7 @@ function init() {
   let currentEvents: any[] = [];
 
   function handleHover(dateKey?: string) {
-    renderList(currentEvents, list, dateKey);
+    highlightEvents(list, dateKey);
   }
 
   async function load() {
@@ -151,6 +157,7 @@ function init() {
       grid.style.display = 'grid';
       renderGrid(events, grid, reference, handleHover);
       renderList(events, list);
+      highlightEvents(list);
       status.textContent = '';
       status.style.display = 'none';
     } catch (err) {
