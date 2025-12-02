@@ -44,6 +44,7 @@ function renderGrid(
     const date = new Date(reference.getFullYear(), reference.getMonth(), day);
     const key = formatDateKey(date);
     const matches = events.filter((evt) => formatDateKey(new Date(evt.start)) === key);
+    cell.dataset.dateKey = key;
     cell.innerHTML = `<div class="calendar__day-number">${day}</div>`;
     matches.slice(0, 3).forEach((evt) => {
       const badge = document.createElement('div');
@@ -63,7 +64,7 @@ function renderGrid(
   }
 }
 
-function renderList(events: any[], list: HTMLElement, highlightDateKey?: string) {
+function renderList(events: any[], list: HTMLElement, onEventHover: (dateKey?: string) => void) {
   list.innerHTML = '';
   const sorted = [...events].sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
 
@@ -82,6 +83,11 @@ function renderList(events: any[], list: HTMLElement, highlightDateKey?: string)
       <p>${start.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })} – ${end.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}</p>
       <p>${evt.location ?? ''}</p>
     `;
+
+    // Add hover listeners to events
+    item.addEventListener('mouseenter', () => onEventHover(eventDateKey));
+    item.addEventListener('mouseleave', () => onEventHover(undefined));
+
     list.appendChild(item);
   });
 }
@@ -91,6 +97,14 @@ function highlightEvents(list: HTMLElement, highlightDateKey?: string) {
   list.querySelectorAll<HTMLElement>('.calendar__event').forEach((item) => {
     const matches = hasHighlight && item.dataset.dateKey === highlightDateKey;
     item.classList.toggle('calendar__event--active', matches);
+  });
+}
+
+function highlightDay(grid: HTMLElement, highlightDateKey?: string) {
+  const hasHighlight = Boolean(highlightDateKey);
+  grid.querySelectorAll<HTMLElement>('.calendar__day').forEach((cell) => {
+    const matches = hasHighlight && cell.dataset.dateKey === highlightDateKey;
+    cell.classList.toggle('calendar__day--active', matches);
   });
 }
 
@@ -144,6 +158,7 @@ function init() {
 
   function handleHover(dateKey?: string) {
     highlightEvents(list, dateKey);
+    highlightDay(grid, dateKey);
   }
 
   async function load() {
@@ -156,8 +171,9 @@ function init() {
       weekdays.style.display = 'grid';
       grid.style.display = 'grid';
       renderGrid(events, grid, reference, handleHover);
-      renderList(events, list);
+      renderList(events, list, handleHover);
       highlightEvents(list);
+      highlightDay(grid);
       status.textContent = '';
       status.style.display = 'none';
     } catch (err) {

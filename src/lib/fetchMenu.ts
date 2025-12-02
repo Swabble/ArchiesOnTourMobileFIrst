@@ -32,7 +32,7 @@ function render(items: MenuItem[], keepErrorVisible = false) {
 
   // Group by superCategory first, then by category
   const hierarchy = items.reduce<Record<string, Record<string, MenuItem[]>>>((acc, item) => {
-    const superCat = item.superCategory?.trim() || 'Weitere Kategorien';
+    const superCat = item.superCategory?.trim() || '';
     const cat = item.category?.trim() || 'Weitere Highlights';
 
     if (!acc[superCat]) acc[superCat] = {};
@@ -45,10 +45,13 @@ function render(items: MenuItem[], keepErrorVisible = false) {
     const superSection = document.createElement('section');
     superSection.className = 'menu-supercategory-block';
 
-    const superHeader = document.createElement('header');
-    superHeader.className = 'menu-supercategory-block__header';
-    superHeader.innerHTML = `<h2 class="menu-supercategory-block__title">${superCategoryName}</h2>`;
-    superSection.appendChild(superHeader);
+    // Only show header if superCategoryName is not empty
+    if (superCategoryName) {
+      const superHeader = document.createElement('header');
+      superHeader.className = 'menu-supercategory-block__header';
+      superHeader.innerHTML = `<h2 class="menu-supercategory-block__title">${superCategoryName}</h2>`;
+      superSection.appendChild(superHeader);
+    }
 
     // Create a single card for the entire supercategory
     const superCard = document.createElement('div');
