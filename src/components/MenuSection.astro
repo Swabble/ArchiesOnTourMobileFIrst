@@ -1,35 +1,28 @@
 <section id="menu" class="section menu-section" aria-live="polite">
   <div class="container">
-    <div class="section-header">
+    <header class="section-header">
       <p class="eyebrow">Unsere Produktauswahl</p>
       <h2>Frisch, flexibel & bereit für euer Event</h2>
       <p class="section-lead">
-        Wir bauen das Menü dynamisch aus eurer Google-Drive-Vorlage auf. Sobald die Daten geladen sind, seht ihr hier übersichtlich
-        jede Kategorie als Karte mit Preis, Beschreibung und Hinweisen.
+        Wir laden die Menü-Daten aus der API, zeigen dir die Rohantwort und rendern die Artikel nach Kategorie. So siehst du
+        jederzeit, was wirklich aus dem Backend kommt.
       </p>
-    </div>
+    </header>
 
-    <div class="menu-board">
-      <div class="menu-board__status">
-        <div id="menu-loading" class="status-pill">Menü wird geladen …</div>
-        <div id="menu-error" class="status-pill status-pill--error is-hidden">Fehler beim Laden der Daten. Es werden Fallback-Produkte angezeigt.</div>
-        <div id="menu-source" class="status-pill status-pill--muted is-hidden"></div>
+    <div class="menu-hero">
+      <div class="menu-hero__status" aria-live="polite">
+        <p id="menu-loading" class="status-pill">Menü wird geladen …</p>
+        <p id="menu-error" class="status-pill status-pill--error is-hidden">Fehler beim Laden der Daten. Fallback aktiv.</p>
+        <p id="menu-source" class="status-pill status-pill--muted is-hidden"></p>
       </div>
 
-      <div class="menu-intro">
-        <div class="menu-intro__text">
-          <h3>Ausgewählt, was bei Events wirklich funktioniert</h3>
-          <p>
-            Vom Klassiker bis zur Spezialität: Jedes Produkt erscheint als kompakte Karte. Wir gruppieren automatisch nach Kategorie
-            und zeigen Preis, Beschreibung sowie optionale Hinweise (z.&nbsp;B. Allergene oder Portionseinheiten).
-          </p>
-          <ul>
-            <li>Live-Daten aus Google Drive oder sichere Demo mit Fallback-Produkten</li>
-            <li>Automatisch gruppiert nach Kategorien – ideal zum schnellen Überfliegen</li>
-            <li>Preise in Euro formatiert, Einheiten und Notizen als Badges</li>
-          </ul>
-        </div>
-        <div id="menu-stats" class="menu-stats card is-hidden" aria-live="polite">
+      <section class="card menu-hero__stats" id="menu-stats" aria-live="polite">
+        <header class="menu-panel__header">
+          <p class="eyebrow">Überblick</p>
+          <h3>Menü-Status & Statistiken</h3>
+          <p>Quelle, Anzahl der Elemente und Kategorien werden nach dem Laden automatisch aktualisiert.</p>
+        </header>
+        <div class="menu-stats__grid">
           <div class="menu-stats__item">
             <p class="menu-stats__label">Produkte</p>
             <p id="menu-stat-count" class="menu-stats__value">–</p>
@@ -43,25 +36,34 @@
             <p id="menu-stat-source" class="menu-stats__value">–</p>
           </div>
         </div>
-      </div>
+      </section>
+    </div>
 
-      <div class="menu-debug card is-hidden" id="menu-debug" aria-live="polite">
-        <div class="menu-debug__header">
-          <div>
-            <p class="eyebrow">API-Daten</p>
-            <h3>Gesamte Menü-Antwort</h3>
-            <p class="menu-debug__hint">Hier siehst du die vollständige JSON-Antwort der /api/menu.json.</p>
-          </div>
-          <div class="menu-debug__meta" id="menu-json-meta"></div>
+    <div class="menu-content">
+      <section class="card menu-panel" id="menu-json-card" aria-live="polite">
+        <header class="menu-panel__header">
+          <p class="eyebrow">API-Rohdaten</p>
+          <h3>JSON-Antwort</h3>
+          <p id="menu-json-meta" class="menu-panel__meta">Wird geladen …</p>
+        </header>
+        <pre id="menu-json-raw" class="menu-json__pre">Noch keine Daten geladen.</pre>
+      </section>
+
+      <section class="card menu-panel" aria-live="polite">
+        <header class="menu-panel__header">
+          <p class="eyebrow">Gerenderte Daten</p>
+          <h3>Produkte aus der API</h3>
+          <p>Alle Artikel werden nach Kategorie gruppiert. Jede Karte zeigt Titel, Preis, Beschreibung und optionale Hinweise.</p>
+        </header>
+        <div id="menu-categories-container" class="menu-categories" aria-live="polite">
+          <p class="menu-empty">Noch keine Produkte geladen.</p>
         </div>
-        <details id="menu-json-panel" class="menu-json is-hidden" open>
-          <summary id="menu-json-summary">Antwort anzeigen</summary>
-          <pre id="menu-json-raw" class="menu-json__pre"></pre>
-        </details>
-      </div>
-
-      <div id="menu-categories-container" class="menu-categories" aria-live="polite"></div>
+      </section>
     </div>
   </div>
 </section>
-<script type="module" src="/src/lib/fetchMenu.ts" defer></script>
+<script type="module">
+  import { bootstrapMenu } from '../lib/fetchMenu.ts';
+
+  bootstrapMenu();
+</script>
