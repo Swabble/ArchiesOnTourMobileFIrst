@@ -1,18 +1,28 @@
 const monthFormatter = new Intl.DateTimeFormat('de-DE', { month: 'long', year: 'numeric' });
 
 function formatDateKey(date: Date) {
-  return date.toISOString().split('T')[0];
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
-function sampleEvents(reference: Date) {
-  const base = new Date(reference.getFullYear(), reference.getMonth(), 5);
-  return [
-    { id: '1', title: 'Sommerfest', start: base, end: new Date(base.getFullYear(), base.getMonth(), base.getDate(), 18), location: 'Köln' },
-    { id: '2', title: 'Messecatering', start: new Date(base.getFullYear(), base.getMonth(), base.getDate() + 8), end: new Date(base.getFullYear(), base.getMonth(), base.getDate() + 8, 20), location: 'Düsseldorf' }
-  ];
+function normalizeDate(dateInput: { date?: string; dateTime?: string }) {
+  if (dateInput?.date) {
+    return new Date(`${dateInput.date}T00:00:00`);
+  }
+  if (dateInput?.dateTime) {
+    return new Date(dateInput.dateTime);
+  }
+  return new Date();
 }
 
-function renderGrid(events: any[], grid: HTMLElement, reference: Date) {
+function renderGrid(
+  events: any[],
+  grid: HTMLElement,
+  reference: Date,
+  onDayHover: (dateKey?: string) => void
+) {
   grid.innerHTML = '';
   const firstDay = new Date(reference.getFullYear(), reference.getMonth(), 1);
   const offset = (firstDay.getDay() + 6) % 7;
@@ -39,15 +49,23 @@ function renderGrid(events: any[], grid: HTMLElement, reference: Date) {
       more.textContent = `+${matches.length - 3}`;
       cell.appendChild(more);
     }
+    cell.addEventListener('mouseenter', () => onDayHover(matches.length ? key : undefined));
+    cell.addEventListener('mouseleave', () => onDayHover(undefined));
     grid.appendChild(cell);
   }
 }
 
 function renderList(events: any[], list: HTMLElement) {
   list.innerHTML = '';
-  events.forEach((evt) => {
+  const sorted = [...events].sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
+
+  sorted.forEach((evt) => {
     const item = document.createElement('article');
     item.className = 'card calendar__event';
+
+    const eventDateKey = formatDateKey(new Date(evt.start));
+    item.dataset.dateKey = eventDateKey;
+
     const start = new Date(evt.start);
     const end = new Date(evt.end);
     item.innerHTML = `
@@ -60,12 +78,39 @@ function renderList(events: any[], list: HTMLElement) {
   });
 }
 
+function highlightEvents(list: HTMLElement, highlightDateKey?: string) {
+  const hasHighlight = Boolean(highlightDateKey);
+  list.querySelectorAll<HTMLElement>('.calendar__event').forEach((item) => {
+    const matches = hasHighlight && item.dataset.dateKey === highlightDateKey;
+    item.classList.toggle('calendar__event--active', matches);
+  });
+}
+
+function getDateRange(reference: Date) {
+  const start = new Date(reference);
+  const end = new Date(reference);
+
+  start.setDate(1);
+  start.setHours(0, 0, 0, 0);
+  end.setMonth(reference.getMonth() + 1, 0);
+  end.setHours(23, 59, 59, 999);
+
+  return { start, end };
+}
+
+function formatLabel(reference: Date) {
+  return monthFormatter.format(reference);
+}
+
 async function fetchEvents(reference: Date) {
   const apiKey = import.meta.env.PUBLIC_DRIVE_API_KEY;
   const calendarId = import.meta.env.PUBLIC_CALENDAR_ID;
-  if (!apiKey || !calendarId) return sampleEvents(reference);
-  const timeMin = new Date(reference.getFullYear(), reference.getMonth(), 1).toISOString();
-  const timeMax = new Date(reference.getFullYear(), reference.getMonth() + 1, 0, 23, 59, 59).toISOString();
+  const { start, end } = getDateRange(reference);
+  if (!apiKey || !calendarId) {
+    throw new Error('Calendar configuration fehlt');
+  }
+  const timeMin = start.toISOString();
+  const timeMax = end.toISOString();
   const url = `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?key=${apiKey}&timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime`;
   const res = await fetch(url);
   if (!res.ok) throw new Error('Calendar fetch failed');
@@ -74,8 +119,8 @@ async function fetchEvents(reference: Date) {
     id: item.id,
     title: item.summary,
     location: item.location,
-    start: item.start?.date ? new Date(item.start.date) : new Date(item.start.dateTime),
-    end: item.end?.date ? new Date(item.end.date) : new Date(item.end.dateTime)
+    start: normalizeDate(item.start),
+    end: normalizeDate(item.end)
   }));
 }
 
@@ -84,34 +129,47 @@ function init() {
   const list = document.getElementById('calendar-events');
   const status = document.getElementById('calendar-status');
   const monthLabel = document.getElementById('calendar-month');
-  if (!grid || !list || !status || !monthLabel) return;
+  const weekdays = document.getElementById('calendar-weekdays');
+  if (!grid || !list || !status || !monthLabel || !weekdays) return;
   let reference = new Date();
+  let currentEvents: any[] = [];
+
+  function handleHover(dateKey?: string) {
+    highlightEvents(list, dateKey);
+  }
 
   async function load() {
     status.textContent = 'Kalender wird geladen …';
-    monthLabel.textContent = monthFormatter.format(reference);
+    status.style.display = 'inline-flex';
+    monthLabel.textContent = formatLabel(reference);
     try {
       const events = await fetchEvents(reference);
-      renderGrid(events, grid, reference);
+      currentEvents = events;
+      weekdays.style.display = 'grid';
+      grid.style.display = 'grid';
+      renderGrid(events, grid, reference, handleHover);
       renderList(events, list);
-      status.textContent = 'Live oder Demo-Kalender';
+      highlightEvents(list);
+      status.textContent = '';
+      status.style.display = 'none';
     } catch (err) {
-      console.warn('Calendar fallback', err);
-      const events = sampleEvents(reference);
-      renderGrid(events, grid, reference);
-      renderList(events, list);
-      status.textContent = 'Beispieltermine angezeigt';
+      console.warn('Calendar Fehler', err);
+      grid.style.display = 'grid';
+      weekdays.style.display = 'grid';
+      grid.innerHTML = '';
+      list.innerHTML = '';
+      status.textContent = 'Kalender konnte nicht geladen werden. Bitte API-Konfiguration prüfen.';
+      status.style.display = 'inline-flex';
     }
   }
 
-  document.getElementById('calendar-prev')?.addEventListener('click', () => {
-    reference = new Date(reference.getFullYear(), reference.getMonth() - 1, 1);
+  function shiftReference(direction: number) {
+    reference = new Date(reference.getFullYear(), reference.getMonth() + direction, 1);
     load();
-  });
-  document.getElementById('calendar-next')?.addEventListener('click', () => {
-    reference = new Date(reference.getFullYear(), reference.getMonth() + 1, 1);
-    load();
-  });
+  }
+
+  document.getElementById('calendar-prev')?.addEventListener('click', () => shiftReference(-1));
+  document.getElementById('calendar-next')?.addEventListener('click', () => shiftReference(1));
 
   load();
 }
