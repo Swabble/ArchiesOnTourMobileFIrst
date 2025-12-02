@@ -173,7 +173,9 @@ async function init() {
   }
 }
 
-if (typeof window !== 'undefined') {
+export function bootstrapMenu() {
+  if (typeof window === 'undefined') return;
+
   if (document.readyState === 'interactive' || document.readyState === 'complete') {
     init();
   } else {
