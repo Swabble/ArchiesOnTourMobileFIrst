@@ -55,12 +55,20 @@ function log(
   fn(LOG_PREFIX, message, details ?? '');
 }
 
-export function mapRowToItem(row: Record<string, string>, logger: MenuLogger = console): MenuItem {
+function normalizeValue(value: unknown): string {
+  if (value === null || value === undefined) return '';
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+  return '';
+}
+
+export function mapRowToItem(row: Record<string, unknown>, logger: MenuLogger = console): MenuItem {
   const item: Partial<MenuItem> = {};
   Object.entries(row).forEach(([rawKey, value]) => {
-    const normalizedKey = rawKey.trim().toLowerCase();
+    const normalizedKey = rawKey.toString().trim().toLowerCase();
     const key = HEADER_MAP[normalizedKey] ?? (normalizedKey as keyof MenuItem);
-    if (key) item[key] = value?.trim();
+    const normalizedValue = normalizeValue(value);
+    if (key) item[key] = normalizedValue.trim();
   });
   if (!item.title && !item.category) {
     log(logger, 'debug', 'Skipping row without title/category', row);
