@@ -42,34 +42,35 @@ function render(items: MenuItem[], keepErrorVisible = false) {
   }, {});
 
   Object.entries(hierarchy).forEach(([superCategoryName, categories]) => {
-    const superSection = document.createElement('section');
-    superSection.className = 'menu-supercategory-block';
+    const superCard = document.createElement('article');
+    superCard.className = 'menu-category-block';
 
     const superHeader = document.createElement('header');
-    superHeader.className = 'menu-supercategory-block__header';
-    superHeader.innerHTML = `<h2 class="menu-supercategory-block__title">${superCategoryName}</h2>`;
-    superSection.appendChild(superHeader);
+    superHeader.className = 'menu-category-block__header';
+    superHeader.innerHTML = `<h3>${superCategoryName}</h3>`;
+    superCard.appendChild(superHeader);
 
     const categoriesContainer = document.createElement('div');
-    categoriesContainer.className = 'menu-subcategories';
+    categoriesContainer.className = 'menu-subcategories-inline';
 
     Object.entries(categories).forEach(([categoryName, categoryItems]) => {
-      const categorySection = document.createElement('section');
-      categorySection.className = 'menu-category-block';
-      categorySection.innerHTML = `
-        <header class="menu-category-block__header">
-          <h3>${categoryName}</h3>
-        </header>
-        <div class="menu-grid"></div>
-      `;
+      const categoryGroup = document.createElement('div');
+      categoryGroup.className = 'menu-subcategory-group';
 
-      const grid = categorySection.querySelector('.menu-grid');
+      const categoryTitle = document.createElement('h4');
+      categoryTitle.className = 'menu-subcategory-title';
+      categoryTitle.textContent = categoryName;
+      categoryGroup.appendChild(categoryTitle);
+
+      const itemsGrid = document.createElement('div');
+      itemsGrid.className = 'menu-grid';
+
       categoryItems.forEach((item) => {
         const card = document.createElement('article');
         card.className = 'menu-card';
         card.innerHTML = `
           <div class="menu-card__header">
-            <h4 class="menu-card__title">${item.title}</h4>
+            <h5 class="menu-card__title">${item.title}</h5>
             <span class="price-pill">${formatPrice(item.price)}</span>
           </div>
           <p class="menu-card__description">${item.description ?? ''}</p>
@@ -78,14 +79,15 @@ function render(items: MenuItem[], keepErrorVisible = false) {
             ${item.notes ? `<div class="menu-card__meta-row"><dt>Hinweise</dt><dd>${item.notes}</dd></div>` : ''}
           </dl>
         `;
-        grid?.appendChild(card);
+        itemsGrid.appendChild(card);
       });
 
-      categoriesContainer.appendChild(categorySection);
+      categoryGroup.appendChild(itemsGrid);
+      categoriesContainer.appendChild(categoryGroup);
     });
 
-    superSection.appendChild(categoriesContainer);
-    container.appendChild(superSection);
+    superCard.appendChild(categoriesContainer);
+    container.appendChild(superCard);
   });
 }
 

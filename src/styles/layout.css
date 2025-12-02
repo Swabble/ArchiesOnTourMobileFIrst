@@ -15,7 +15,7 @@ main::before {
   content: '';
   position: fixed;
   inset: 0;
-  background: var(--color-background) url('/assets/your-background.svg') center calc(50% + 10vh) / cover no-repeat fixed;
+  background: var(--color-background) url('/assets/your-background.svg') center calc(50% + 20vh) / cover no-repeat fixed;
   filter: saturate(1.05);
   z-index: -2;
 }
@@ -36,17 +36,36 @@ main::after {
   margin: var(--space-7) auto;
   padding: var(--space-5) var(--space-4);
   isolation: isolate;
+  max-width: min(1100px, 95%);
+  color: var(--color-corporate-white);
 }
 
 .section::before {
   content: '';
   position: absolute;
-  inset: 0;
+  inset: 0 var(--space-3);
   background: rgba(0, 0, 0, 0.5);
   border-radius: var(--radius-xl);
   backdrop-filter: blur(10px);
   box-shadow: var(--shadow-soft);
   z-index: -1;
+}
+
+.section h2,
+.section h3,
+.section h4,
+.section h5,
+.section h6 {
+  color: var(--color-corporate-white);
+}
+
+.section p {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.section ul,
+.section li {
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .grid {
