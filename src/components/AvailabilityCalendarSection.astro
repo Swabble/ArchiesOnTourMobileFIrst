@@ -1,17 +1,33 @@
 <section id="verfuegbarkeit" class="section">
   <div class="container">
     <h2>Verfügbarkeit</h2>
-    <p>Live aus Google Calendar oder als Demo bei fehlender Konfiguration.</p>
+    <p>Live aus Google Calendar mit flexiblen Ansichten.</p>
     <div class="card">
-      <header class="menu-card__header" style="justify-content: space-between;">
-        <div>
-          <button id="calendar-prev" class="btn btn-secondary" aria-label="Vorheriger Monat">‹</button>
-          <button id="calendar-next" class="btn btn-secondary" aria-label="Nächster Monat">›</button>
+      <header class="menu-card__header" style="justify-content: space-between; gap: var(--space-3); flex-wrap: wrap;">
+        <div style="display: flex; gap: var(--space-2); align-items: center;">
+          <button id="calendar-prev" class="btn btn-secondary" aria-label="Vorherige Ansicht">‹</button>
+          <strong id="calendar-month"></strong>
+          <button id="calendar-next" class="btn btn-secondary" aria-label="Nächste Ansicht">›</button>
         </div>
-        <strong id="calendar-month"></strong>
+        <div style="display: flex; gap: var(--space-1); flex-wrap: wrap; align-items: center;" aria-label="Kalenderansicht wählen">
+          {[
+            ['day', 'Tagesansicht'],
+            ['week', 'Wochenansicht'],
+            ['month', 'Monatsansicht'],
+            ['agenda', 'Agenda'],
+          ].map(([value, label]) => (
+            <button class={`btn btn-secondary calendar-view ${value === 'month' ? 'is-active' : ''}`} data-calendar-view={value}>
+              {label}
+            </button>
+          ))}
+        </div>
       </header>
       <div id="calendar-status" class="price-pill">Kalender wird geladen …</div>
-      <div class="calendar__weekdays" style="display:grid;grid-template-columns:repeat(7,1fr);gap:var(--space-2);margin:var(--space-3) 0;">
+      <div
+        id="calendar-weekdays"
+        class="calendar__weekdays"
+        style="display:grid;grid-template-columns:repeat(7,1fr);gap:var(--space-2);margin:var(--space-3) 0;"
+      >
         {['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'].map((d) => (
           <div style="text-align:center;font-weight:600;">{d}</div>
         ))}
