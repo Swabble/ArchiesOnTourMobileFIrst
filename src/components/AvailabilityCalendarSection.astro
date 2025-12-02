@@ -1,17 +1,22 @@
 <section id="verfuegbarkeit" class="section">
   <div class="container">
     <h2>Verfügbarkeit</h2>
-    <p>Live aus Google Calendar oder als Demo bei fehlender Konfiguration.</p>
-    <div class="card">
-      <header class="menu-card__header" style="justify-content: space-between;">
-        <div>
+    <p>Aktuelle Termine aus Google Calendar in einer ruhigen Monatsübersicht.</p>
+    <div class="card calendar-card">
+      <header class="calendar-toolbar">
+        <div class="calendar-nav">
           <button id="calendar-prev" class="btn btn-secondary" aria-label="Vorheriger Monat">‹</button>
+          <strong id="calendar-month"></strong>
           <button id="calendar-next" class="btn btn-secondary" aria-label="Nächster Monat">›</button>
         </div>
-        <strong id="calendar-month"></strong>
+        <p class="calendar-hint">Navigiere mit den Pfeilen durch die Monate.</p>
       </header>
       <div id="calendar-status" class="price-pill">Kalender wird geladen …</div>
-      <div class="calendar__weekdays" style="display:grid;grid-template-columns:repeat(7,1fr);gap:var(--space-2);margin:var(--space-3) 0;">
+      <div
+        id="calendar-weekdays"
+        class="calendar__weekdays"
+        style="display:grid;grid-template-columns:repeat(7,1fr);gap:var(--space-2);margin:var(--space-3) 0;"
+      >
         {['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'].map((d) => (
           <div style="text-align:center;font-weight:600;">{d}</div>
         ))}
@@ -21,4 +26,84 @@
     </div>
   </div>
 </section>
+<style>
+  #verfuegbarkeit h2 {
+    color: var(--color-corporate-white);
+  }
+
+  #verfuegbarkeit p {
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  #verfuegbarkeit .calendar-card {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.97), rgba(255, 255, 255, 0.92));
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: var(--shadow-strong);
+  }
+
+  #verfuegbarkeit .calendar-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    padding: var(--space-2) var(--space-1) var(--space-3);
+    border-bottom: 1px solid rgba(15, 17, 21, 0.08);
+  }
+
+  #verfuegbarkeit .calendar-nav {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+  }
+
+  #verfuegbarkeit .calendar-hint {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-muted);
+  }
+
+  #verfuegbarkeit .btn-secondary {
+    background: linear-gradient(135deg, var(--color-primary), #ff947c);
+    color: var(--color-corporate-white);
+    border: none;
+    box-shadow: 0 10px 24px rgba(255, 113, 91, 0.28);
+  }
+
+  #verfuegbarkeit .btn-secondary:hover,
+  #verfuegbarkeit .btn-secondary:focus-visible {
+    filter: brightness(0.98);
+    transform: translateY(-1px);
+  }
+
+  #verfuegbarkeit #calendar-month {
+    font-size: var(--font-size-lg);
+    color: var(--color-text);
+  }
+
+  #verfuegbarkeit .calendar__weekdays {
+    background: rgba(255, 113, 91, 0.06);
+    padding: var(--space-2);
+    border-radius: var(--radius-md);
+  }
+
+  #verfuegbarkeit .calendar__day {
+    border: 1px solid rgba(15, 17, 21, 0.08);
+    background: var(--color-corporate-white);
+  }
+
+  #verfuegbarkeit .calendar__day-number {
+    color: var(--color-text);
+  }
+
+  #verfuegbarkeit .calendar__event {
+    transition: border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
+  }
+
+  #verfuegbarkeit .calendar__event--active {
+    border-color: rgba(255, 113, 91, 0.5);
+    box-shadow: 0 8px 24px rgba(255, 113, 91, 0.18);
+    transform: translateY(-2px);
+  }
+</style>
 <script type="module" src="/src/lib/calendar.ts" defer></script>
