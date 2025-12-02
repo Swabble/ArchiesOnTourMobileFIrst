@@ -1,4 +1,12 @@
+type CalendarView = 'day' | 'week' | 'month' | 'agenda';
+
 const monthFormatter = new Intl.DateTimeFormat('de-DE', { month: 'long', year: 'numeric' });
+const dayFormatter = new Intl.DateTimeFormat('de-DE', {
+  weekday: 'long',
+  day: '2-digit',
+  month: 'long',
+  year: 'numeric'
+});
 
 function formatDateKey(date: Date) {
   return date.toISOString().split('T')[0];
@@ -99,6 +107,7 @@ function init() {
   const weekdays = document.getElementById('calendar-weekdays');
   if (!grid || !list || !status || !monthLabel || !weekdays) return;
   let reference = new Date();
+  let view: CalendarView = 'month';
 
   async function load() {
     status.textContent = 'Kalender wird geladen …';
