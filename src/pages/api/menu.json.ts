@@ -1,8 +1,11 @@
 import type { APIRoute } from 'astro';
+import { Logger, type LoggerLabel } from '../../../node_modules/astro/dist/core/logger/core.js';
+import { nodeLogDestination } from '../../../node_modules/astro/dist/core/logger/node.js';
 import { FALLBACK_ITEMS, parseMenuPayload, type MenuLogger } from '../../lib/menuParser';
 import type { MenuItem } from '../../lib/menuTypes';
 
 const LOG_PREFIX = '[menu-api]';
+const LOG_LABEL: LoggerLabel = 'env';
 
 const DEFAULT_HEADERS = {
   'cache-control': 'no-store',
@@ -17,7 +20,13 @@ function log(
 ) {
   const fn = logger[level] ?? console[level];
   if (typeof fn !== 'function') return;
-  fn(LOG_PREFIX, message, details ?? '');
+
+  if (logger instanceof Logger) {
+    const formattedDetails = details ? ` ${JSON.stringify(details)}` : '';
+    fn.call(logger, LOG_LABEL, `${LOG_PREFIX} ${message}${formattedDetails}`);
+  } else {
+    fn(LOG_PREFIX, message, details ?? '');
+  }
 }
 
 function normalizeHeaders(headers: Headers): Record<string, string> {
@@ -64,9 +73,9 @@ async function fetchSheet(url: string, logger: MenuLogger): Promise<{ items: Men
 
 export const prerender = false;
 
-export const GET: APIRoute = async ({ locals, request }) => {
-  const logger = (locals as { logger?: MenuLogger })?.logger ?? console;
-  const sheetUrl = import.meta.env.PUBLIC_MENU_SHEET_URL;
+export const GET: APIRoute = async ({ request }) => {
+  const logger = new Logger({ dest: nodeLogDestination, level: 'info' }) as unknown as MenuLogger;
+  const sheetUrl = import.meta.env.MENU_SHEET_URL;
 
   log(logger, 'info', 'Menu API request', {
     requestUrl: request.url,
@@ -74,7 +83,7 @@ export const GET: APIRoute = async ({ locals, request }) => {
   });
 
   if (!sheetUrl) {
-    log(logger, 'warn', 'PUBLIC_MENU_SHEET_URL missing, serving fallback items');
+    log(logger, 'warn', 'MENU_SHEET_URL missing, serving fallback items');
     return new Response(
       JSON.stringify({ items: FALLBACK_ITEMS, source: 'missing-url' }),
       { status: 200, headers: DEFAULT_HEADERS }

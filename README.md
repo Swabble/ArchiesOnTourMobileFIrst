@@ -16,7 +16,7 @@ Für Produktions-Builds: `npm run build` und `npm run preview`.
 Legen Sie eine `.env` mit folgenden Schlüsseln an (siehe `.env.example`):
 
 - `PUBLIC_DRIVE_API_KEY` – Google API Key für Drive/Calendar.
-- `PUBLIC_MENU_FOLDER_ID` / `PUBLIC_MENU_SHEET_URL` – Quelle der Menü-Daten (CSV/JSON oder Sheet-Export).
+- `PUBLIC_MENU_FOLDER_ID` / `MENU_SHEET_URL` – Quelle der Menü-Daten (CSV/JSON oder Sheet-Export).
 - `PUBLIC_GALLERY_FOLDER_ID` – Drive-Ordner für Galerie-Bilder.
 - `PUBLIC_CALENDAR_ID` – Google Calendar ID für Verfügbarkeiten.
 
@@ -24,7 +24,7 @@ Ohne gültige Keys greifen Fallback-Daten (Demo-Menü, Galerie-JSON, Beispielter
 
 ## Datenpflege
 
-- **Menü:** Pflege im angebundenen Google Sheet. Spalten sollten Titel/Name, Preis, Beschreibung, Einheit, Hinweise, Kategorie enthalten. Der Export-Link wird in `PUBLIC_MENU_SHEET_URL` hinterlegt.
+- **Menü:** Pflege im angebundenen Google Sheet. Spalten sollten Titel/Name, Preis, Beschreibung, Einheit, Hinweise, Kategorie enthalten. Der Export-Link wird in `MENU_SHEET_URL` hinterlegt.
 - **Galerie:** Standard-Fallback liegt unter `public/data/gallery.json` (Felder: `url`, `thumbnail`, `alt`). Bei aktiver Drive-Integration wird der Ordner per API geladen.
 - **Kalender:** Google Calendar muss öffentlich lesbar sein; ID in `PUBLIC_CALENDAR_ID` eintragen.
 
