@@ -140,13 +140,17 @@ async function loadImages() {
       state.images = (data.files || []).map((file: any) => {
         const thumbnailLink = file.thumbnailLink;
         const webContentLink = file.webContentLink;
+        const fileId = file.id;
         console.log('[GALLERY DEBUG] Processing file:', file.name);
         console.log('[GALLERY DEBUG] - thumbnailLink:', thumbnailLink);
         console.log('[GALLERY DEBUG] - webContentLink:', webContentLink);
 
         // Better URL handling with fallback
-        let url = webContentLink;
-        let thumbUrl = webContentLink;
+        // Prefer the Google-provided thumbnail link when present.
+        // If links are missing (common when a file is only shared by name),
+        // build direct image URLs so we always have something to show.
+        let url = webContentLink as string | undefined;
+        let thumbUrl = webContentLink as string | undefined;
 
         if (thumbnailLink) {
           const baseUrl = thumbnailLink.split('=')[0];
@@ -155,8 +159,13 @@ async function loadImages() {
         } else if (webContentLink) {
           // If no thumbnailLink, try to construct from webContentLink
           // Google Drive direct links format: https://drive.google.com/uc?id=FILE_ID
-          const fileId = file.id;
           url = `https://drive.google.com/thumbnail?id=${fileId}&sz=w1600`;
+          thumbUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w600`;
+        }
+
+        // Absolute fallback when Drive only returns file names without links
+        if (!url || !thumbUrl) {
+          url = `https://drive.google.com/uc?export=view&id=${fileId}`;
           thumbUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w600`;
         }
 
@@ -168,7 +177,7 @@ async function loadImages() {
           thumbnail: thumbUrl,
           alt: file.name || 'Galeriebild'
         };
-      });
+      }).filter((img: { url?: string; thumbnail?: string }) => Boolean(img.url && img.thumbnail));
 
       if (debugBox && state.images.length > 0) {
         debugBox.innerHTML += `<br><strong>Sample URLs:</strong><br>${state.images[0].thumbnail}<br>`;
