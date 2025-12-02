@@ -76,6 +76,9 @@ header.site-header {
 .hero {
   color: var(--color-corporate-white);
   text-align: left;
+  --hero-offset: clamp(2rem, 10vh, 4rem);
+  margin-top: var(--hero-offset);
+  scroll-margin-top: calc(var(--header-height) + var(--hero-offset));
 }
 
 .hero h1 {
