@@ -63,19 +63,19 @@ function renderGrid(
   }
 }
 
-function renderList(events: any[], list: HTMLElement, filterDateKey?: string) {
+function renderList(events: any[], list: HTMLElement, highlightDateKey?: string) {
   list.innerHTML = '';
   const sorted = [...events].sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
-  const filteredCandidates = filterDateKey
-    ? sorted.filter((evt) => formatDateKey(new Date(evt.start)) === filterDateKey)
-    : sorted;
-  const filtered = filterDateKey && filteredCandidates.length > 0 ? filteredCandidates : sorted;
-  filtered.forEach((evt) => {
+
+  sorted.forEach((evt) => {
     const item = document.createElement('article');
     item.className = 'card calendar__event';
-    if (filterDateKey) {
+
+    const eventDateKey = formatDateKey(new Date(evt.start));
+    if (highlightDateKey && eventDateKey === highlightDateKey) {
       item.classList.add('calendar__event--active');
     }
+
     const start = new Date(evt.start);
     const end = new Date(evt.end);
     item.innerHTML = `
