@@ -10,24 +10,20 @@ function formatPrice(price: string | number) {
 }
 
 function updateJsonPanel(payload: unknown, meta?: { status?: number; source?: string; note?: string }) {
-  const panel = document.getElementById('menu-json-panel');
   const pre = document.getElementById('menu-json-raw');
-  const summary = document.getElementById('menu-json-summary');
   const metaRow = document.getElementById('menu-json-meta');
-  const wrapper = document.getElementById('menu-debug');
-  if (!panel || !pre || !summary || !metaRow || !wrapper) return;
+  const card = document.getElementById('menu-json-card');
+  if (!pre || !metaRow || !card) return;
 
-  const summaryParts = [] as string[];
-  if (meta?.status !== undefined) summaryParts.push(`Status ${meta.status}`);
-  if (meta?.source) summaryParts.push(`Quelle: ${meta.source}`);
-  if (meta?.note) summaryParts.push(meta.note);
+  const metaParts = [] as string[];
+  if (meta?.status !== undefined) metaParts.push(`Status ${meta.status}`);
+  if (meta?.source) metaParts.push(`Quelle: ${meta.source}`);
+  if (meta?.note) metaParts.push(meta.note);
 
-  summary.textContent = summaryParts.length ? summaryParts.join(' · ') : 'API-Antwort anzeigen';
-  metaRow.textContent = summaryParts.length ? summaryParts.join(' • ') : '';
+  metaRow.textContent = metaParts.join(' • ');
   pre.textContent = JSON.stringify(payload, null, 2);
 
-  panel.classList.remove('is-hidden');
-  wrapper.classList.remove('is-hidden');
+  card.classList.remove('is-hidden');
 }
 
 function render(items: MenuItem[], source?: string, keepErrorVisible = false) {
@@ -73,7 +69,7 @@ function render(items: MenuItem[], source?: string, keepErrorVisible = false) {
 
   Object.entries(categories).forEach(([categoryName, categoryItems]) => {
     const section = document.createElement('section');
-    section.className = 'menu-category-block reveal';
+    section.className = 'menu-category-block';
     section.innerHTML = `
       <header class="menu-category-block__header">
         <p class="eyebrow">Kategorie</p>
@@ -95,10 +91,10 @@ function render(items: MenuItem[], source?: string, keepErrorVisible = false) {
           <span class="price-pill">${formatPrice(item.price)}</span>
         </div>
         <p class="menu-card__description">${item.description ?? ''}</p>
-        <div class="menu-card__meta">
-          ${item.unit ? `<span class="tag">${item.unit}</span>` : ''}
-          ${item.notes ? `<span class="tag tag--muted">${item.notes}</span>` : ''}
-        </div>
+        <dl class="menu-card__meta">
+          ${item.unit ? `<div class="menu-card__meta-row"><dt>Einheit</dt><dd>${item.unit}</dd></div>` : ''}
+          ${item.notes ? `<div class="menu-card__meta-row"><dt>Hinweise</dt><dd>${item.notes}</dd></div>` : ''}
+        </dl>
       `;
       grid?.appendChild(card);
     });
@@ -131,17 +127,17 @@ async function fetchRemoteMenu(): Promise<{
   const items = Array.isArray((payload as { items?: MenuItem[] }).items)
     ? ((payload as { items?: MenuItem[] }).items as MenuItem[])
     : [];
-  const source = (payload as { source?: string }).source ?? 'unknown';
+  const sourceValue = (payload as { source?: string }).source ?? 'unknown';
 
   console.info(LOG_PREFIX, 'Menu API response received', {
     status: res.status,
     itemCount: items.length,
-    source
+    source: sourceValue
   });
 
   return {
     items: items.length ? items : FALLBACK_ITEMS,
-    source: items.length ? source : 'fallback',
+    source: items.length ? sourceValue : 'fallback',
     rawPayload: payload,
     ok: res.ok,
     status: res.status
@@ -178,5 +174,9 @@ async function init() {
 }
 
 if (typeof window !== 'undefined') {
-  window.addEventListener('DOMContentLoaded', init);
+  if (document.readyState === 'interactive' || document.readyState === 'complete') {
+    init();
+  } else {
+    window.addEventListener('DOMContentLoaded', init, { once: true });
+  }
 }
