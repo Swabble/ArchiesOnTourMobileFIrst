@@ -141,6 +141,7 @@ function init() {
 
   async function load() {
     status.textContent = 'Kalender wird geladen …';
+    status.style.display = 'inline-flex';
     monthLabel.textContent = formatLabel(reference, view);
     try {
       const events = await fetchEvents(reference, view);
@@ -154,7 +155,8 @@ function init() {
         grid.innerHTML = '';
       }
       renderList(events, list);
-      status.textContent = 'Google Calendar geladen';
+      status.textContent = '';
+      status.style.display = 'none';
     } catch (err) {
       console.warn('Calendar Fehler', err);
       grid.style.display = view === 'month' ? 'grid' : 'none';
@@ -162,6 +164,7 @@ function init() {
       grid.innerHTML = '';
       list.innerHTML = '';
       status.textContent = 'Kalender konnte nicht geladen werden. Bitte API-Konfiguration prüfen.';
+      status.style.display = 'inline-flex';
     }
   }
 
