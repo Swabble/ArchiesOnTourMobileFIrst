@@ -15,7 +15,7 @@ main::before {
   content: '';
   position: fixed;
   inset: 0;
-  background: var(--color-background) url('/assets/your-background.svg') center center / cover no-repeat fixed;
+  background: var(--color-background) url('/assets/your-background.svg') center calc(50% + 10vh) / cover no-repeat fixed;
   filter: saturate(1.05);
   z-index: -2;
 }
@@ -34,7 +34,7 @@ main::after {
 .section {
   position: relative;
   margin: var(--space-7) auto;
-  padding: var(--space-7) var(--space-4);
+  padding: var(--space-5) var(--space-4);
   isolation: isolate;
 }
 
@@ -42,7 +42,7 @@ main::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: var(--color-surface);
+  background: rgba(0, 0, 0, 0.5);
   border-radius: var(--radius-xl);
   backdrop-filter: blur(10px);
   box-shadow: var(--shadow-soft);
@@ -72,7 +72,7 @@ main::after {
   }
 
   .section {
-    padding: var(--space-8) var(--space-6);
+    padding: var(--space-6) var(--space-5);
   }
 
   .cards {
