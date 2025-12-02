@@ -49,7 +49,7 @@ body {
   margin: 0;
   padding: 0;
   font-family: var(--font-family-sans);
-  background: var(--color-background);
+  background: #0b0d11;
   color: var(--color-text);
   scroll-behavior: smooth;
   touch-action: pan-x pan-y;
@@ -60,18 +60,18 @@ body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background: url('/assets/your-background.svg') center/cover no-repeat;
-  opacity: 0.16;
   z-index: -2;
+  background: #0b0d11 url('/assets/your-background.svg') center center / cover no-repeat fixed;
+  filter: saturate(1.05);
 }
 
 body::after {
   content: '';
   position: fixed;
   inset: 0;
-  background: radial-gradient(circle at 20% 20%, rgba(255, 113, 91, 0.25), transparent 40%),
-    radial-gradient(circle at 80% 10%, rgba(61, 214, 160, 0.14), transparent 38%),
-    linear-gradient(135deg, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.9));
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.35)),
+    radial-gradient(circle at 22% 22%, rgba(255, 113, 91, 0.18), transparent 46%),
+    radial-gradient(circle at 78% 12%, rgba(61, 214, 160, 0.14), transparent 44%);
   z-index: -1;
   pointer-events: none;
 }
