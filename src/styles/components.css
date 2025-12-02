@@ -195,10 +195,20 @@ header.site-header {
   color: #c7513f;
 }
 
+.status-pill--muted {
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--color-text-subtle);
+}
+
 .menu-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: var(--space-4);
+}
+
+.menu-categories {
+  display: grid;
+  gap: clamp(var(--space-4), 3vw, var(--space-6));
 }
 
 .menu-card {
@@ -268,45 +278,76 @@ header.site-header {
   background: rgba(0, 0, 0, 0.03);
 }
 
-.debug-card {
-  font-size: var(--font-size-sm);
-  background: #f8fafc;
-  border: 1px dashed rgba(0, 0, 0, 0.08);
+.menu-intro {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.menu-intro__text {
   display: grid;
   gap: var(--space-2);
 }
 
-.debug-card__title {
+.menu-intro ul {
   margin: 0;
+  padding-left: var(--space-4);
+  color: var(--color-text-subtle);
+  display: grid;
+  gap: var(--space-2);
+}
+
+.menu-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--space-3);
+  border: 1px dashed rgba(0, 0, 0, 0.08);
+  background: #fff;
+}
+
+.menu-stats__item {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.menu-stats__label {
+  margin: 0;
+  color: var(--color-text-subtle);
+  font-weight: 600;
+}
+
+.menu-stats__value {
+  margin: 0;
+  font-size: var(--font-size-2xl);
   font-weight: 700;
 }
 
-.debug-card__list {
-  margin: 0;
+.menu-category-block {
+  background: #fff;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-soft);
+  padding: clamp(var(--space-4), 4vw, var(--space-6));
+  border: 1px solid rgba(0, 0, 0, 0.04);
   display: grid;
-  gap: var(--space-2);
+  gap: var(--space-3);
 }
 
-.debug-card__row {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: var(--space-2);
+.menu-category-block__header {
+  display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
 }
 
-.debug-card__row dt {
-  font-weight: 600;
-  color: var(--color-text-subtle);
-}
-
-.debug-card__row dd {
-  margin: 0;
-  font-weight: 600;
-}
-
-.debug-card__hint {
+.menu-empty {
   margin: 0;
   color: var(--color-text-subtle);
+  font-weight: 600;
+  padding: var(--space-4);
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: var(--radius-lg);
 }
 
 .menu-category-section {
