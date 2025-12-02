@@ -9,8 +9,18 @@
     </button>
     <nav>
       <ul id="nav-menu" class="nav__list">
-        {['start', 'angebot', 'menu', 'referenzen', 'galerie', 'ablauf', 'verfuegbarkeit', 'anfrage', 'ueber-uns'].map((id) => (
-          <li><a class="nav__link" href={`#${id}`}>{id.replace('-', ' ')}</a></li>
+        {[
+          { id: 'start', label: 'START' },
+          { id: 'angebot', label: 'ANGEBOT' },
+          { id: 'menu', label: 'MENÜ' },
+          { id: 'referenzen', label: 'REFERENZEN' },
+          { id: 'galerie', label: 'GALERIE' },
+          { id: 'ablauf', label: 'ABLAUF' },
+          { id: 'verfuegbarkeit', label: 'VERFÜGBARKEIT' },
+          { id: 'anfrage', label: 'ANFRAGE' },
+          { id: 'ueber-uns', label: 'ÜBER UNS' }
+        ].map((item) => (
+          <li><a class="nav__link" href={`#${item.id}`}>{item.label}</a></li>
         ))}
       </ul>
     </nav>
