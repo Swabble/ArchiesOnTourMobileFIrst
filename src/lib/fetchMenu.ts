@@ -22,13 +22,6 @@ function render(items: MenuItem[], keepErrorVisible = false) {
   container.innerHTML = '';
   console.info(LOG_PREFIX, `Rendering ${items.length} menu items`);
 
-  const categories = items.reduce<Record<string, MenuItem[]>>((acc, item) => {
-    const category = item.category?.trim() || 'Weitere Highlights';
-    if (!acc[category]) acc[category] = [];
-    acc[category].push(item);
-    return acc;
-  }, {});
-
   if (!items.length) {
     const empty = document.createElement('p');
     empty.className = 'menu-empty';
@@ -37,35 +30,62 @@ function render(items: MenuItem[], keepErrorVisible = false) {
     return;
   }
 
-  Object.entries(categories).forEach(([categoryName, categoryItems]) => {
-    const section = document.createElement('section');
-    section.className = 'menu-category-block';
-    section.innerHTML = `
-      <header class="menu-category-block__header">
-        <h3>${categoryName}</h3>
-      </header>
-      <div class="menu-grid"></div>
-    `;
+  // Group by superCategory first, then by category
+  const hierarchy = items.reduce<Record<string, Record<string, MenuItem[]>>>((acc, item) => {
+    const superCat = item.superCategory?.trim() || 'Weitere Kategorien';
+    const cat = item.category?.trim() || 'Weitere Highlights';
 
-    const grid = section.querySelector('.menu-grid');
-    categoryItems.forEach((item) => {
-      const card = document.createElement('article');
-      card.className = 'menu-card';
-      card.innerHTML = `
-        <div class="menu-card__header">
-          <h4 class="menu-card__title">${item.title}</h4>
-          <span class="price-pill">${formatPrice(item.price)}</span>
-        </div>
-        <p class="menu-card__description">${item.description ?? ''}</p>
-        <dl class="menu-card__meta">
-          ${item.unit ? `<div class="menu-card__meta-row"><dt>Einheit</dt><dd>${item.unit}</dd></div>` : ''}
-          ${item.notes ? `<div class="menu-card__meta-row"><dt>Hinweise</dt><dd>${item.notes}</dd></div>` : ''}
-        </dl>
+    if (!acc[superCat]) acc[superCat] = {};
+    if (!acc[superCat][cat]) acc[superCat][cat] = [];
+    acc[superCat][cat].push(item);
+    return acc;
+  }, {});
+
+  Object.entries(hierarchy).forEach(([superCategoryName, categories]) => {
+    const superSection = document.createElement('section');
+    superSection.className = 'menu-supercategory-block';
+
+    const superHeader = document.createElement('header');
+    superHeader.className = 'menu-supercategory-block__header';
+    superHeader.innerHTML = `<h2 class="menu-supercategory-block__title">${superCategoryName}</h2>`;
+    superSection.appendChild(superHeader);
+
+    const categoriesContainer = document.createElement('div');
+    categoriesContainer.className = 'menu-subcategories';
+
+    Object.entries(categories).forEach(([categoryName, categoryItems]) => {
+      const categorySection = document.createElement('section');
+      categorySection.className = 'menu-category-block';
+      categorySection.innerHTML = `
+        <header class="menu-category-block__header">
+          <h3>${categoryName}</h3>
+        </header>
+        <div class="menu-grid"></div>
       `;
-      grid?.appendChild(card);
+
+      const grid = categorySection.querySelector('.menu-grid');
+      categoryItems.forEach((item) => {
+        const card = document.createElement('article');
+        card.className = 'menu-card';
+        card.innerHTML = `
+          <div class="menu-card__header">
+            <h4 class="menu-card__title">${item.title}</h4>
+            <span class="price-pill">${formatPrice(item.price)}</span>
+          </div>
+          <p class="menu-card__description">${item.description ?? ''}</p>
+          <dl class="menu-card__meta">
+            ${item.unit ? `<div class="menu-card__meta-row"><dt>Einheit</dt><dd>${item.unit}</dd></div>` : ''}
+            ${item.notes ? `<div class="menu-card__meta-row"><dt>Hinweise</dt><dd>${item.notes}</dd></div>` : ''}
+          </dl>
+        `;
+        grid?.appendChild(card);
+      });
+
+      categoriesContainer.appendChild(categorySection);
     });
 
-    container.appendChild(section);
+    superSection.appendChild(categoriesContainer);
+    container.appendChild(superSection);
   });
 }
 
