@@ -5,7 +5,7 @@
 }
 
 main {
-  padding-top: clamp(3rem, 8vh, 5rem);
+  padding-top: 75vh;
 }
 
 .section {
