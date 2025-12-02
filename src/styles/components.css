@@ -79,6 +79,29 @@ header.site-header {
   --hero-offset: clamp(2rem, 10vh, 4rem);
   margin-top: var(--hero-offset);
   scroll-margin-top: calc(var(--header-height) + var(--hero-offset));
+  position: relative;
+}
+
+.hero--with-logo::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50%;
+  height: 50%;
+  background-image: url('/assets/Logo.svg');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  opacity: 0.08;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero--with-logo > * {
+  position: relative;
+  z-index: 1;
 }
 
 .hero h1 {
@@ -229,17 +252,10 @@ header.site-header {
   margin-bottom: var(--space-2);
 }
 
-.menu-card__titles {
-  display: grid;
-  gap: var(--space-1);
-}
-
-.menu-card__category {
+.menu-card__title {
   margin: 0;
-  font-size: var(--font-size-xs);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-text-subtle);
+  font-size: var(--font-size-lg);
+  font-weight: 700;
 }
 
 .menu-card__description {
@@ -609,4 +625,43 @@ header.site-header {
 .reveal.visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+.offer-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.offer-card__icon {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.offer-card__title {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+}
+
+.offer-card__features {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.offer-card__features li {
+  padding-left: var(--space-4);
+  position: relative;
+  line-height: 1.5;
+}
+
+.offer-card__features li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--color-accent);
+  font-weight: 700;
 }
