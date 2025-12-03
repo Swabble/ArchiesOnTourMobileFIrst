@@ -228,7 +228,7 @@ header.site-header {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: var(--space-4);
-  align-items: start;
+  align-items: stretch;
 }
 
 .menu-categories {
@@ -245,6 +245,7 @@ header.site-header {
   display: grid;
   gap: var(--space-3);
   align-content: start;
+  height: 100%;
   color: #0f1115;
 }
 
