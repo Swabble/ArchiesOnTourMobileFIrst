@@ -41,7 +41,10 @@ main::after {
 .section::before {
   content: '';
   position: absolute;
-  inset: var(--space-3);
+  top: var(--space-3);
+  bottom: var(--space-3);
+  left: 10rem;
+  right: 10rem;
   background: rgba(0, 0, 0, 0.5);
   border-radius: var(--radius-xl);
   backdrop-filter: blur(10px);
