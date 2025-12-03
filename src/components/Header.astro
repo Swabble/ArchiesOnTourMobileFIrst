@@ -10,17 +10,17 @@
     <nav>
       <ul id="nav-menu" class="nav__list">
         {[
-          { id: 'start', label: 'Start' },
-          { id: 'angebot', label: 'Angebot' },
-          { id: 'menu', label: 'Menü' },
-          { id: 'referenzen', label: 'Referenzen' },
-          { id: 'galerie', label: 'Galerie' },
-          { id: 'ablauf', label: 'Ablauf' },
-          { id: 'verfuegbarkeit', label: 'Verfügbarkeit' },
-          { id: 'anfrage', label: 'Anfrage' },
-          { id: 'ueber-uns', label: 'Über uns' }
+          { id: 'start', label: 'Start', href: '#start' },
+          { id: 'angebot', label: 'Angebot', href: '#angebot' },
+          { id: 'menu', label: 'Menü', href: '/menu' },
+          { id: 'referenzen', label: 'Referenzen', href: '#referenzen' },
+          { id: 'galerie', label: 'Galerie', href: '#galerie' },
+          { id: 'ablauf', label: 'Ablauf', href: '#ablauf' },
+          { id: 'verfuegbarkeit', label: 'Verfügbarkeit', href: '#verfuegbarkeit' },
+          { id: 'anfrage', label: 'Anfrage', href: '#anfrage' },
+          { id: 'ueber-uns', label: 'Über uns', href: '#ueber-uns' }
         ].map((item) => (
-          <li><a class="nav__link" href={`#${item.id}`}>{item.label}</a></li>
+          <li><a class="nav__link" href={item.href}>{item.label}</a></li>
         ))}
       </ul>
     </nav>
