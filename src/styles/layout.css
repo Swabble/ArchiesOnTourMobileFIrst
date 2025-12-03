@@ -9,6 +9,11 @@
   padding: 0 var(--space-4);
 }
 
+body {
+  position: relative;
+  background: var(--color-background);
+}
+
 main {
   position: relative;
   padding-top: 75vh;
@@ -16,7 +21,9 @@ main {
   isolation: isolate;
 }
 
-main::before {
+main::before,
+main::after,
+body::after {
   content: '';
   position: fixed;
   inset: 0;
