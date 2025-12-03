@@ -247,6 +247,14 @@ header.site-header {
   align-content: start;
   height: 100%;
   color: #0f1115;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.menu-card:hover,
+.menu-card:focus-within {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-strong);
+  border-color: rgba(0, 0, 0, 0.08);
 }
 
 .menu-card__header {
@@ -452,6 +460,14 @@ header.site-header {
   display: grid;
   gap: var(--space-3);
   color: #0f1115;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.menu-category-block:hover,
+.menu-category-block:focus-within {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-strong);
+  border-color: rgba(0, 0, 0, 0.08);
 }
 
 .menu-category-block__header {
