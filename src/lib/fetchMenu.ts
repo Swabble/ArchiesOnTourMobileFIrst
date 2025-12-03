@@ -9,6 +9,11 @@ function formatPrice(price: string | number) {
   return `${numeric.toLocaleString('de-DE', { minimumFractionDigits: 2 })} €`;
 }
 
+type MenuGroup = {
+  title: string;
+  categories: Record<string, MenuItem[]>;
+};
+
 function render(items: MenuItem[], keepErrorVisible = false) {
   const container = document.getElementById('menu-categories-container');
   const loading = document.getElementById('menu-loading');
@@ -30,34 +35,36 @@ function render(items: MenuItem[], keepErrorVisible = false) {
     return;
   }
 
-  // Group by superCategory first, then by category
-  const hierarchy = items.reduce<Record<string, Record<string, MenuItem[]>>>((acc, item) => {
-    const superCat = item.superCategory?.trim() || '';
-    const cat = item.category?.trim() || 'Weitere Highlights';
+  // Group by card (superCategory if present, otherwise the category itself)
+  const grouped = items.reduce<Record<string, MenuGroup>>((acc, item) => {
+    const trimmedSuper = item.superCategory?.trim();
+    const categoryName = item.category?.trim() || 'Weitere Highlights';
+    const cardKey = trimmedSuper || categoryName;
+    if (!acc[cardKey]) {
+      acc[cardKey] = {
+        title: trimmedSuper || categoryName,
+        categories: {}
+      };
+    }
 
-    if (!acc[superCat]) acc[superCat] = {};
-    if (!acc[superCat][cat]) acc[superCat][cat] = [];
-    acc[superCat][cat].push(item);
+    if (!acc[cardKey].categories[categoryName]) {
+      acc[cardKey].categories[categoryName] = [];
+    }
+
+    acc[cardKey].categories[categoryName].push(item);
     return acc;
   }, {});
 
-  Object.entries(hierarchy).forEach(([superCategoryName, categories]) => {
-    const superSection = document.createElement('section');
-    superSection.className = 'menu-supercategory-block';
+  Object.values(grouped).forEach((group) => {
+    const cardWrapper = document.createElement('section');
+    cardWrapper.className = 'menu-category-block';
 
-    // Only show header if superCategoryName is not empty
-    if (superCategoryName) {
-      const superHeader = document.createElement('header');
-      superHeader.className = 'menu-supercategory-block__header';
-      superHeader.innerHTML = `<h2 class="menu-supercategory-block__title">${superCategoryName}</h2>`;
-      superSection.appendChild(superHeader);
-    }
+    const cardHeader = document.createElement('header');
+    cardHeader.className = 'menu-category-block__header';
+    cardHeader.innerHTML = `<h3>${group.title}</h3>`;
+    cardWrapper.appendChild(cardHeader);
 
-    // Create a single card for the entire supercategory
-    const superCard = document.createElement('div');
-    superCard.className = 'menu-category-block';
-
-    Object.entries(categories).forEach(([categoryName, categoryItems]) => {
+    Object.entries(group.categories).forEach(([categoryName, categoryItems]) => {
       const categorySection = document.createElement('section');
       categorySection.className = 'menu-category-section';
       categorySection.innerHTML = `
@@ -74,22 +81,21 @@ function render(items: MenuItem[], keepErrorVisible = false) {
         card.innerHTML = `
           <div class="menu-card__header">
             <h4 class="menu-card__title">${item.title}</h4>
-            <span class="price-pill">${formatPrice(item.price)}</span>
+            <span class="price-pill" aria-label="Preis">${formatPrice(item.price)}</span>
           </div>
           <p class="menu-card__description">${item.description ?? ''}</p>
-          <dl class="menu-card__meta">
-            ${item.unit ? `<div class="menu-card__meta-row"><dt>Einheit</dt><dd>${item.unit}</dd></div>` : ''}
-            ${item.notes ? `<div class="menu-card__meta-row"><dt>Hinweise</dt><dd>${item.notes}</dd></div>` : ''}
-          </dl>
+          <div class="menu-card__meta">
+            ${item.unit ? `<span class="menu-pill menu-pill--muted">${item.unit}</span>` : ''}
+            ${item.notes ? `<span class="menu-pill menu-pill--highlight" role="note">${item.notes}</span>` : ''}
+          </div>
         `;
         grid?.appendChild(card);
       });
 
-      superCard.appendChild(categorySection);
+      cardWrapper.appendChild(categorySection);
     });
 
-    superSection.appendChild(superCard);
-    container.appendChild(superSection);
+    container.appendChild(cardWrapper);
   });
 }
 

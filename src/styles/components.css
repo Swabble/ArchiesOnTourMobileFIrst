@@ -249,15 +249,18 @@ header.site-header {
 .menu-card__header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--space-3);
   margin-bottom: var(--space-2);
+  flex-wrap: wrap;
 }
 
 .menu-card__title {
   margin: 0;
   font-size: var(--font-size-lg);
   font-weight: 700;
+  flex: 1;
+  min-width: 200px;
 }
 
 .menu-card__description {
@@ -279,6 +282,28 @@ header.site-header {
   background: rgba(255, 113, 91, 0.12);
   color: #c7513f;
   font-weight: 600;
+  white-space: nowrap;
+}
+
+.menu-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 6px 10px;
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.menu-pill--muted {
+  background: rgba(0, 0, 0, 0.04);
+  color: #4a5568;
+}
+
+.menu-pill--highlight {
+  background: rgba(255, 196, 0, 0.18);
+  color: #9c5900;
+  box-shadow: 0 0 0 1px rgba(255, 196, 0, 0.35);
 }
 
 .tag {
