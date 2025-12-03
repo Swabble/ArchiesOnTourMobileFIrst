@@ -42,7 +42,6 @@
 
   --parallax-offset: 0px;
   --parallax-offset-strong: 0px;
-  --parallax-foreground-opacity: 0;
 }
 
 *, *::before, *::after {
