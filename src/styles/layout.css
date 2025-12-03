@@ -1,6 +1,8 @@
 :root {
   --parallax-svg-offset: 0px;
   --parallax-photo-offset: 0px;
+  --svg-opacity: 1;
+  --burger-opacity: 0;
 }
 
 .container {
@@ -16,18 +18,31 @@ main {
   isolation: isolate;
 }
 
+/* SVG Background - startet oben, scrollt nach oben weg */
 main::before {
   content: '';
   position: fixed;
   inset: 0;
-  background:
-    url('/assets/your-background.svg') center calc(50% - var(--parallax-svg-offset)) / cover no-repeat fixed,
-    url('/assets/AdobeStock_94926894.jpeg') center calc(50% + 50vh - var(--parallax-photo-offset)) / cover no-repeat fixed,
-    var(--color-background);
-  z-index: -2;
-  will-change: background-position;
+  background: url('/assets/your-background.svg') center / cover no-repeat;
+  transform: translateY(calc(-1 * var(--parallax-svg-offset)));
+  opacity: var(--svg-opacity, 1);
+  z-index: -3;
+  will-change: transform, opacity;
 }
 
+/* Burger Background - startet unten, wird beim Scrollen sichtbar */
+.background-burger {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: url('/assets/AdobeStock_94926894.jpeg') center / cover no-repeat;
+  transform: translateY(calc(100vh - var(--parallax-photo-offset)));
+  opacity: var(--burger-opacity, 0);
+  z-index: -2;
+  will-change: transform, opacity;
+}
+
+/* Overlay für beide Hintergründe */
 main::after {
   content: '';
   position: fixed;
