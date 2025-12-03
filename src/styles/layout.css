@@ -4,6 +4,11 @@
   padding: 0 var(--space-4);
 }
 
+body {
+  position: relative;
+  background: var(--color-background);
+}
+
 main {
   position: relative;
   padding-top: 75vh;
@@ -11,31 +16,43 @@ main {
   isolation: isolate;
 }
 
-main::before {
+main::before,
+main::after,
+body::after {
   content: '';
   position: fixed;
   inset: 0;
+  pointer-events: none;
+}
+
+main::before {
+  z-index: -3;
   background-color: var(--color-background);
-  background-image: url('/assets/your-background.svg'), url('/assets/Burger.jpeg');
-  background-repeat: no-repeat, no-repeat;
-  background-size: cover, min(1600px, 130vw);
-  background-position:
-    center calc(50% + 22vh + var(--parallax-offset)),
-    center calc(65% + var(--parallax-offset-strong));
-  background-attachment: fixed, fixed;
+  background-image: url('/assets/your-background.svg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center calc(50% + 22vh + var(--parallax-offset));
+  background-attachment: fixed;
   filter: saturate(1.05);
+}
+
+body::after {
   z-index: -2;
+  background-image: url('/assets/Unbetitelt.svg');
+  background-repeat: no-repeat;
+  background-size: min(1600px, 130vw);
+  background-position: center calc(65% + var(--parallax-offset-strong));
+  background-attachment: fixed;
+  opacity: var(--parallax-foreground-opacity);
+  transition: opacity 220ms ease-out;
+  filter: saturate(1.05);
 }
 
 main::after {
-  content: '';
-  position: fixed;
-  inset: 0;
+  z-index: -1;
   background: linear-gradient(145deg, rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0.4)),
     radial-gradient(circle at 20% 18%, rgba(255, 113, 91, 0.22), transparent 42%),
     radial-gradient(circle at 80% 10%, rgba(61, 214, 160, 0.18), transparent 38%);
-  z-index: -1;
-  pointer-events: none;
 }
 
 .section {
