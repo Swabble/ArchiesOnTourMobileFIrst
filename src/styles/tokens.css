@@ -45,6 +45,11 @@
   box-sizing: border-box;
 }
 
+html {
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
 html,
 body {
   margin: 0;
@@ -52,11 +57,11 @@ body {
   font-family: var(--font-family-sans);
   background: #0b0d11;
   color: var(--color-text);
-  scroll-behavior: smooth;
-  touch-action: pan-x pan-y;
+  touch-action: pan-y;
   min-height: 100%;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 a {

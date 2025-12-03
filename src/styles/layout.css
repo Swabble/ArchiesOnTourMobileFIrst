@@ -28,16 +28,16 @@ main::before {
   bottom: 0;
   width: 100%;
   height: 100vh;
-  background: url('/assets/your-background.svg') center center / cover no-repeat;
+  background: url('/assets/your-background.svg') center top / cover no-repeat;
   background-attachment: scroll;
   transform: translate3d(0, calc(-1 * var(--parallax-svg-offset)), 0);
   -webkit-transform: translate3d(0, calc(-1 * var(--parallax-svg-offset)), 0);
   opacity: var(--svg-opacity, 1);
   z-index: -3;
-  will-change: transform, opacity;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   -webkit-perspective: 1000;
+  pointer-events: none;
 }
 
 /* Burger Background - startet mittig, wird beim Scrollen sichtbar */
@@ -50,16 +50,16 @@ main::before {
   bottom: 0;
   width: 100%;
   height: 100vh;
-  background: url('/assets/AdobeStock_94926894.jpeg') center center / cover no-repeat;
+  background: url('/assets/AdobeStock_94926894.jpeg') center top / cover no-repeat;
   background-attachment: scroll;
   transform: translate3d(0, calc(50vh - var(--parallax-photo-offset)), 0);
   -webkit-transform: translate3d(0, calc(50vh - var(--parallax-photo-offset)), 0);
   opacity: var(--burger-opacity, 0);
   z-index: -2;
-  will-change: transform, opacity;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   -webkit-perspective: 1000;
+  pointer-events: none;
 }
 
 /* Overlay für beide Hintergründe */
