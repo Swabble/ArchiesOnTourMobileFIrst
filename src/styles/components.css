@@ -82,7 +82,7 @@ header.site-header {
   position: relative;
 }
 
-.hero--with-logo::before {
+.hero--with-logo::after {
   content: '';
   position: absolute;
   top: 50%;
