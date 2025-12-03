@@ -1,6 +1,7 @@
 if (typeof window !== 'undefined') {
   const root = document.documentElement;
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const isMobile = window.matchMedia('(max-width: 767px)');
 
   const resetParallaxOffsets = () => {
     root.style.setProperty('--parallax-svg-offset', '0px');
@@ -8,7 +9,8 @@ if (typeof window !== 'undefined') {
   };
 
   const updateParallaxOffsets = () => {
-    if (prefersReducedMotion.matches) {
+    // Disable parallax on mobile devices or when reduced motion is preferred
+    if (prefersReducedMotion.matches || isMobile.matches) {
       resetParallaxOffsets();
       return;
     }
@@ -23,4 +25,5 @@ if (typeof window !== 'undefined') {
   window.addEventListener('scroll', updateParallaxOffsets, { passive: true });
 
   prefersReducedMotion.addEventListener('change', updateParallaxOffsets);
+  isMobile.addEventListener('change', updateParallaxOffsets);
 }
