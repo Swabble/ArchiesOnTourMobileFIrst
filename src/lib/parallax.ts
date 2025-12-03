@@ -13,8 +13,10 @@ if (typeof window !== 'undefined') {
       return;
     }
     const scrollY = window.scrollY || 0;
-    root.style.setProperty('--parallax-svg-offset', `${scrollY * 0.16}px`);
-    root.style.setProperty('--parallax-photo-offset', `${scrollY * 0.1}px`);
+    // SVG scrollt schneller nach oben weg (größerer positiver Offset bedeutet Verschiebung nach oben durch calc Subtraktion)
+    root.style.setProperty('--parallax-svg-offset', `${scrollY * 0.25}px`);
+    // Burger scrollt langsamer nach oben und wird sichtbar
+    root.style.setProperty('--parallax-photo-offset', `${scrollY * 0.08}px`);
   };
 
   updateParallaxOffsets();
