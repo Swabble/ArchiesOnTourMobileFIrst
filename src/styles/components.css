@@ -82,28 +82,6 @@ header.site-header {
   position: relative;
 }
 
-.hero--with-logo::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 30%;
-  height: 30%;
-  background-image: url('/assets/Logo.svg');
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
-  opacity: 0.08;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.hero--with-logo > * {
-  position: relative;
-  z-index: 1;
-}
-
 .hero h1 {
   font-size: var(--font-size-4xl);
   margin: 0 0 var(--space-4);
