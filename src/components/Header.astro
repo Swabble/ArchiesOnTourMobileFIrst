@@ -1,6 +1,6 @@
 <header class="site-header" aria-label="Hauptnavigation">
   <div class="container header__inner">
-    <a class="logo" href="#start" aria-label="Archie on Tour Startseite">
+    <a class="logo" href="/" aria-label="Archie on Tour Startseite">
       <img src="/assets/Logo.svg" alt="Archie Logo" width="36" height="36" />
       <span>Archie on Tour</span>
     </a>
@@ -10,15 +10,15 @@
     <nav>
       <ul id="nav-menu" class="nav__list">
         {[
-          { id: 'start', label: 'Start', href: '#start' },
-          { id: 'angebot', label: 'Angebot', href: '#angebot' },
+          { id: 'start', label: 'Start', href: '/' },
+          { id: 'angebot', label: 'Angebot', href: '/#angebot' },
           { id: 'menu', label: 'Menü', href: '/menu' },
-          { id: 'referenzen', label: 'Referenzen', href: '#referenzen' },
-          { id: 'galerie', label: 'Galerie', href: '#galerie' },
-          { id: 'ablauf', label: 'Ablauf', href: '#ablauf' },
-          { id: 'verfuegbarkeit', label: 'Verfügbarkeit', href: '#verfuegbarkeit' },
-          { id: 'anfrage', label: 'Anfrage', href: '#anfrage' },
-          { id: 'ueber-uns', label: 'Über uns', href: '#ueber-uns' }
+          { id: 'referenzen', label: 'Referenzen', href: '/#referenzen' },
+          { id: 'galerie', label: 'Galerie', href: '/#galerie' },
+          { id: 'ablauf', label: 'Ablauf', href: '/#ablauf' },
+          { id: 'verfuegbarkeit', label: 'Verfügbarkeit', href: '/#verfuegbarkeit' },
+          { id: 'anfrage', label: 'Anfrage', href: '/#anfrage' },
+          { id: 'ueber-uns', label: 'Über uns', href: '/#ueber-uns' }
         ].map((item) => (
           <li><a class="nav__link" href={item.href}>{item.label}</a></li>
         ))}
