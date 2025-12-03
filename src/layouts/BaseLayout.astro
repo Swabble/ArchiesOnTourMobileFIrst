@@ -3,13 +3,9 @@ import '../styles/tokens.css';
 import '../styles/layout.css';
 import '../styles/components.css';
 import '../styles/utilities.css';
-<<<<<<< HEAD
-import '../lib/scrollReveal.ts';
-import '../lib/zoomGuard.ts';
-=======
 import scrollRevealScript from '../lib/scrollReveal.ts?url';
 import zoomGuardScript from '../lib/zoomGuard.ts?url';
->>>>>>> adfee83984f2292a9755322f0eacb69d02ac1f25
+import parallaxScript from '../lib/parallax.ts?url';
 
 const { title = 'Archie on Tour – Foodtruck Catering', description = 'Foodtruck Catering für Firmen-Events, Festivals und private Feiern.' } = Astro.props;
 ---
@@ -31,5 +27,8 @@ const { title = 'Archie on Tour – Foodtruck Catering', description = 'Foodtruc
   </head>
   <body>
     <slot />
+    <script type="module" src={scrollRevealScript}></script>
+    <script type="module" src={zoomGuardScript}></script>
+    <script type="module" src={parallaxScript}></script>
   </body>
 </html>
