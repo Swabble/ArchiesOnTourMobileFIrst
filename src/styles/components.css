@@ -244,6 +244,7 @@ header.site-header {
   border: 1px solid rgba(0, 0, 0, 0.04);
   display: grid;
   gap: var(--space-3);
+  align-content: start;
   color: #0f1115;
 }
 
