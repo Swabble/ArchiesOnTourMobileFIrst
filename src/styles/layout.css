@@ -4,27 +4,43 @@
   padding: 0 var(--space-4);
 }
 
+body {
+  position: relative;
+  background: var(--color-background);
+}
+
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+  pointer-events: none;
+  filter: saturate(1.05);
+}
+
+body::before {
+  z-index: -3;
+  background-image: url('/assets/your-background.svg');
+  background-position: center calc(50% + 22vh + var(--parallax-offset));
+}
+
+body::after {
+  z-index: -2;
+  background-image: url('/assets/Unbetitelt.svg');
+  background-size: min(1600px, 130vw);
+  background-position: center calc(65% + var(--parallax-offset-strong));
+  opacity: var(--parallax-foreground-opacity);
+  transition: opacity 220ms ease-out;
+}
+
 main {
   position: relative;
   padding-top: 75vh;
   background: var(--color-background);
   isolation: isolate;
-}
-
-main::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-color: var(--color-background);
-  background-image: url('/assets/your-background.svg'), url('/assets/Burger.jpeg');
-  background-repeat: no-repeat, no-repeat;
-  background-size: cover, min(1600px, 130vw);
-  background-position:
-    center calc(50% + 22vh + var(--parallax-offset)),
-    center calc(65% + var(--parallax-offset-strong));
-  background-attachment: fixed, fixed;
-  filter: saturate(1.05);
-  z-index: -2;
 }
 
 main::after {
