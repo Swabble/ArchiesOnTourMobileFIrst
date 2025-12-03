@@ -1,3 +1,8 @@
+:root {
+  --parallax-svg-offset: 0px;
+  --parallax-photo-offset: 0px;
+}
+
 .container {
   width: min(1100px, 100%);
   margin: 0 auto;
@@ -15,9 +20,13 @@ main::before {
   content: '';
   position: fixed;
   inset: 0;
-  background: var(--color-background) url('/assets/your-background.svg') center calc(50% + 25vh) / cover no-repeat fixed;
+  background:
+    url('/assets/your-background.svg') center calc(50% + 25vh + var(--parallax-svg-offset)) / cover no-repeat fixed,
+    url('/assets/AdobeStock_94926894.jpeg') center calc(50% + var(--parallax-photo-offset)) / cover no-repeat fixed,
+    var(--color-background);
   filter: saturate(1.05);
   z-index: -2;
+  will-change: background-position;
 }
 
 main::after {
