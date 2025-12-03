@@ -50,9 +50,9 @@ body::after {
 
 main::after {
   z-index: -1;
-  background: linear-gradient(150deg, rgba(10, 10, 12, 0.8), rgba(24, 24, 30, 0.45)),
-    radial-gradient(circle at 18% 16%, rgba(68, 68, 78, 0.24), transparent 44%),
-    radial-gradient(circle at 78% 12%, rgba(50, 50, 62, 0.2), transparent 40%);
+  background: linear-gradient(145deg, rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0.4)),
+    radial-gradient(circle at 20% 18%, rgba(255, 113, 91, 0.22), transparent 42%),
+    radial-gradient(circle at 80% 10%, rgba(61, 214, 160, 0.18), transparent 38%);
 }
 
 .section {
