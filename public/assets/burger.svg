@@ -1,0 +1,21 @@
+<svg width="500" height="500" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Illustration eines Burgers</title>
+  <desc id="desc">Stilisiertes Burger-Icon mit Brötchen, Salat, Käse und Patty in warmen Farben.</desc>
+  <rect width="500" height="500" rx="120" fill="#0F1115" />
+  <ellipse cx="250" cy="365" rx="160" ry="24" fill="#D18C3F" opacity="0.35" />
+  <rect x="110" y="160" width="280" height="60" rx="30" fill="#F4C67E" stroke="#E0A852" stroke-width="6" />
+  <path d="M114 195C156 210 196 218 250 218C304 218 344 210 386 195" stroke="#EFA34C" stroke-width="10" stroke-linecap="round" />
+  <path d="M130 240C150 230 175 225 205 225H295C325 225 350 230 370 240C395 252 395 282 370 294C350 304 325 309 295 309H205C175 309 150 304 130 294C105 282 105 252 130 240Z" fill="#6B3A25" stroke="#512518" stroke-width="6" />
+  <path d="M140 246C160 238 188 234 215 234H285C312 234 340 238 360 246C370 250 370 262 360 266C340 274 312 278 285 278H215C188 278 160 274 140 266C130 262 130 250 140 246Z" fill="#A34A2A" />
+  <rect x="140" y="214" width="220" height="22" rx="11" fill="#F6D447" />
+  <path d="M122 262C144 252 174 245 210 245H290C326 245 356 252 378 262C399 272 399 288 378 298C356 308 326 315 290 315H210C174 315 144 308 122 298C101 288 101 272 122 262Z" fill="#3DAA6E" stroke="#2F8A58" stroke-width="6" />
+  <rect x="110" y="300" width="280" height="70" rx="30" fill="#F0B45E" stroke="#D38A32" stroke-width="6" />
+  <circle cx="168" cy="182" r="6" fill="#FFF5DA" />
+  <circle cx="198" cy="176" r="6" fill="#FFF5DA" />
+  <circle cx="228" cy="186" r="6" fill="#FFF5DA" />
+  <circle cx="258" cy="174" r="6" fill="#FFF5DA" />
+  <circle cx="288" cy="184" r="6" fill="#FFF5DA" />
+  <circle cx="318" cy="178" r="6" fill="#FFF5DA" />
+  <circle cx="348" cy="188" r="6" fill="#FFF5DA" />
+  <path d="M145 333C165 343 190 349 220 349H280C310 349 335 343 355 333" stroke="#D38A32" stroke-width="10" stroke-linecap="round" />
+</svg>
