@@ -15,7 +15,14 @@ main::before {
   content: '';
   position: fixed;
   inset: 0;
-  background: var(--color-background) url('/assets/your-background.svg') center calc(50% + 25vh) / cover no-repeat fixed;
+  background-color: var(--color-background);
+  background-image: url('/assets/your-background.svg'), url('/assets/Burger.jpeg');
+  background-repeat: no-repeat, no-repeat;
+  background-size: cover, min(1600px, 130vw);
+  background-position:
+    center calc(50% + 22vh + var(--parallax-offset)),
+    center calc(65% + var(--parallax-offset-strong));
+  background-attachment: fixed, fixed;
   filter: saturate(1.05);
   z-index: -2;
 }
