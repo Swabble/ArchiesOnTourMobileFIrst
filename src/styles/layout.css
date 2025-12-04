@@ -191,8 +191,8 @@ main::after {
     z-index: 1;
   }
 
-  /* Reduce margin for first section after parallax */
+  /* Consistent margin for first section after parallax */
   .mobile-parallax + .section {
-    margin-top: var(--space-4);
+    margin-top: var(--space-7);
   }
 }
