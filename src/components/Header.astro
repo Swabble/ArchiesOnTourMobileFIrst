@@ -7,6 +7,7 @@
     <button class="nav__toggle" aria-expanded="false" aria-controls="nav-menu" aria-label="Navigation umschalten">
       ☰
     </button>
+    <div class="nav__overlay"></div>
     <nav>
       <ul id="nav-menu" class="nav__list">
         {[
@@ -29,8 +30,35 @@
 <script>
   const toggle = document.querySelector('.nav__toggle');
   const list = document.querySelector('.nav__list');
+  const overlay = document.querySelector('.nav__overlay');
+  const links = document.querySelectorAll('.nav__link');
+
+  const closeMenu = () => {
+    list?.classList.remove('open');
+    overlay?.classList.remove('active');
+    toggle?.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  };
+
+  const openMenu = () => {
+    list?.classList.add('open');
+    overlay?.classList.add('active');
+    toggle?.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+  };
+
   toggle?.addEventListener('click', () => {
-    const isOpen = list?.classList.toggle('open');
-    toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    const isOpen = list?.classList.contains('open');
+    if (isOpen) {
+      closeMenu();
+    } else {
+      openMenu();
+    }
+  });
+
+  overlay?.addEventListener('click', closeMenu);
+
+  links.forEach(link => {
+    link.addEventListener('click', closeMenu);
   });
 </script>
