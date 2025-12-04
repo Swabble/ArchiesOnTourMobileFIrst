@@ -3,8 +3,17 @@ header.site-header {
   top: 0;
   z-index: 10;
   backdrop-filter: blur(10px);
-  background: rgba(0, 0, 0, 0.7);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(26, 26, 24, 0.95);
+}
+
+header.site-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: var(--space-4);
+  right: var(--space-4);
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .header__inner {
@@ -26,8 +35,7 @@ header.site-header {
 
 .nav__toggle {
   background: transparent;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: var(--radius-md);
+  border: none;
   padding: var(--space-3) var(--space-4);
   color: var(--color-corporate-white);
   font-size: var(--font-size-xl);
@@ -37,9 +45,20 @@ header.site-header {
   position: relative;
 }
 
+@media (max-width: 767px) {
+  .nav__toggle {
+    margin-right: calc(-1 * var(--space-4));
+  }
+
+  /* Remove nav from flex flow on mobile */
+  header.site-header nav {
+    position: absolute;
+    right: 0;
+  }
+}
+
 .nav__toggle:hover {
   background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.5);
 }
 
 .nav__overlay {
@@ -147,9 +166,9 @@ header.site-header {
 .hero--with-logo::after {
   content: '';
   position: absolute;
-  top: 50%;
+  top: 15%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, 0);
   width: 30%;
   height: 30%;
   background-image: url('/assets/Logo.svg');
@@ -686,8 +705,12 @@ header.site-header {
 }
 
 @media (max-width: 768px) {
+  /* Mobile arrows now visible */
   .carousel-nav {
-    display: none;
+    width: 36px;
+    height: 36px;
+    padding: var(--space-2);
+    font-size: var(--font-size-lg);
   }
 
   /* Fix mobile image scaling - use width-based sizing instead of height */
@@ -705,23 +728,8 @@ header.site-header {
 
   .carousel-dots {
     padding-inline: var(--space-4);
-    max-width: min(320px, 100%);
     margin-inline: auto;
-    overflow: hidden;
-    position: relative;
-    -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.85) 12%, rgba(0, 0, 0, 0.85) 88%, transparent 100%);
-    mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.85) 12%, rgba(0, 0, 0, 0.85) 88%, transparent 100%);
-  }
-
-  .carousel-dots::after {
-    content: "…";
-    position: absolute;
-    right: var(--space-1);
-    top: 50%;
-    transform: translateY(-50%);
-    color: rgba(255, 255, 255, 0.7);
-    font-size: var(--font-size-sm);
-    pointer-events: none;
+    /* Masking removed - windowed dots already limit visible count */
   }
 
   .carousel-dot {
@@ -935,7 +943,7 @@ header.site-header {
 
 .footer {
   position: relative;
-  background: rgba(0, 0, 0, 0.85);
+  background: rgba(26, 26, 24, 0.95);
   color: var(--color-corporate-white);
   padding: var(--space-6) var(--space-4);
   margin-top: var(--space-8);

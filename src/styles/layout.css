@@ -89,6 +89,13 @@ main::after {
   z-index: -1;
 }
 
+@media (max-width: 767px) {
+  .section::before {
+    left: var(--space-2);
+    right: var(--space-2);
+  }
+}
+
 .grid {
   display: grid;
   gap: var(--space-4);
@@ -136,7 +143,7 @@ main::after {
     display: block;
     position: relative;
     width: 100%;
-    height: 200vh;
+    height: 100vh;
     overflow: hidden;
   }
 
@@ -158,6 +165,13 @@ main::after {
     object-fit: contain;
   }
 
+  .mobile-parallax__layer--burger img {
+    object-fit: cover;
+    height: 120vh;
+    width: 100vw;
+    object-position: center;
+  }
+
   .mobile-parallax__layer--svg {
     z-index: -9;
     opacity: 1;
@@ -174,5 +188,10 @@ main::after {
   .section {
     position: relative;
     z-index: 1;
+  }
+
+  /* Reduce margin for first section after parallax */
+  .mobile-parallax + .section {
+    margin-top: var(--space-4);
   }
 }

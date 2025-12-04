@@ -21,15 +21,54 @@ function setBodyScroll(disable: boolean) {
   document.body.classList.toggle('no-scroll', disable);
 }
 
+function getVisibleDotRange(currentIndex: number, totalImages: number): { start: number; end: number } {
+  const windowSize = 5;
+
+  if (totalImages <= windowSize) {
+    return { start: 0, end: totalImages - 1 };
+  }
+
+  // First 3 images: show first 5 dots
+  if (currentIndex < 3) {
+    return { start: 0, end: windowSize - 1 };
+  }
+
+  // Last 3 images: show last 5 dots
+  if (currentIndex >= totalImages - 3) {
+    return { start: totalImages - windowSize, end: totalImages - 1 };
+  }
+
+  // Middle images: show windowed dots (current in center)
+  return { start: currentIndex - 2, end: currentIndex + 2 };
+}
+
+function renderWindowedDots() {
+  if (!dots) return;
+  const total = state.images.length;
+  const range = getVisibleDotRange(state.currentIndex, total);
+
+  dots.innerHTML = '';
+
+  for (let i = range.start; i <= range.end; i++) {
+    const dot = document.createElement('button');
+    dot.className = 'carousel-dot';
+    dot.dataset.realIndex = String(i);
+    dot.classList.toggle('active', i === state.currentIndex);
+    dot.setAttribute('aria-label', `Bild ${i + 1} von ${total}`);
+    dot.addEventListener('click', () => setActiveIndex(i));
+    dots.appendChild(dot);
+  }
+}
+
 function highlightActive(index: number) {
   if (!track || !dots) return;
   const items = Array.from(track.querySelectorAll('.carousel-item')) as HTMLElement[];
   items.forEach((item, itemIndex) => {
     item.classList.toggle('center', itemIndex === index);
   });
-  Array.from(dots.children).forEach((dot, dotIndex) => {
-    dot.classList.toggle('active', dotIndex === index);
-  });
+
+  // Update windowed dots
+  renderWindowedDots();
 }
 
 function scrollToItem(index: number, smooth = true) {
@@ -59,16 +98,13 @@ function renderCarousel() {
     item.dataset.index = String(index);
     const loading = index < EAGER_THUMBNAIL_COUNT ? 'eager' : 'lazy';
     item.innerHTML = `<img src="${img.thumbnail}" alt="${img.alt}" loading="${loading}" />`;
-    item.addEventListener('click', () => openLightbox(index));
+    // Lightbox disabled - click does nothing
+    // item.addEventListener('click', () => openLightbox(index));
     track.appendChild(item);
-
-    const dot = document.createElement('button');
-    dot.className = 'carousel-dot';
-    dot.setAttribute('aria-label', `Bild ${index + 1} von ${state.images.length}`);
-    dot.addEventListener('click', () => setActiveIndex(index));
-    dots.appendChild(dot);
   });
 
+  // Render windowed dots initially
+  renderWindowedDots();
   highlightActive(state.currentIndex);
   scrollToItem(state.currentIndex, false);
 }
