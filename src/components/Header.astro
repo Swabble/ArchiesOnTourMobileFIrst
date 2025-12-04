@@ -37,14 +37,14 @@
     list?.classList.remove('open');
     overlay?.classList.remove('active');
     toggle?.setAttribute('aria-expanded', 'false');
-    document.body.style.overflow = '';
+    document.body.classList.remove('menu-open');
   };
 
   const openMenu = () => {
     list?.classList.add('open');
     overlay?.classList.add('active');
     toggle?.setAttribute('aria-expanded', 'true');
-    document.body.style.overflow = 'hidden';
+    document.body.classList.add('menu-open');
   };
 
   toggle?.addEventListener('click', () => {
