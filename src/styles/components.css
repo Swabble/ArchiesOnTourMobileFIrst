@@ -126,7 +126,7 @@ header.site-header {
     text-align: center;
   }
   .nav__link:hover {
-    background: rgba(255, 255, 255, 0.12);
+    background: transparent;
     transform: none;
   }
 }
