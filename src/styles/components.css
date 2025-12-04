@@ -119,6 +119,14 @@ header.site-header::after {
 .nav__list.open li:nth-child(8) { transition-delay: 0.4s; }
 .nav__list.open li:nth-child(9) { transition-delay: 0.45s; }
 
+.nav__list li:not(:last-child)::after {
+  content: '';
+  display: block;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: var(--space-2) var(--space-4);
+}
+
 .nav__link {
   color: var(--color-corporate-white);
   padding: var(--space-3) var(--space-4);
@@ -163,6 +171,18 @@ header.site-header::after {
   .nav__list li {
     opacity: 1;
     transform: none;
+    position: relative;
+  }
+  .nav__list li:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: calc(-1 * var(--space-1));
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1px;
+    height: 16px;
+    background: rgba(255, 255, 255, 0.08);
+    margin: 0;
   }
   .nav__link {
     padding: var(--space-2) var(--space-3);
