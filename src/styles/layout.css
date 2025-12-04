@@ -89,6 +89,13 @@ main::after {
   z-index: -1;
 }
 
+@media (max-width: 767px) {
+  .section::before {
+    left: var(--space-2);
+    right: var(--space-2);
+  }
+}
+
 .grid {
   display: grid;
   gap: var(--space-4);
@@ -158,11 +165,17 @@ main::after {
     object-fit: contain;
   }
 
+  .mobile-parallax__layer--burger {
+    overflow: hidden;
+  }
+
   .mobile-parallax__layer--burger img {
     object-fit: cover;
     height: 120vh;
-    width: 150vw;
-    margin-left: -25vw;
+    width: 200%;
+    position: relative;
+    left: 50%;
+    margin-left: -100%;
     object-position: center;
   }
 

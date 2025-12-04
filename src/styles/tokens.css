@@ -59,6 +59,7 @@ body {
   scroll-behavior: smooth;
   touch-action: pan-x pan-y;
   min-height: 100%;
+  overflow-x: hidden;
 }
 
 a {
