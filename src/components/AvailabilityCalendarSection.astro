@@ -244,8 +244,12 @@
     transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease, background 160ms ease;
     min-height: 4.1rem;
     padding: var(--space-1);
-    display: grid;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     gap: 6px;
+    text-align: center;
   }
 
   #verfuegbarkeit .calendar__day--active {
@@ -265,6 +269,7 @@
     display: grid;
     gap: 4px;
     margin-top: var(--space-1);
+    justify-items: center;
   }
 
   #verfuegbarkeit .calendar__badge {
