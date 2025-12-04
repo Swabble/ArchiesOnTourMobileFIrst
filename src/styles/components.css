@@ -805,12 +805,6 @@ header.site-header {
   background: #fff;
 }
 
-.form__field input[type="date"] {
-  max-width: 100%;
-  min-width: 0;
-  box-sizing: border-box;
-}
-
 .form__field .error {
   color: #c7513f;
   font-size: var(--font-size-sm);
