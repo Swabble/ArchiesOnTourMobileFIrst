@@ -49,19 +49,22 @@ main::after {
 /* Mobile optimizations: Disable parallax and use absolute positioning */
 @media (max-width: 767px) {
   main::before,
-  main::after,
-  body::after {
+  main::after {
     position: absolute;
-    background:
-      url('/assets/your-background.svg') center 50% / cover no-repeat,
-      url('/assets/AdobeStock_94926894.jpeg') center calc(50% + 50vh) / cover no-repeat,
-      var(--color-background);
+    background: none;
     will-change: auto;
     transform: translateZ(0);
   }
 
-  main::after {
+  body::after {
     position: absolute;
+    background:
+      url('/assets/your-background.svg') center 15% / contain no-repeat,
+      url('/assets/AdobeStock_94926894.jpeg') center 70% / contain no-repeat,
+      var(--color-background);
+    background-repeat: no-repeat;
+    will-change: auto;
+    transform: translateZ(0);
   }
 }
 
