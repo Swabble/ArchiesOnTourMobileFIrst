@@ -6,11 +6,13 @@ body.menu-open {
 }
 
 header.site-header {
+  position: -webkit-sticky;
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 100;
   backdrop-filter: blur(10px);
   background: transparent;
+  will-change: transform;
 }
 
 header.site-header::after {
