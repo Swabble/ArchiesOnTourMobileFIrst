@@ -45,18 +45,22 @@ function renderGrid(
     const key = formatDateKey(date);
     const matches = events.filter((evt) => formatDateKey(new Date(evt.start)) === key);
     cell.dataset.dateKey = key;
-    cell.innerHTML = `<div class="calendar__day-number">${day}</div>`;
+    cell.innerHTML = `
+      <div class="calendar__day-number">${day}</div>
+      <div class="calendar__chips"></div>
+    `;
+    const chipContainer = cell.querySelector('.calendar__chips');
     matches.slice(0, 3).forEach((evt) => {
       const badge = document.createElement('div');
-      badge.className = 'price-pill';
+      badge.className = 'calendar__badge';
       badge.textContent = evt.title;
-      cell.appendChild(badge);
+      chipContainer?.appendChild(badge);
     });
     if (matches.length > 3) {
       const more = document.createElement('div');
       more.className = 'calendar__badge calendar__badge--muted';
       more.textContent = `+${matches.length - 3}`;
-      cell.appendChild(more);
+      chipContainer?.appendChild(more);
     }
     cell.addEventListener('mouseenter', () => onDayHover(matches.length ? key : undefined));
     cell.addEventListener('mouseleave', () => onDayHover(undefined));
@@ -77,11 +81,28 @@ function renderList(events: any[], list: HTMLElement, onEventHover: (dateKey?: s
 
     const start = new Date(evt.start);
     const end = new Date(evt.end);
+    const weekdayLabel = start.toLocaleDateString('de-DE', { weekday: 'short' });
+    const dayNumber = start.toLocaleDateString('de-DE', { day: '2-digit' });
+    const monthLabel = start.toLocaleDateString('de-DE', { month: 'short' });
+    const timeRange = `${start.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })} – ${end.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}`;
+
     item.innerHTML = `
-      <p class="price-pill">${start.toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: 'long' })}</p>
-      <h4>${evt.title}</h4>
-      <p>${start.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })} – ${end.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}</p>
-      <p>${evt.location ?? ''}</p>
+      <div class="event-date">
+        <span class="weekday">${weekdayLabel}</span>
+        <span class="day-number">${dayNumber}</span>
+        <span class="month">${monthLabel}</span>
+      </div>
+      <div class="event-content">
+        <div class="event-header">
+          <h4 class="event-title">${evt.title}</h4>
+          <span class="pill-muted">Kalender</span>
+        </div>
+        <div class="event-meta">
+          <span class="meta-chip">🕑 ${timeRange}</span>
+          ${evt.location ? `<span class="meta-chip">📍 ${evt.location}</span>` : ''}
+        </div>
+        <p class="event-description">Synchronisiert mit Google Calendar – immer aktuell.</p>
+      </div>
     `;
 
     // Add hover listeners to events
