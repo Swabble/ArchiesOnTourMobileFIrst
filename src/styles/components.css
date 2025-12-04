@@ -124,10 +124,9 @@ header.site-header {
     padding: var(--space-2) var(--space-3);
     font-size: var(--font-size-base);
     text-align: center;
-    background: transparent;
   }
   .nav__link:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.12);
     transform: none;
   }
 }
