@@ -1,6 +1,7 @@
 :root {
   --parallax-svg-offset: 0px;
   --parallax-photo-offset: 0px;
+  --main-offset: 50vh;
 }
 
 .container {
@@ -16,7 +17,7 @@ body {
 
 main {
   position: relative;
-  padding-top: 75vh;
+  padding-top: var(--main-offset);
   background: var(--color-background);
   isolation: isolate;
 }
