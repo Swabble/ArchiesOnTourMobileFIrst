@@ -776,8 +776,12 @@ header.site-header {
 
 @media (min-width: 768px) {
   .form__grid {
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
   }
+}
+
+.form__grid > .form__field {
+  min-width: 0;
 }
 
 .form__field label {
