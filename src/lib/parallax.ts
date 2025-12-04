@@ -9,19 +9,26 @@ if (typeof window !== 'undefined') {
   };
 
   const updateParallaxOffsets = () => {
-    // Disable parallax when reduced motion is preferred or on mobile
-    if (prefersReducedMotion.matches || isMobile.matches) {
+    // Disable parallax when reduced motion is preferred
+    if (prefersReducedMotion.matches) {
       resetParallaxOffsets();
       return;
     }
 
     const scrollY = window.scrollY || 0;
 
-    // Full parallax effect for desktop only
-    // SVG scrollt schneller nach oben weg (größerer positiver Offset bedeutet Verschiebung nach oben durch calc Subtraktion)
-    root.style.setProperty('--parallax-svg-offset', `${scrollY * 0.25}px`);
-    // Burger scrollt langsamer nach oben und wird sichtbar
-    root.style.setProperty('--parallax-photo-offset', `${scrollY * 0.08}px`);
+    // Use reduced parallax values on mobile for better performance
+    if (isMobile.matches) {
+      // Reduced parallax effect for mobile (50% of desktop values)
+      root.style.setProperty('--parallax-svg-offset', `${scrollY * 0.125}px`);
+      root.style.setProperty('--parallax-photo-offset', `${scrollY * 0.04}px`);
+    } else {
+      // Full parallax effect for desktop
+      // SVG scrollt schneller nach oben weg (größerer positiver Offset bedeutet Verschiebung nach oben durch calc Subtraktion)
+      root.style.setProperty('--parallax-svg-offset', `${scrollY * 0.25}px`);
+      // Burger scrollt langsamer nach oben und wird sichtbar
+      root.style.setProperty('--parallax-photo-offset', `${scrollY * 0.08}px`);
+    }
   };
 
   updateParallaxOffsets();

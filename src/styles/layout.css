@@ -53,8 +53,8 @@ main::after {
   body::after {
     position: absolute;
     background:
-      url('/assets/your-background.svg') center top / 100% auto no-repeat,
-      url('/assets/AdobeStock_94926894.jpeg') center calc(50% + 50vh) / 100% auto no-repeat,
+      url('/assets/your-background.svg') center 50% / cover no-repeat,
+      url('/assets/AdobeStock_94926894.jpeg') center calc(50% + 50vh) / cover no-repeat,
       var(--color-background);
     will-change: auto;
     transform: translateZ(0);
