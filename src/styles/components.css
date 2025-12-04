@@ -103,6 +103,10 @@ header.site-header {
   .nav__toggle {
     display: none;
   }
+  header.site-header {
+    background: transparent;
+    border-bottom: none;
+  }
   .nav__overlay {
     display: none;
   }
