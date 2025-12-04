@@ -73,10 +73,14 @@ function render(items: MenuItem[], keepErrorVisible = false) {
     categoryEntries.forEach(([categoryName, categoryItems]) => {
       const categorySection = document.createElement('section');
       categorySection.className = 'menu-category-section';
+
+      // Show category header only if there are multiple categories or if it differs from the card title
+      const shouldShowCategoryHeader = categoryEntries.length > 1 || categoryName !== group.title;
+
       categorySection.innerHTML = `
-        <header class="menu-category-section__header">
+        ${shouldShowCategoryHeader ? `<header class="menu-category-section__header">
           <h3>${categoryName}</h3>
-        </header>
+        </header>` : ''}
         <div class="menu-grid"></div>
       `;
 
