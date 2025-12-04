@@ -17,6 +17,10 @@
           </div>
           <button id="calendar-next" class="btn btn-secondary" aria-label="Nächster Monat">❯</button>
         </div>
+        <div class="calendar-legend">
+          <span class="legend-dot legend-dot--primary"></span>
+          <span>Bestätigte Termine</span>
+        </div>
       </header>
       <div id="calendar-status" class="price-pill calendar-status" aria-live="polite">Kalender wird geladen …</div>
       <div class="calendar-layout">
@@ -87,7 +91,7 @@
 
   #verfuegbarkeit .calendar-nav {
     display: flex;
-    gap: var(--space-2);
+    gap: var(--space-3);
     align-items: center;
   }
 
@@ -119,6 +123,30 @@
     font-size: 1.25rem;
     color: #0f1115;
     text-transform: capitalize;
+  }
+
+  #verfuegbarkeit .calendar-status {
+    margin: 0 var(--space-1) var(--space-2);
+  }
+
+  #verfuegbarkeit .calendar-legend {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: var(--font-size-sm);
+    color: var(--color-muted);
+  }
+
+  #verfuegbarkeit .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    display: inline-block;
+  }
+
+  #verfuegbarkeit .legend-dot--primary {
+    background: linear-gradient(135deg, #ff715b, #ffb347);
+    box-shadow: 0 0 0 4px rgba(255, 113, 91, 0.18);
   }
 
   #verfuegbarkeit .calendar-status {
@@ -171,6 +199,15 @@
       grid-template-columns: repeat(7, minmax(2.35rem, 1fr));
       gap: 10px;
       min-width: 340px;
+    }
+
+    #verfuegbarkeit .calendar-layout {
+      grid-template-columns: 1fr;
+    }
+
+    #verfuegbarkeit .calendar-toolbar {
+      flex-direction: column;
+      align-items: flex-start;
     }
 
     #verfuegbarkeit .calendar-layout {
