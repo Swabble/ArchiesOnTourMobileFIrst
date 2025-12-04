@@ -1,24 +1,43 @@
 <section id="verfuegbarkeit" class="section">
   <div class="container">
-    <h2>Events</h2>
+    <div class="section-header">
+      <p class="eyebrow">Events &amp; Auftritte</p>
+      <h2>Erlebe Archie live und in Farbe</h2>
+      <p class="subtitle">
+        Übersichtliche Planung mit direkter Anbindung an den Kalender. Tippe oder fahre über ein Datum, um die passenden
+        Termine hervorzuheben.
+      </p>
+    </div>
     <div class="card calendar-card">
       <header class="calendar-toolbar">
         <div class="calendar-nav">
-          <button id="calendar-prev" class="btn btn-secondary" aria-label="Vorheriger Monat">‹</button>
-          <strong id="calendar-month"></strong>
-          <button id="calendar-next" class="btn btn-secondary" aria-label="Nächster Monat">›</button>
+          <button id="calendar-prev" class="btn btn-secondary" aria-label="Vorheriger Monat">❮</button>
+          <div class="calendar-month">
+            <strong id="calendar-month"></strong>
+          </div>
+          <button id="calendar-next" class="btn btn-secondary" aria-label="Nächster Monat">❯</button>
         </div>
       </header>
-      <div id="calendar-status" class="price-pill">Kalender wird geladen …</div>
+      <div id="calendar-status" class="price-pill calendar-status" aria-live="polite">Kalender wird geladen …</div>
       <div class="calendar-layout">
-        <div id="calendar-weekdays" class="calendar__weekdays">
-          {['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'].map((d) => (
-            <div class="calendar__weekday">{d}</div>
-          ))}
+        <div class="calendar-board">
+          <div id="calendar-weekdays" class="calendar__weekdays">
+            {['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'].map((d) => (
+              <div class="calendar__weekday">{d}</div>
+            ))}
+          </div>
+          <div id="calendar-grid" class="grid"></div>
         </div>
-        <div id="calendar-grid" class="grid"></div>
+        <aside class="calendar-panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Nächste Events</p>
+              <h3>Alle Termine im Detail</h3>
+            </div>
+          </div>
+          <div id="calendar-events" class="cards calendar__event-list"></div>
+        </aside>
       </div>
-      <div id="calendar-events" class="cards" style="margin-top: var(--space-4);"></div>
     </div>
   </div>
 </section>
@@ -27,20 +46,43 @@
     color: var(--color-corporate-white);
   }
 
+  #verfuegbarkeit .section-header {
+    display: grid;
+    gap: var(--space-1);
+    margin-bottom: var(--space-4);
+    max-width: 760px;
+  }
+
+  #verfuegbarkeit .subtitle {
+    color: var(--color-muted);
+    margin: 0;
+  }
+
+  #verfuegbarkeit .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: var(--font-size-xs);
+    color: var(--color-muted);
+    margin: 0;
+  }
+
   #verfuegbarkeit .calendar-card {
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.97), rgba(255, 255, 255, 0.92));
+    background: radial-gradient(circle at 30% 20%, rgba(255, 113, 91, 0.08), transparent 45%),
+      radial-gradient(circle at 70% 40%, rgba(74, 200, 255, 0.1), transparent 42%),
+      linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.9));
     border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: var(--shadow-strong);
+    box-shadow: 0 12px 42px rgba(15, 17, 21, 0.12);
+    overflow: hidden;
   }
 
   #verfuegbarkeit .calendar-toolbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: var(--space-3);
+    gap: var(--space-2);
     flex-wrap: wrap;
-    padding: var(--space-2) var(--space-1) var(--space-3);
-    border-bottom: 1px solid rgba(15, 17, 21, 0.08);
+    padding: var(--space-2) var(--space-2) var(--space-3);
+    border-bottom: 1px solid rgba(15, 17, 21, 0.06);
   }
 
   #verfuegbarkeit .calendar-nav {
@@ -49,55 +91,73 @@
     align-items: center;
   }
 
-  #verfuegbarkeit .calendar-hint {
-    margin: 0;
-    font-size: var(--font-size-sm);
-    color: var(--color-muted);
+  #verfuegbarkeit .calendar-month {
+    display: grid;
+    gap: 2px;
   }
 
   #verfuegbarkeit .btn-secondary {
-    background: rgba(15, 17, 21, 0.04);
-    color: var(--color-text);
-    border: 1px solid rgba(15, 17, 21, 0.06);
-    box-shadow: 0 6px 16px rgba(15, 17, 21, 0.08);
+    background: #f2f2f4;
+    color: #0f1115;
+    border: 1px solid rgba(15, 17, 21, 0.14);
+    box-shadow: 0 14px 30px rgba(15, 17, 21, 0.12);
     padding: var(--space-2);
-    border-radius: var(--radius-md);
+    border-radius: 12px;
+    width: 3rem;
+    height: 3rem;
+    font-size: 1.35rem;
+    font-weight: 700;
   }
 
   #verfuegbarkeit .btn-secondary:hover,
   #verfuegbarkeit .btn-secondary:focus-visible {
-    background: rgba(15, 17, 21, 0.08);
-    box-shadow: 0 8px 18px rgba(15, 17, 21, 0.1);
+    background: #e7e8eb;
+    box-shadow: 0 16px 36px rgba(15, 17, 21, 0.18);
   }
 
   #verfuegbarkeit #calendar-month {
-    font-size: var(--font-size-lg);
-    color: var(--color-text);
+    font-size: 1.25rem;
+    color: #0f1115;
+    text-transform: capitalize;
+  }
+
+  #verfuegbarkeit .calendar-status {
+    margin: 0 var(--space-1) var(--space-2);
   }
 
   #verfuegbarkeit .calendar__weekdays {
-    background: rgba(255, 113, 91, 0.06);
+    background: rgba(255, 113, 91, 0.08);
     padding: var(--space-2);
     border-radius: var(--radius-md);
   }
 
   #verfuegbarkeit .calendar-layout {
     width: 100%;
+    display: grid;
+    gap: var(--space-3);
+    grid-template-columns: minmax(340px, 1.05fr) minmax(320px, 0.95fr);
+    align-items: start;
+    padding: 0 var(--space-1) var(--space-3);
+    box-sizing: border-box;
+  }
+
+  #verfuegbarkeit .calendar-board {
+    width: 100%;
     overflow-x: auto;
-    padding-bottom: var(--space-2);
+    padding-bottom: var(--space-1);
   }
 
   #verfuegbarkeit #calendar-weekdays,
   #verfuegbarkeit #calendar-grid {
     display: grid;
-    grid-template-columns: repeat(7, minmax(3rem, 1fr));
-    gap: var(--space-2);
+    grid-template-columns: repeat(7, minmax(2.75rem, 1fr));
+    gap: var(--space-1);
     width: 100%;
-    min-width: 420px;
+    min-width: 360px;
   }
 
   #verfuegbarkeit #calendar-weekdays {
-    margin: var(--space-3) 0;
+    margin: var(--space-3) 0 var(--space-2);
   }
 
   #verfuegbarkeit .calendar__weekday {
@@ -108,9 +168,18 @@
   @media (max-width: 720px) {
     #verfuegbarkeit #calendar-weekdays,
     #verfuegbarkeit #calendar-grid {
-      grid-template-columns: repeat(7, minmax(2.5rem, 1fr));
-      gap: var(--space-1);
-      min-width: 380px;
+      grid-template-columns: repeat(7, minmax(2.35rem, 1fr));
+      gap: 10px;
+      min-width: 340px;
+    }
+
+    #verfuegbarkeit .calendar-layout {
+      grid-template-columns: 1fr;
+    }
+
+    #verfuegbarkeit .calendar-toolbar {
+      flex-direction: column;
+      align-items: flex-start;
     }
 
     #verfuegbarkeit #calendar-weekdays {
@@ -126,25 +195,57 @@
   @media (max-width: 520px) {
     #verfuegbarkeit #calendar-weekdays,
     #verfuegbarkeit #calendar-grid {
-      grid-template-columns: repeat(7, minmax(2.25rem, 1fr));
-      min-width: 340px;
+      grid-template-columns: repeat(7, minmax(2.15rem, 1fr));
+      min-width: 320px;
     }
   }
 
   #verfuegbarkeit .calendar__day {
-    border: 1px solid rgba(15, 17, 21, 0.08);
-    background: var(--color-corporate-white);
-    transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+    border: 1px solid rgba(15, 17, 21, 0.06);
+    background: #fbfbfc;
+    border-radius: 10px;
+    transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease, background 160ms ease;
+    min-height: 4.1rem;
+    padding: var(--space-1);
+    display: grid;
+    gap: 6px;
   }
 
   #verfuegbarkeit .calendar__day--active {
-    border-color: rgba(255, 113, 91, 0.5);
-    box-shadow: 0 12px 28px rgba(255, 113, 91, 0.22);
-    transform: translateY(-4px) scale(1.03);
+    border-color: rgba(255, 113, 91, 0.45);
+    box-shadow: 0 6px 18px rgba(255, 113, 91, 0.15);
+    transform: translateY(-2px);
+    background: linear-gradient(180deg, rgba(255, 113, 91, 0.08), #fffaf7);
   }
 
   #verfuegbarkeit .calendar__day-number {
-    color: var(--color-text);
+    color: #0f1115;
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+
+  #verfuegbarkeit .calendar__chips {
+    display: grid;
+    gap: 4px;
+    margin-top: var(--space-1);
+  }
+
+  #verfuegbarkeit .calendar__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 113, 91, 0.1);
+    color: #0f1115;
+    padding: 4px 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 113, 91, 0.3);
+    font-size: var(--font-size-xs);
+    line-height: 1.1;
+  }
+
+  #verfuegbarkeit .calendar__badge--muted {
+    background: rgba(15, 17, 21, 0.04);
+    border-color: rgba(15, 17, 21, 0.12);
   }
 
   #verfuegbarkeit .calendar__event {
@@ -155,6 +256,106 @@
     border-color: rgba(255, 113, 91, 0.5);
     box-shadow: 0 12px 28px rgba(255, 113, 91, 0.22);
     transform: translateY(-4px) scale(1.03);
+  }
+
+  #verfuegbarkeit .calendar-panel {
+    background: rgba(15, 17, 21, 0.02);
+    border: 1px solid rgba(15, 17, 21, 0.05);
+    border-radius: var(--radius-lg);
+    padding: var(--space-3);
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  #verfuegbarkeit .panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+  }
+
+  #verfuegbarkeit .pill-muted {
+    background: rgba(15, 17, 21, 0.06);
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-size: var(--font-size-xs);
+    color: var(--color-muted);
+  }
+
+  #verfuegbarkeit .calendar__event-list {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  #verfuegbarkeit .calendar__event {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-2);
+    align-items: center;
+    border: 1px solid rgba(15, 17, 21, 0.08);
+  }
+
+  #verfuegbarkeit .event-date {
+    display: grid;
+    gap: 2px;
+    text-align: center;
+    background: linear-gradient(135deg, #ff715b, #ffb347);
+    color: white;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    min-width: 120px;
+  }
+
+  #verfuegbarkeit .event-date .weekday {
+    font-size: var(--font-size-sm);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    opacity: 0.9;
+  }
+
+  #verfuegbarkeit .event-date .day-number {
+    font-size: 1.75rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  #verfuegbarkeit .event-content {
+    display: grid;
+    gap: 6px;
+  }
+
+  #verfuegbarkeit .event-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-1);
+  }
+
+  #verfuegbarkeit .event-title {
+    margin: 0;
+  }
+
+  #verfuegbarkeit .event-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    color: var(--color-muted);
+    font-size: var(--font-size-sm);
+  }
+
+  #verfuegbarkeit .meta-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(15, 17, 21, 0.04);
+  }
+
+  #verfuegbarkeit .event-description {
+    margin: 0;
+    color: var(--color-text);
   }
 </style>
 <script type="module" src="/src/lib/calendar.ts" defer></script>
