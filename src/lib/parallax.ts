@@ -17,22 +17,36 @@ if (typeof window !== 'undefined') {
 
     const scrollY = window.scrollY || 0;
 
-    // Use reduced parallax values on mobile for better performance
+    // Mobile: optimized transform-based parallax for better performance
+    // SVG moves up faster, photo reveals from below more slowly
     if (isMobile.matches) {
-      // Reduced parallax effect for mobile (50% of desktop values)
-      root.style.setProperty('--parallax-svg-offset', `${scrollY * 0.125}px`);
-      root.style.setProperty('--parallax-photo-offset', `${scrollY * 0.04}px`);
+      // SVG scrollt nach oben weg (negativer Wert für nach oben)
+      root.style.setProperty('--parallax-svg-offset', `${-scrollY * 0.3}px`);
+      // Foto bewegt sich langsamer nach oben und wird sichtbar
+      root.style.setProperty('--parallax-photo-offset', `${scrollY * 0.5}px`);
     } else {
-      // Full parallax effect for desktop
-      // SVG scrollt schneller nach oben weg (größerer positiver Offset bedeutet Verschiebung nach oben durch calc Subtraktion)
-      root.style.setProperty('--parallax-svg-offset', `${scrollY * 0.25}px`);
-      // Burger scrollt langsamer nach oben und wird sichtbar
-      root.style.setProperty('--parallax-photo-offset', `${scrollY * 0.08}px`);
+      // Desktop: stronger parallax effect
+      // SVG scrollt schneller nach oben weg (negativer Wert)
+      root.style.setProperty('--parallax-svg-offset', `${-scrollY * 0.4}px`);
+      // Foto bewegt sich langsamer und wird sichtbar
+      root.style.setProperty('--parallax-photo-offset', `${scrollY * 0.6}px`);
+    }
+  };
+
+  // Use requestAnimationFrame for smoother animations
+  let ticking = false;
+  const requestTick = () => {
+    if (!ticking) {
+      window.requestAnimationFrame(() => {
+        updateParallaxOffsets();
+        ticking = false;
+      });
+      ticking = true;
     }
   };
 
   updateParallaxOffsets();
-  window.addEventListener('scroll', updateParallaxOffsets, { passive: true });
+  window.addEventListener('scroll', requestTick, { passive: true });
 
   prefersReducedMotion.addEventListener('change', updateParallaxOffsets);
   isMobile.addEventListener('change', updateParallaxOffsets);

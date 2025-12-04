@@ -12,30 +12,43 @@
 body {
   position: relative;
   background: var(--color-background);
+  overflow-x: hidden;
+}
+
+/* Separate layers for parallax images for better mobile support */
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* SVG Background Layer - scrolls faster (appears to move up) */
+body::before {
+  background: url('/assets/your-background.svg') center top / cover no-repeat;
+  z-index: -3;
+  transform: translate3d(0, var(--parallax-svg-offset), 0);
+  will-change: transform;
+}
+
+/* Photo Background Layer - scrolls slower (reveals from below) */
+body::after {
+  background: url('/assets/AdobeStock_94926894.jpeg') center center / cover no-repeat;
+  z-index: -2;
+  transform: translate3d(0, calc(100vh - var(--parallax-photo-offset)), 0);
+  will-change: transform;
 }
 
 main {
   position: relative;
   padding-top: 75vh;
-  background: var(--color-background);
+  background: transparent;
   isolation: isolate;
 }
 
-main::before,
-main::after,
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background:
-    url('/assets/your-background.svg') center calc(50% - var(--parallax-svg-offset)) / cover no-repeat fixed,
-    url('/assets/AdobeStock_94926894.jpeg') center calc(50% + 50vh - var(--parallax-photo-offset)) / cover no-repeat fixed,
-    var(--color-background);
-  z-index: -2;
-  will-change: background-position;
-}
-
-main::after {
+/* Overlay gradient for better text readability */
+main::before {
   content: '';
   position: fixed;
   inset: 0;
@@ -46,22 +59,29 @@ main::after {
   pointer-events: none;
 }
 
-/* Mobile optimizations: Disable parallax and use absolute positioning */
+/* Mobile optimizations: Use lighter transforms for better performance */
 @media (max-width: 767px) {
-  main::before,
-  main::after,
+  body::before,
   body::after {
-    position: absolute;
-    background:
-      url('/assets/your-background.svg') center 50% / cover no-repeat,
-      url('/assets/AdobeStock_94926894.jpeg') center calc(50% + 50vh) / cover no-repeat,
-      var(--color-background);
-    will-change: auto;
-    transform: translateZ(0);
+    /* Keep transform-based animation for mobile */
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
   }
 
-  main::after {
-    position: absolute;
+  /* SVG starts fully visible on mobile */
+  body::before {
+    transform: translate3d(0, var(--parallax-svg-offset), 0);
+  }
+
+  /* Photo starts just below the viewport on mobile */
+  body::after {
+    transform: translate3d(0, calc(80vh - var(--parallax-photo-offset)), 0);
+  }
+
+  main::before {
+    position: fixed;
   }
 }
 
