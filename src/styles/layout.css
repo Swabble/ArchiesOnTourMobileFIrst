@@ -165,17 +165,10 @@ main::after {
     object-fit: contain;
   }
 
-  .mobile-parallax__layer--burger {
-    overflow: hidden;
-  }
-
   .mobile-parallax__layer--burger img {
     object-fit: cover;
     height: 120vh;
-    width: 200%;
-    position: relative;
-    left: 50%;
-    margin-left: -100%;
+    width: 100vw;
     object-position: center;
   }
 

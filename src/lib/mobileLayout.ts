@@ -30,11 +30,11 @@ function initMobileLayout() {
     const scale = viewportWidth / svgNaturalWidth;
     const scaledHeight = svgHeight * scale;
 
-    // Position main content to start right below header, with minimal padding
-    main.style.paddingTop = `${headerHeight + 10}px`;
+    // Position main content to start right below header
+    main.style.paddingTop = `${headerHeight}px`;
 
-    // Set parallax container height based on scaled SVG height
-    parallaxContainer.style.height = `${scaledHeight}px`;
+    // Set parallax container height based on scaled SVG height + extra space for next section
+    parallaxContainer.style.height = `${scaledHeight + 60}px`;
   }
 
   // Initial adjustment

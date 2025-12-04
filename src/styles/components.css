@@ -4,7 +4,16 @@ header.site-header {
   z-index: 10;
   backdrop-filter: blur(10px);
   background: rgba(26, 26, 24, 0.95);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+header.site-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: var(--space-4);
+  right: var(--space-4);
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .header__inner {
@@ -39,6 +48,12 @@ header.site-header {
 @media (max-width: 767px) {
   .nav__toggle {
     margin-right: calc(-1 * var(--space-4));
+  }
+
+  /* Remove nav from flex flow on mobile */
+  header.site-header nav {
+    position: absolute;
+    right: 0;
   }
 }
 
