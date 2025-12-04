@@ -30,24 +30,12 @@ function initMobileLayout() {
     const scale = viewportWidth / svgNaturalWidth;
     const scaledHeight = svgHeight * scale;
 
-    // Read section spacing from CSS variables to keep vertical rhythm consistent
-    const rootStyles = getComputedStyle(document.documentElement);
-    const baseFontSize = parseFloat(rootStyles.fontSize) || 16;
-    const toPixels = (value: string) => {
-      const numeric = parseFloat(value);
-      if (Number.isNaN(numeric)) return 0;
-      return value.trim().endsWith('rem') ? numeric * baseFontSize : numeric;
-    };
-
-    const sectionMargin = toPixels(rootStyles.getPropertyValue('--space-7'));
-    const sectionPadding = toPixels(rootStyles.getPropertyValue('--space-5'));
-    const sectionSpacing = sectionMargin * 2 + sectionPadding * 2;
-
     // Position main content to start after header and parallax artwork
     main.style.paddingTop = `${headerHeight + scaledHeight}px`;
 
-    // Set parallax container height to match scaled artwork plus standard section spacing
-    parallaxContainer.style.height = `${scaledHeight + sectionSpacing}px`;
+    // Set parallax container height to match scaled artwork only
+    // Section spacing is handled by CSS margin rules
+    parallaxContainer.style.height = `${scaledHeight}px`;
   }
 
   // Initial adjustment
