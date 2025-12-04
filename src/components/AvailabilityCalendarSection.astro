@@ -62,16 +62,18 @@
   }
 
   #verfuegbarkeit .btn-secondary {
-    background: linear-gradient(135deg, var(--color-primary), #ff947c);
-    color: var(--color-corporate-white);
+    background: transparent;
+    color: var(--color-text);
     border: none;
-    box-shadow: 0 10px 24px rgba(255, 113, 91, 0.28);
+    box-shadow: none;
+    padding: var(--space-2);
+    border-radius: var(--radius-md);
   }
 
   #verfuegbarkeit .btn-secondary:hover,
   #verfuegbarkeit .btn-secondary:focus-visible {
-    filter: brightness(0.98);
-    transform: translateY(-1px);
+    background: rgba(15, 17, 21, 0.04);
+    box-shadow: none;
   }
 
   #verfuegbarkeit #calendar-month {
