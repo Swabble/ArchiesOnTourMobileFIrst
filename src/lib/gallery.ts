@@ -7,7 +7,6 @@ const loadingBox = document.getElementById('gallery-loading');
 const errorBox = document.getElementById('gallery-error');
 
 const lightboxImage = document.getElementById('lightbox-image') as HTMLImageElement | null;
-const lightboxCaption = document.getElementById('lightbox-caption');
 const lightboxCounter = document.getElementById('lightbox-counter');
 
 const EAGER_THUMBNAIL_COUNT = 2;
@@ -111,16 +110,24 @@ function schedulePreload() {
   }
 }
 
-function openLightbox(index: number) {
-  if (!overlay || !lightboxImage || !lightboxCaption || !lightboxCounter) return;
-  state.currentIndex = index;
-  const image = state.images[index];
-  overlay.classList.add('active');
-  overlay.setAttribute('aria-hidden', 'false');
+function updateLightboxDisplay() {
+  if (!overlay || !lightboxImage || !lightboxCounter) return;
+  if (!overlay.classList.contains('active')) return;
+
+  const image = state.images[state.currentIndex];
+  if (!image) return;
+
   lightboxImage.src = image.url;
   lightboxImage.alt = image.alt;
-  lightboxCaption.textContent = image.alt;
-  lightboxCounter.textContent = `${index + 1} / ${state.images.length}`;
+  lightboxCounter.textContent = `${state.currentIndex + 1} / ${state.images.length}`;
+}
+
+function openLightbox(index: number) {
+  if (!overlay || !lightboxImage || !lightboxCounter) return;
+  state.currentIndex = index;
+  overlay.classList.add('active');
+  overlay.setAttribute('aria-hidden', 'false');
+  updateLightboxDisplay();
   setBodyScroll(true);
 }
 
@@ -132,6 +139,9 @@ function closeLightbox() {
 
 function goTo(next: number) {
   setActiveIndex(next);
+  if (overlay?.classList.contains('active')) {
+    updateLightboxDisplay();
+  }
 }
 
 async function loadImages() {
