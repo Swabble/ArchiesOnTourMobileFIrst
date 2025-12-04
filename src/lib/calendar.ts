@@ -40,7 +40,7 @@ function renderGrid(
   const days = new Date(reference.getFullYear(), reference.getMonth() + 1, 0).getDate();
   for (let day = 1; day <= days; day++) {
     const cell = document.createElement('div');
-    cell.className = 'card calendar__day';
+    cell.className = 'calendar__day';
     const date = new Date(reference.getFullYear(), reference.getMonth(), day);
     const key = formatDateKey(date);
     const matches = events.filter((evt) => formatDateKey(new Date(evt.start)) === key);
@@ -95,13 +95,12 @@ function renderList(events: any[], list: HTMLElement, onEventHover: (dateKey?: s
       <div class="event-content">
         <div class="event-header">
           <h4 class="event-title">${evt.title}</h4>
-          <span class="pill-muted">Kalender</span>
+          <span class="pill-muted">Termin</span>
         </div>
         <div class="event-meta">
           <span class="meta-chip">🕑 ${timeRange}</span>
           ${evt.location ? `<span class="meta-chip">📍 ${evt.location}</span>` : ''}
         </div>
-        <p class="event-description">Synchronisiert mit Google Calendar – immer aktuell.</p>
       </div>
     `;
 
