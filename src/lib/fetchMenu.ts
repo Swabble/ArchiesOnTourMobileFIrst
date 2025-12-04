@@ -57,18 +57,9 @@ function render(items: MenuItem[], keepErrorVisible = false) {
 
   Object.values(grouped).forEach((group) => {
     const categoryEntries = Object.entries(group.categories);
-    const singleCategory = categoryEntries.length === 1 ? categoryEntries[0]?.[0] : null;
-    const shouldShowCardHeader = categoryEntries.length > 1 || group.title !== singleCategory;
 
     const cardWrapper = document.createElement('section');
     cardWrapper.className = 'menu-category-block';
-
-    if (shouldShowCardHeader) {
-      const cardHeader = document.createElement('header');
-      cardHeader.className = 'menu-category-block__header';
-      cardHeader.innerHTML = `<h3>${group.title}</h3>`;
-      cardWrapper.appendChild(cardHeader);
-    }
 
     categoryEntries.forEach(([categoryName, categoryItems]) => {
       const categorySection = document.createElement('section');
