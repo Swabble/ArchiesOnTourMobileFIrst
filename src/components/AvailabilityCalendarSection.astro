@@ -10,16 +10,14 @@
         </div>
       </header>
       <div id="calendar-status" class="price-pill">Kalender wird geladen …</div>
-      <div
-        id="calendar-weekdays"
-        class="calendar__weekdays"
-        style="display:grid;grid-template-columns:repeat(7,1fr);gap:var(--space-2);margin:var(--space-3) 0;"
-      >
-        {['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'].map((d) => (
-          <div style="text-align:center;font-weight:600;">{d}</div>
-        ))}
+      <div class="calendar-layout">
+        <div id="calendar-weekdays" class="calendar__weekdays">
+          {['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'].map((d) => (
+            <div class="calendar__weekday">{d}</div>
+          ))}
+        </div>
+        <div id="calendar-grid" class="grid"></div>
       </div>
-      <div id="calendar-grid" class="grid" style="grid-template-columns: repeat(7, 1fr);"></div>
       <div id="calendar-events" class="cards" style="margin-top: var(--space-4);"></div>
     </div>
   </div>
@@ -81,6 +79,56 @@
     background: rgba(255, 113, 91, 0.06);
     padding: var(--space-2);
     border-radius: var(--radius-md);
+  }
+
+  #verfuegbarkeit .calendar-layout {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: var(--space-2);
+  }
+
+  #verfuegbarkeit #calendar-weekdays,
+  #verfuegbarkeit #calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(3rem, 1fr));
+    gap: var(--space-2);
+    width: 100%;
+    min-width: 420px;
+  }
+
+  #verfuegbarkeit #calendar-weekdays {
+    margin: var(--space-3) 0;
+  }
+
+  #verfuegbarkeit .calendar__weekday {
+    text-align: center;
+    font-weight: 600;
+  }
+
+  @media (max-width: 720px) {
+    #verfuegbarkeit #calendar-weekdays,
+    #verfuegbarkeit #calendar-grid {
+      grid-template-columns: repeat(7, minmax(2.5rem, 1fr));
+      gap: var(--space-1);
+      min-width: 380px;
+    }
+
+    #verfuegbarkeit #calendar-weekdays {
+      padding: var(--space-2) var(--space-1);
+      margin: var(--space-2) 0;
+    }
+
+    #verfuegbarkeit .calendar__weekday {
+      font-size: var(--font-size-sm);
+    }
+  }
+
+  @media (max-width: 520px) {
+    #verfuegbarkeit #calendar-weekdays,
+    #verfuegbarkeit #calendar-grid {
+      grid-template-columns: repeat(7, minmax(2.25rem, 1fr));
+      min-width: 340px;
+    }
   }
 
   #verfuegbarkeit .calendar__day {
