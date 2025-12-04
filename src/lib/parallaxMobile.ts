@@ -31,15 +31,15 @@ function initMobileParallax() {
     let progress = (relativeScroll - transitionStart) / (transitionEnd - transitionStart);
     progress = Math.max(0, Math.min(1, progress)); // Clamp between 0 and 1
 
-    // SVG Layer: Fade out and move up
+    // SVG Layer: Fade out and move up faster
     const svgOpacity = 1 - progress;
-    const svgTranslateY = -progress * 50; // Move up 50px
+    const svgTranslateY = -progress * 200; // Move up 200px for faster scroll
     svgLayer.style.opacity = svgOpacity.toString();
     svgLayer.style.transform = `translate3d(0, ${svgTranslateY}px, 0)`;
 
-    // Burger Layer: Fade in and move slower
+    // Burger Layer: Fade in and move from bottom to top
     const burgerOpacity = progress;
-    const burgerTranslateY = (1 - progress) * -30; // Start at -30px, end at 0
+    const burgerTranslateY = (1 - progress) * window.innerHeight; // Start at 100vh (bottom), end at 0
     burgerLayer.style.opacity = burgerOpacity.toString();
     burgerLayer.style.transform = `translate3d(0, ${burgerTranslateY}px, 0)`;
 

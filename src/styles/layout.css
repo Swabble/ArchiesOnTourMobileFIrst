@@ -146,7 +146,7 @@ main::after {
     left: 0;
     width: 100vw;
     height: auto;
-    z-index: -1;
+    z-index: -10;
     will-change: transform, opacity;
     pointer-events: none;
   }
@@ -159,14 +159,20 @@ main::after {
   }
 
   .mobile-parallax__layer--svg {
-    z-index: 2;
+    z-index: -9;
     opacity: 1;
     transform: translate3d(0, 0, 0);
   }
 
   .mobile-parallax__layer--burger {
-    z-index: 1;
+    z-index: -10;
     opacity: 0;
-    transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 100vh, 0);
+  }
+
+  /* Ensure sections stay above parallax images */
+  .section {
+    position: relative;
+    z-index: 1;
   }
 }
