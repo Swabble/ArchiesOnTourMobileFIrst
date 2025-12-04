@@ -3,7 +3,7 @@ header.site-header {
   top: 0;
   z-index: 10;
   backdrop-filter: blur(10px);
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(26, 26, 24, 0.95);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -26,8 +26,7 @@ header.site-header {
 
 .nav__toggle {
   background: transparent;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: var(--radius-md);
+  border: none;
   padding: var(--space-3) var(--space-4);
   color: var(--color-corporate-white);
   font-size: var(--font-size-xl);
@@ -35,11 +34,11 @@ header.site-header {
   transition: all 0.3s ease;
   z-index: 100;
   position: relative;
+  margin-right: calc(-1 * var(--space-2));
 }
 
 .nav__toggle:hover {
   background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.5);
 }
 
 .nav__overlay {
@@ -147,9 +146,9 @@ header.site-header {
 .hero--with-logo::after {
   content: '';
   position: absolute;
-  top: 50%;
+  top: 15%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, 0);
   width: 30%;
   height: 30%;
   background-image: url('/assets/Logo.svg');
@@ -935,7 +934,7 @@ header.site-header {
 
 .footer {
   position: relative;
-  background: rgba(0, 0, 0, 0.85);
+  background: rgba(26, 26, 24, 0.95);
   color: var(--color-corporate-white);
   padding: var(--space-6) var(--space-4);
   margin-top: var(--space-8);
