@@ -6,6 +6,7 @@ import '../styles/utilities.css';
 import scrollRevealScript from '../lib/scrollReveal.ts?url';
 import zoomGuardScript from '../lib/zoomGuard.ts?url';
 import parallaxScript from '../lib/parallax.ts?url';
+import parallaxMobileScript from '../lib/parallaxMobile.ts?url';
 
 const { title = 'Archie on Tour – Foodtruck Catering', description = 'Foodtruck Catering für Firmen-Events, Festivals und private Feiern.' } = Astro.props;
 ---
@@ -30,5 +31,6 @@ const { title = 'Archie on Tour – Foodtruck Catering', description = 'Foodtruc
     <script type="module" src={scrollRevealScript}></script>
     <script type="module" src={zoomGuardScript}></script>
     <script type="module" src={parallaxScript}></script>
+    <script type="module" src={parallaxMobileScript}></script>
   </body>
 </html>
