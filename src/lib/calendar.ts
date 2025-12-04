@@ -47,9 +47,23 @@ function renderGrid(
     cell.dataset.dateKey = key;
     cell.innerHTML = `
       <div class="calendar__day-number">${day}</div>
-      <div class="calendar__chips"></div>
+      <div class="calendar__markers" aria-hidden="true"></div>
+      <div class="calendar__chips" aria-hidden="true"></div>
     `;
+    const markerContainer = cell.querySelector('.calendar__markers');
     const chipContainer = cell.querySelector('.calendar__chips');
+    matches.slice(0, 4).forEach((evt) => {
+      const marker = document.createElement('span');
+      marker.className = 'calendar__marker';
+      marker.title = evt.title;
+      markerContainer?.appendChild(marker);
+    });
+    if (matches.length > 4) {
+      const more = document.createElement('span');
+      more.className = 'calendar__marker calendar__marker--count';
+      more.textContent = `+${matches.length - 4}`;
+      markerContainer?.appendChild(more);
+    }
     matches.slice(0, 3).forEach((evt) => {
       const badge = document.createElement('div');
       badge.className = 'calendar__badge';

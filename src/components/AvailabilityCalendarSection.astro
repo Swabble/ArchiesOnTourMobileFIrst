@@ -237,6 +237,31 @@
     }
   }
 
+  @media (min-width: 960px) {
+    #verfuegbarkeit .calendar__day {
+      align-items: stretch;
+      text-align: left;
+      gap: 8px;
+      padding: var(--space-2);
+      min-height: 5rem;
+    }
+
+    #verfuegbarkeit .calendar__day-number {
+      align-self: flex-start;
+    }
+
+    #verfuegbarkeit .calendar__markers {
+      display: none;
+    }
+
+    #verfuegbarkeit .calendar__chips {
+      display: grid;
+      gap: 4px;
+      margin-top: 2px;
+      justify-items: start;
+    }
+  }
+
   #verfuegbarkeit .calendar__day {
     border: 1px solid rgba(15, 17, 21, 0.06);
     background: #fbfbfc;
@@ -248,7 +273,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 4px;
     text-align: center;
   }
 
@@ -265,11 +290,41 @@
     font-size: 1.05rem;
   }
 
+  #verfuegbarkeit .calendar__markers {
+    display: inline-flex;
+    gap: 6px;
+    margin-top: 2px;
+    align-items: center;
+    justify-content: center;
+  }
+
   #verfuegbarkeit .calendar__chips {
-    display: grid;
-    gap: 4px;
-    margin-top: var(--space-1);
-    justify-items: center;
+    display: none;
+  }
+
+  #verfuegbarkeit .calendar__marker {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #ff715b, #ffb347);
+    border: 1px solid rgba(255, 113, 91, 0.35);
+    box-shadow: 0 0 0 3px rgba(255, 113, 91, 0.14);
+  }
+
+  #verfuegbarkeit .calendar__marker--count {
+    min-width: 22px;
+    height: 12px;
+    border-radius: 999px;
+    background: rgba(15, 17, 21, 0.08);
+    color: #0f1115;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    border: 1px solid rgba(15, 17, 21, 0.14);
+    box-shadow: 0 0 0 2px rgba(15, 17, 21, 0.04);
+    padding: 0 6px;
   }
 
   #verfuegbarkeit .calendar__badge {
