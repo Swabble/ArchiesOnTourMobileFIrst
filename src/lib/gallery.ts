@@ -10,6 +10,8 @@ const lightboxImage = document.getElementById('lightbox-image') as HTMLImageElem
 const lightboxCaption = document.getElementById('lightbox-caption');
 const lightboxCounter = document.getElementById('lightbox-counter');
 
+const EAGER_THUMBNAIL_COUNT = 2;
+
 let state = {
   images: [] as { url: string; thumbnail: string; alt: string }[],
   currentIndex: 0
@@ -56,7 +58,8 @@ function renderCarousel() {
     const item = document.createElement('button');
     item.className = 'carousel-item';
     item.dataset.index = String(index);
-    item.innerHTML = `<img src="${img.thumbnail}" alt="${img.alt}" loading="lazy" />`;
+    const loading = index < EAGER_THUMBNAIL_COUNT ? 'eager' : 'lazy';
+    item.innerHTML = `<img src="${img.thumbnail}" alt="${img.alt}" loading="${loading}" />`;
     item.addEventListener('click', () => openLightbox(index));
     track.appendChild(item);
 
@@ -69,6 +72,43 @@ function renderCarousel() {
 
   highlightActive(state.currentIndex);
   scrollToItem(state.currentIndex, false);
+}
+
+function preloadSequential(urls: string[]) {
+  let index = 0;
+
+  const loadNext = () => {
+    if (index >= urls.length) return;
+    const img = new Image();
+    const handle = () => {
+      index += 1;
+      loadNext();
+    };
+    img.onload = handle;
+    img.onerror = handle;
+    img.src = urls[index];
+  };
+
+  loadNext();
+}
+
+function schedulePreload() {
+  if (!state.images.length) return;
+
+  const startPreload = () => {
+    const remainingThumbnails = state.images
+      .slice(EAGER_THUMBNAIL_COUNT)
+      .map((image) => image.thumbnail);
+    const fullImages = state.images.map((image) => image.url);
+    preloadSequential([...remainingThumbnails, ...fullImages]);
+  };
+
+  const requestIdle = (window as typeof window & { requestIdleCallback?: (cb: () => void) => number }).requestIdleCallback;
+  if (typeof requestIdle === 'function') {
+    requestIdle(startPreload);
+  } else {
+    setTimeout(startPreload, 0);
+  }
 }
 
 function openLightbox(index: number) {
@@ -134,11 +174,13 @@ async function loadImages() {
       state.images = await fallback.json();
     }
     renderCarousel();
+    schedulePreload();
   } catch (error) {
     errorBox?.classList.remove('is-hidden');
     const fallback = await fetch('/data/gallery.json');
     state.images = await fallback.json();
     renderCarousel();
+    schedulePreload();
   } finally {
     loadingBox?.classList.add('is-hidden');
   }
