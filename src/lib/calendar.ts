@@ -70,11 +70,11 @@ function renderGrid(
       badge.textContent = evt.title;
       chipContainer?.appendChild(badge);
     });
-    if (matches.length > 3) {
-      const more = document.createElement('div');
-      more.className = 'calendar__badge calendar__badge--muted';
-      more.textContent = `+${matches.length - 3}`;
-      chipContainer?.appendChild(more);
+    if (matches.length > 4) {
+      const more = document.createElement('span');
+      more.className = 'calendar__marker calendar__marker--count';
+      more.textContent = `+${matches.length - 4}`;
+      markerContainer?.appendChild(more);
     }
     cell.addEventListener('mouseenter', () => onDayHover(matches.length ? key : undefined));
     cell.addEventListener('mouseleave', () => onDayHover(undefined));
@@ -82,11 +82,35 @@ function renderGrid(
   }
 }
 
-function renderList(events: any[], list: HTMLElement, onEventHover: (dateKey?: string) => void) {
+function renderList(
+  events: any[],
+  list: HTMLElement,
+  onEventHover: (dateKey?: string) => void,
+  activeDateKey?: string
+) {
   list.innerHTML = '';
-  const sorted = [...events].sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
 
-  sorted.forEach((evt) => {
+  if (!activeDateKey) {
+    const fallback = document.createElement('p');
+    fallback.className = 'calendar__empty';
+    fallback.textContent = 'Wähle einen Tag, um Termine zu sehen.';
+    list.appendChild(fallback);
+    return;
+  }
+
+  const filtered = events
+    .filter((evt) => formatDateKey(new Date(evt.start)) === activeDateKey)
+    .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
+
+  if (!filtered.length) {
+    const empty = document.createElement('p');
+    empty.className = 'calendar__empty';
+    empty.textContent = 'Keine Termine für diesen Tag.';
+    list.appendChild(empty);
+    return;
+  }
+
+  filtered.forEach((evt) => {
     const item = document.createElement('article');
     item.className = 'card calendar__event';
 
@@ -189,8 +213,14 @@ function init() {
   if (!grid || !list || !status || !monthLabel || !weekdays) return;
   let reference = new Date();
   let currentEvents: any[] = [];
+  let activeDateKey: string | undefined;
 
   function handleHover(dateKey?: string) {
+    const changed = activeDateKey !== dateKey;
+    activeDateKey = dateKey;
+    if (changed) {
+      renderList(currentEvents, list, handleHover, activeDateKey);
+    }
     highlightEvents(list, dateKey);
     highlightDay(grid, dateKey);
   }
@@ -205,9 +235,7 @@ function init() {
       weekdays.style.display = 'grid';
       grid.style.display = 'grid';
       renderGrid(events, grid, reference, handleHover);
-      renderList(events, list, handleHover);
-      highlightEvents(list);
-      highlightDay(grid);
+      handleHover(undefined);
       status.textContent = '';
       status.style.display = 'none';
     } catch (err) {

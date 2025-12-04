@@ -909,6 +909,23 @@ header.site-header::after {
   inline-size: 100%;
   max-inline-size: 100%;
   min-inline-size: 0;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  display: block;
+  line-height: 1.5;
+  height: auto;
+  min-height: calc(1.5em + (var(--space-3) * 2) + 2px);
+}
+
+@media (max-width: 767px) {
+  .form__field input[type='date'] {
+    font-size: 16px;
+    padding: var(--space-3);
+  }
 }
 
 .form__field .error {

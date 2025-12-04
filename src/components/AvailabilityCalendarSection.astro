@@ -327,22 +327,20 @@
     padding: 0 6px;
   }
 
-  #verfuegbarkeit .calendar__badge {
+  #verfuegbarkeit .calendar__marker--count {
+    min-width: 22px;
+    height: 12px;
+    border-radius: 999px;
+    background: rgba(15, 17, 21, 0.08);
+    color: #0f1115;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    background: rgba(255, 113, 91, 0.1);
-    color: #0f1115;
-    padding: 4px 8px;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 113, 91, 0.3);
+    justify-content: center;
     font-size: var(--font-size-xs);
-    line-height: 1.1;
-  }
-
-  #verfuegbarkeit .calendar__badge--muted {
-    background: rgba(15, 17, 21, 0.04);
-    border-color: rgba(15, 17, 21, 0.12);
+    font-weight: 700;
+    border: 1px solid rgba(15, 17, 21, 0.14);
+    box-shadow: 0 0 0 2px rgba(15, 17, 21, 0.04);
+    padding: 0 6px;
   }
 
   #verfuegbarkeit .calendar__event {
