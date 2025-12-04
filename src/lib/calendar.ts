@@ -47,20 +47,20 @@ function renderGrid(
     cell.dataset.dateKey = key;
     cell.innerHTML = `
       <div class="calendar__day-number">${day}</div>
-      <div class="calendar__chips"></div>
+      <div class="calendar__markers" aria-hidden="true"></div>
     `;
-    const chipContainer = cell.querySelector('.calendar__chips');
-    matches.slice(0, 3).forEach((evt) => {
-      const badge = document.createElement('div');
-      badge.className = 'calendar__badge';
-      badge.textContent = evt.title;
-      chipContainer?.appendChild(badge);
+    const markerContainer = cell.querySelector('.calendar__markers');
+    matches.slice(0, 4).forEach((evt) => {
+      const marker = document.createElement('span');
+      marker.className = 'calendar__marker';
+      marker.title = evt.title;
+      markerContainer?.appendChild(marker);
     });
-    if (matches.length > 3) {
-      const more = document.createElement('div');
-      more.className = 'calendar__badge calendar__badge--muted';
-      more.textContent = `+${matches.length - 3}`;
-      chipContainer?.appendChild(more);
+    if (matches.length > 4) {
+      const more = document.createElement('span');
+      more.className = 'calendar__marker calendar__marker--count';
+      more.textContent = `+${matches.length - 4}`;
+      markerContainer?.appendChild(more);
     }
     cell.addEventListener('mouseenter', () => onDayHover(matches.length ? key : undefined));
     cell.addEventListener('mouseleave', () => onDayHover(undefined));
