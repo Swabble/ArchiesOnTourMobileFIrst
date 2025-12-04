@@ -10,7 +10,7 @@ header.site-header {
   top: 0;
   z-index: 10;
   backdrop-filter: blur(10px);
-  background: rgba(26, 26, 24, 0.95);
+  background: transparent;
 }
 
 header.site-header::after {
