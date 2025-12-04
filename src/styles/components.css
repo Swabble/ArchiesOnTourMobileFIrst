@@ -604,12 +604,13 @@ header.site-header {
 
 .carousel-track {
   display: flex;
-  gap: var(--space-3);
+  gap: var(--space-2);
   overflow-x: auto;
-  padding: var(--space-1);
+  padding: var(--space-2) var(--space-3);
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
   scrollbar-width: none;
+  scroll-padding: 0 var(--space-3);
 }
 
 .carousel-track::-webkit-scrollbar {
@@ -617,7 +618,7 @@ header.site-header {
 }
 
 .carousel-item {
-  min-width: clamp(260px, 70vw, 420px);
+  min-width: clamp(240px, 65vw, 360px);
   height: clamp(280px, 40vh, 380px);
   scroll-snap-align: center;
   position: relative;
@@ -691,7 +692,7 @@ header.site-header {
 
   /* Fix mobile image scaling - use width-based sizing instead of height */
   .carousel-item {
-    min-width: clamp(260px, 85vw, 420px);
+    min-width: clamp(240px, 88vw, 360px);
     height: auto;
     aspect-ratio: 4/3;
   }
