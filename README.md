@@ -46,17 +46,16 @@ Ohne gültige Keys greifen Fallback-Daten (Demo-Menü, Galerie-JSON, Beispielter
 
 ## Hosting-Hinweise
 
-Das Projekt erzeugt hauptsächlich statische Assets, benötigt für die Menü-API aber einen Server-/Serverless-Runtime (Astro Hybrid + Node-Adapter). Setzen Sie lange Cache-Header für Assets (`public, max-age=31536000, immutable`) und kurze für HTML.
+Das Projekt wird als vollständig statisches Astro-Build ausgeliefert (`output: 'static'`). Hostings sollten den generierten `dist/`-Ordner direkt bedienen; es ist kein Node.js-Server nötig. Setzen Sie lange Cache-Header für Assets (`public, max-age=31536000, immutable`) und kurze für HTML.
 
-## Deploy Now (SSR)
+## Deploy Now (Static)
 
-Für IONOS Deploy Now (SSR-Deployment mit Node-Adapter):
+Für IONOS Deploy Now als statisches Deployment:
 
 - Installation: `npm ci`
 - Build: `npm run build`
-- Start (SSR): `npm start` (ruft `node ./dist/server/entry.mjs` auf; respektiert `PORT`)
-
-Healthcheck-Empfehlung: `/api/menu.json` liefert API-Status.
+- Deployment-Output: `dist` als Dokumentenstamm; keine `startCommand`/Node-Runtime erforderlich
+- Optionaler Healthcheck: `/index.html` (statisch)
 
 Wichtige Deploy-Now-ENV-Variablen für die Menü-API (siehe `.env.example`):
 
