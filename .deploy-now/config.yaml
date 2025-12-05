@@ -1,0 +1,6 @@
+version: 1
+projects:
+  - path: .
+    name: ArchiesOnTourMobileFIrst
+    configFile: .deploy-now/ArchiesOnTourMobileFIrst/config.yaml
+defaultProject: ArchiesOnTourMobileFIrst

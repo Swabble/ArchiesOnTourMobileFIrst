@@ -1,0 +1,18 @@
+version: 1
+project:
+  name: ArchiesOnTourMobileFIrst
+  framework: astro
+  installCommand: npm ci
+  buildCommand: npm run build
+  outputPath: dist
+  startCommand: npm start
+  healthCheckPath: /api/menu.json
+  environment:
+    - key: PUBLIC_DRIVE_API_KEY
+      value: ${PUBLIC_DRIVE_API_KEY}
+    - key: PUBLIC_MENU_FOLDER_ID
+      value: ${PUBLIC_MENU_FOLDER_ID}
+    - key: MENU_SHEET_URL
+      value: ${MENU_SHEET_URL}
+    - key: PORT
+      value: ${PORT}
