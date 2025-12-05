@@ -47,3 +47,19 @@ Ohne gültige Keys greifen Fallback-Daten (Demo-Menü, Galerie-JSON, Beispielter
 ## Hosting-Hinweise
 
 Das Projekt erzeugt hauptsächlich statische Assets, benötigt für die Menü-API aber einen Server-/Serverless-Runtime (Astro Hybrid + Node-Adapter). Setzen Sie lange Cache-Header für Assets (`public, max-age=31536000, immutable`) und kurze für HTML.
+
+## Deploy Now (SSR)
+
+Für IONOS Deploy Now (SSR-Deployment mit Node-Adapter):
+
+- Installation: `npm ci`
+- Build: `npm run build`
+- Start (SSR): `npm start` (ruft `node ./dist/server/entry.mjs` auf; respektiert `PORT`)
+
+Healthcheck-Empfehlung: `/api/menu.json` liefert API-Status.
+
+Wichtige Deploy-Now-ENV-Variablen für die Menü-API (siehe `.env.example`):
+
+- `PUBLIC_DRIVE_API_KEY`
+- `PUBLIC_MENU_FOLDER_ID`
+- `MENU_SHEET_URL`
