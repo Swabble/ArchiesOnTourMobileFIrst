@@ -1,0 +1,33 @@
+name: "Nightly Rebuild"
+
+on:
+  # Run every night at 2 AM UTC
+  schedule:
+    - cron: '0 2 * * *'
+
+  # Allow manual triggering
+  workflow_dispatch:
+
+jobs:
+  trigger-rebuild:
+    name: Trigger rebuild and deployment
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Trigger orchestration workflow
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'ArchiesOnTourMobileFIrst-orchestration.yaml',
+              ref: context.ref
+            });
+
+            console.log('✅ Triggered nightly rebuild and deployment');

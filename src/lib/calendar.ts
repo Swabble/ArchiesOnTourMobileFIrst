@@ -182,13 +182,57 @@ function formatLabel(reference: Date) {
   return monthFormatter.format(reference);
 }
 
+// Cache for preloaded events from build time
+let preloadedEvents: any[] | null = null;
+
+function loadPrerenderedEvents() {
+  if (preloadedEvents !== null) return preloadedEvents;
+
+  try {
+    const dataElement = document.getElementById('calendar-data');
+    if (dataElement?.textContent) {
+      const parsed = JSON.parse(dataElement.textContent);
+      preloadedEvents = Array.isArray(parsed) ? parsed.map((item: any) => ({
+        ...item,
+        start: new Date(item.start),
+        end: new Date(item.end)
+      })) : [];
+      console.info('[calendar] Loaded', preloadedEvents.length, 'prerendered events');
+      return preloadedEvents;
+    }
+  } catch (error) {
+    console.warn('[calendar] Failed to load prerendered events:', error);
+  }
+
+  preloadedEvents = [];
+  return preloadedEvents;
+}
+
 async function fetchEvents(reference: Date) {
+  const { start, end } = getDateRange(reference);
+
+  // Try to use prerendered data first
+  const allEvents = loadPrerenderedEvents();
+
+  if (allEvents.length > 0) {
+    // Filter prerendered events for the current month
+    const filtered = allEvents.filter((evt: any) => {
+      const evtDate = new Date(evt.start);
+      return evtDate >= start && evtDate <= end;
+    });
+    console.info('[calendar] Using prerendered events for', formatLabel(reference));
+    return filtered;
+  }
+
+  // Fallback: fetch from API (for local dev without env vars)
+  console.warn('[calendar] No prerendered data, falling back to API fetch');
   const apiKey = import.meta.env.PUBLIC_DRIVE_API_KEY;
   const calendarId = import.meta.env.PUBLIC_CALENDAR_ID;
-  const { start, end } = getDateRange(reference);
+
   if (!apiKey || !calendarId) {
     throw new Error('Calendar configuration fehlt');
   }
+
   const timeMin = start.toISOString();
   const timeMax = end.toISOString();
   const url = `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?key=${apiKey}&timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime`;

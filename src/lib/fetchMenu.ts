@@ -141,7 +141,21 @@ async function init() {
   const loading = document.getElementById('menu-loading');
   const error = document.getElementById('menu-error');
   loading?.classList.remove('is-hidden');
+
   try {
+    // Try to load prerendered menu data first
+    const dataElement = document.getElementById('menu-data');
+    if (dataElement?.textContent) {
+      const parsed = JSON.parse(dataElement.textContent);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        console.info(LOG_PREFIX, 'Using', parsed.length, 'prerendered menu items');
+        render(parsed, false);
+        return;
+      }
+    }
+
+    // Fallback: fetch from API (for local dev)
+    console.warn(LOG_PREFIX, 'No prerendered data, falling back to fetch');
     const result = await fetchRemoteMenu();
     if (!result.ok) {
       error?.classList.remove('is-hidden');

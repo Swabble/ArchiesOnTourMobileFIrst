@@ -1,5 +1,28 @@
 ---
 import menuScript from '../lib/fetchMenu.ts?url';
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
+import { FALLBACK_ITEMS } from '../lib/menuParser';
+
+// Load menu data at build time
+async function loadMenuData() {
+  try {
+    const menuPath = path.resolve('public/menu.json');
+    const content = await readFile(menuPath, 'utf-8');
+    const parsed = JSON.parse(content);
+
+    if (parsed.items && Array.isArray(parsed.items) && parsed.items.length > 0) {
+      console.info('[menu] Loaded', parsed.items.length, 'items at build time');
+      return parsed.items;
+    }
+  } catch (error) {
+    console.warn('[menu] Failed to load menu.json, using fallback:', error);
+  }
+
+  return FALLBACK_ITEMS;
+}
+
+const menuItems = await loadMenuData();
 ---
 <section id="menu" class="section menu-section" aria-live="polite">
   <div class="container">
@@ -26,4 +49,5 @@ import menuScript from '../lib/fetchMenu.ts?url';
     </div>
   </div>
 </section>
+<script id="menu-data" type="application/json" set:html={JSON.stringify(menuItems)} />
 <script type="module" src={menuScript} defer></script>

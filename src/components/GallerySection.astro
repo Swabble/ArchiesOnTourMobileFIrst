@@ -1,5 +1,46 @@
 ---
 import galleryScript from '../lib/gallery.ts?url';
+
+// Fetch gallery images at build time
+async function fetchGalleryImages() {
+  try {
+    const apiKey = import.meta.env.PUBLIC_DRIVE_API_KEY;
+    const folderId = import.meta.env.PUBLIC_GALLERY_FOLDER_ID;
+
+    if (!apiKey || !folderId) {
+      console.warn('[gallery] Missing API credentials, using fallback');
+      return [];
+    }
+
+    const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+mimeType+contains+'image/'and+trashed=false&fields=files(id,name,thumbnailLink,webContentLink)&supportsAllDrives=true&key=${apiKey}`;
+
+    const res = await fetch(url);
+
+    if (!res.ok) {
+      console.warn('[gallery] Build-time fetch failed:', res.status);
+      return [];
+    }
+
+    const data = await res.json();
+
+    const images = (data.files || []).map((file: any) => {
+      const fileId = file.id;
+      return {
+        url: `https://drive.google.com/uc?export=view&id=${fileId}`,
+        thumbnail: `https://drive.google.com/thumbnail?id=${fileId}&sz=w600`,
+        alt: file.name || 'Galeriebild'
+      };
+    }).filter((img: { url?: string; thumbnail?: string }) => Boolean(img.url && img.thumbnail));
+
+    console.info('[gallery] Fetched', images.length, 'images at build time');
+    return images;
+  } catch (error) {
+    console.warn('[gallery] Build-time fetch error:', error);
+    return [];
+  }
+}
+
+const galleryImages = await fetchGalleryImages();
 ---
 <section id="galerie" class="section">
   <div class="container">
@@ -32,4 +73,5 @@ import galleryScript from '../lib/gallery.ts?url';
     </div>
   </div>
 </section>
+<script id="gallery-data" type="application/json" set:html={JSON.stringify(galleryImages)} />
 <script type="module" src={galleryScript} defer></script>

@@ -184,16 +184,31 @@ async function loadImages() {
   loadingBox?.classList.remove('is-hidden');
 
   try {
+    // Try to load prerendered images from build time
+    const dataElement = document.getElementById('gallery-data');
+    if (dataElement?.textContent) {
+      const parsed = JSON.parse(dataElement.textContent);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        state.images = parsed;
+        console.info('[gallery] Loaded', state.images.length, 'prerendered images');
+        renderCarousel();
+        schedulePreload();
+        loadingBox?.classList.add('is-hidden');
+        return;
+      }
+    }
+
+    // Fallback: Try API fetch (for local dev)
     const apiKey = import.meta.env.PUBLIC_DRIVE_API_KEY;
     const folderId = import.meta.env.PUBLIC_GALLERY_FOLDER_ID;
 
     if (apiKey && folderId) {
+      console.warn('[gallery] No prerendered data, falling back to API fetch');
       const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+mimeType+contains+'image/'and+trashed=false&fields=files(id,name,thumbnailLink,webContentLink)&supportsAllDrives=true&key=${apiKey}`;
 
       const res = await fetch(url);
 
       if (!res.ok) {
-        const errorText = await res.text();
         throw new Error(`Drive request failed: ${res.status}`);
       }
 
@@ -201,20 +216,15 @@ async function loadImages() {
 
       state.images = (data.files || []).map((file: any) => {
         const fileId = file.id;
-
-        // Use Google Drive's public image URLs
-        // These work for files in a publicly shared folder
-        const url = `https://drive.google.com/uc?export=view&id=${fileId}`;
-        const thumbUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w600`;
-
         return {
-          url,
-          thumbnail: thumbUrl,
+          url: `https://drive.google.com/uc?export=view&id=${fileId}`,
+          thumbnail: `https://drive.google.com/thumbnail?id=${fileId}&sz=w600`,
           alt: file.name || 'Galeriebild'
         };
       }).filter((img: { url?: string; thumbnail?: string }) => Boolean(img.url && img.thumbnail));
     }
 
+    // Final fallback: static JSON
     if (!state.images.length) {
       const fallback = await fetch('/data/gallery.json');
       state.images = await fallback.json();
@@ -222,11 +232,16 @@ async function loadImages() {
     renderCarousel();
     schedulePreload();
   } catch (error) {
+    console.warn('[gallery] Error loading images:', error);
     errorBox?.classList.remove('is-hidden');
-    const fallback = await fetch('/data/gallery.json');
-    state.images = await fallback.json();
-    renderCarousel();
-    schedulePreload();
+    try {
+      const fallback = await fetch('/data/gallery.json');
+      state.images = await fallback.json();
+      renderCarousel();
+      schedulePreload();
+    } catch (fallbackError) {
+      console.error('[gallery] Fallback also failed:', fallbackError);
+    }
   } finally {
     loadingBox?.classList.add('is-hidden');
   }

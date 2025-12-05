@@ -1,5 +1,55 @@
 ---
 import calendarScript from '../lib/calendar.ts?url';
+
+// Fetch calendar events at build time
+async function fetchCalendarEvents() {
+  try {
+    const apiKey = import.meta.env.PUBLIC_DRIVE_API_KEY;
+    const calendarId = import.meta.env.PUBLIC_CALENDAR_ID;
+
+    if (!apiKey || !calendarId) {
+      console.warn('[calendar] Missing API credentials, skipping build-time fetch');
+      return [];
+    }
+
+    // Fetch next 6 months of events
+    const now = new Date();
+    const sixMonthsLater = new Date();
+    sixMonthsLater.setMonth(now.getMonth() + 6);
+
+    const timeMin = now.toISOString();
+    const timeMax = sixMonthsLater.toISOString();
+
+    const url = `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?key=${apiKey}&timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime`;
+
+    const res = await fetch(url);
+
+    if (!res.ok) {
+      console.warn('[calendar] Build-time fetch failed:', res.status);
+      return [];
+    }
+
+    const data = await res.json();
+
+    return (data.items || []).map((item: any) => {
+      const startDate = item.start?.date ? new Date(`${item.start.date}T00:00:00`) : new Date(item.start?.dateTime);
+      const endDate = item.end?.date ? new Date(`${item.end.date}T00:00:00`) : new Date(item.end?.dateTime);
+
+      return {
+        id: item.id,
+        title: item.summary,
+        location: item.location,
+        start: startDate.toISOString(),
+        end: endDate.toISOString()
+      };
+    });
+  } catch (error) {
+    console.warn('[calendar] Build-time fetch error:', error);
+    return [];
+  }
+}
+
+const calendarEvents = await fetchCalendarEvents();
 ---
 <section id="verfuegbarkeit" class="section">
   <div class="container">
@@ -456,4 +506,5 @@ import calendarScript from '../lib/calendar.ts?url';
     color: var(--color-text);
   }
 </style>
+<script id="calendar-data" type="application/json" set:html={JSON.stringify(calendarEvents)} />
 <script type="module" src={calendarScript} defer></script>
