@@ -1,3 +1,6 @@
+---
+import menuScript from '../lib/fetchMenu.ts?url';
+---
 <section id="menu" class="section menu-section" aria-live="polite">
   <div class="container">
     <a href="/" class="back-button" aria-label="Zurück zur Startseite">
@@ -23,4 +26,4 @@
     </div>
   </div>
 </section>
-<script type="module" src="/src/lib/fetchMenu.ts" defer></script>
+<script type="module" src={menuScript} defer></script>
