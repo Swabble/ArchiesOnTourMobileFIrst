@@ -1,0 +1,27 @@
+{
+  "items": [
+    {
+      "title": "Signature Burger",
+      "description": "Rindfleisch-Patty, Cheddar, karamellisierte Zwiebeln, Haus-Sauce",
+      "price": "11.90",
+      "unit": "pro Stück",
+      "category": "Burger"
+    },
+    {
+      "title": "Veggie Bowl",
+      "description": "Geröstetes Gemüse, Quinoa, Kräuter-Dip",
+      "price": "10.50",
+      "unit": "pro Portion",
+      "category": "Bowls"
+    },
+    {
+      "title": "Hauslimonade",
+      "description": "Zitrone-Ingwer, wenig Zucker",
+      "price": "3.90",
+      "unit": "0,33l",
+      "category": "Getränke"
+    }
+  ],
+  "source": "missing-config",
+  "fetchedAt": "2024-01-01T00:00:00.000Z"
+}
