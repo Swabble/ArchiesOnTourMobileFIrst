@@ -7,7 +7,7 @@
     "dev": "astro dev",
     "build": "npm run build:menu && astro build",
     "preview": "astro preview",
-    "start": "node ./dist/server/entry.mjs",
+    "start": "astro preview",
     "lint": "eslint src --ext .astro,.ts,.js",
     "format": "prettier --write .",
     "test:e2e": "playwright test",
