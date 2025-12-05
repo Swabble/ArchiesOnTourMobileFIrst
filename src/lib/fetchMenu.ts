@@ -145,12 +145,22 @@ async function init() {
   try {
     // Try to load prerendered menu data first
     const dataElement = document.getElementById('menu-data');
+    console.info(LOG_PREFIX, 'Looking for prerendered data...', { found: !!dataElement, hasContent: !!dataElement?.textContent });
+
     if (dataElement?.textContent) {
-      const parsed = JSON.parse(dataElement.textContent);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        console.info(LOG_PREFIX, 'Using', parsed.length, 'prerendered menu items');
-        render(parsed, false);
-        return;
+      try {
+        const parsed = JSON.parse(dataElement.textContent);
+        console.info(LOG_PREFIX, 'Parsed prerendered data:', { isArray: Array.isArray(parsed), length: Array.isArray(parsed) ? parsed.length : 0 });
+
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          console.info(LOG_PREFIX, 'Using', parsed.length, 'prerendered menu items');
+          render(parsed, false);
+          return;
+        } else {
+          console.warn(LOG_PREFIX, 'Prerendered data is empty or not an array');
+        }
+      } catch (parseError) {
+        console.error(LOG_PREFIX, 'Failed to parse prerendered data:', parseError);
       }
     }
 
