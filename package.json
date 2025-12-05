@@ -5,13 +5,14 @@
   "description": "Archie on Tour – mobile-first marketing site built with Astro.",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "npm run build:menu && astro build",
     "preview": "astro preview",
     "start": "node ./dist/server/entry.mjs",
     "lint": "eslint src --ext .astro,.ts,.js",
     "format": "prettier --write .",
     "test:e2e": "playwright test",
-    "validate:data": "node scripts/validate-data.mjs"
+    "validate:data": "node scripts/validate-data.mjs",
+    "build:menu": "node scripts/build-menu.mjs"
   },
   "dependencies": {
     "@astrojs/node": "^8.3.4",

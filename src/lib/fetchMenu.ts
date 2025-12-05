@@ -103,10 +103,10 @@ async function fetchRemoteMenu(): Promise<{
   ok: boolean;
   status: number;
 }> {
-  const apiUrl = '/api/menu.json';
+  const apiUrl = '/menu.json';
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 8000);
-  console.info(LOG_PREFIX, 'Fetching menu from API', apiUrl);
+  console.info(LOG_PREFIX, 'Fetching menu from static file', apiUrl);
   const res = await fetch(apiUrl, { signal: controller.signal });
   clearTimeout(timeout);
 
