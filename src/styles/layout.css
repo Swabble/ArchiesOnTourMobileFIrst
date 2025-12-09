@@ -32,10 +32,11 @@ body {
 }
 
 .slide-in-panel__logo {
-  width: 100%;
-  max-width: none;
-  height: auto;
   display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 240px;
 }
 
 @keyframes slide-panel-in {
@@ -44,11 +45,11 @@ body {
     max-height: 0;
   }
   60% {
-    max-height: 240px;
+    max-height: 320px;
   }
   100% {
     transform: translateY(0);
-    max-height: 240px;
+    max-height: 320px;
   }
 }
 
