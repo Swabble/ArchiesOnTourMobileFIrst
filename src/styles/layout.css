@@ -64,6 +64,13 @@ main {
   isolation: isolate;
 }
 
+main {
+  position: relative;
+  padding-top: var(--space-6);
+  background: var(--color-background);
+  isolation: isolate;
+}
+
 .section {
   position: relative;
   margin: var(--space-7) auto;
