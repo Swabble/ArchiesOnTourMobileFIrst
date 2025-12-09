@@ -39,10 +39,6 @@
 
   --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.12);
   --shadow-strong: 0 12px 36px rgba(0, 0, 0, 0.18);
-
-  --parallax-offset: 0px;
-  --parallax-offset-strong: 0px;
-  --parallax-foreground-opacity: 0;
 }
 
 *, *::before, *::after {
