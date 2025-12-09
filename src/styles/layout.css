@@ -16,7 +16,7 @@ body {
   background-color: var(--color-accent);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(8px);
-  transform: translateY(-120%);
+  transform: translateY(-100%);
   max-height: 0;
   animation: slide-panel-in 750ms ease-out 120ms forwards;
   will-change: transform, max-height;
@@ -33,7 +33,7 @@ body {
 }
 
 .slide-in-panel__logo {
-  width: clamp(160px, 35vw, 320px);
+  width: 100%;
   height: auto;
   filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15));
   pointer-events: auto;
@@ -41,7 +41,7 @@ body {
 
 @keyframes slide-panel-in {
   0% {
-    transform: translateY(-120%);
+    transform: translateY(-100%);
     max-height: 0;
   }
   60% {
