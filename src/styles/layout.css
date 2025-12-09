@@ -25,21 +25,14 @@ body {
 .slide-in-panel__inner {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
-  padding: var(--space-4) var(--space-4) var(--space-4);
+  align-items: center;
+  padding: var(--space-3) var(--space-4) var(--space-4);
 }
 
-.slide-in-panel__title {
-  margin: 0;
-  font-size: clamp(1.125rem, 1vw + 1rem, 1.5rem);
-  font-weight: 700;
-  letter-spacing: 0.01em;
-}
-
-.slide-in-panel__subtitle {
-  margin: 0;
-  font-size: clamp(0.95rem, 1vw + 0.8rem, 1.15rem);
-  color: rgba(255, 255, 255, 0.85);
+.slide-in-panel__logo {
+  width: clamp(140px, 20vw, 220px);
+  height: auto;
+  display: block;
 }
 
 @keyframes slide-panel-in {
@@ -62,6 +55,13 @@ body {
     transform: none;
     max-height: none;
   }
+}
+
+main {
+  position: relative;
+  padding-top: var(--space-6);
+  background: var(--color-background);
+  isolation: isolate;
 }
 
 main {
