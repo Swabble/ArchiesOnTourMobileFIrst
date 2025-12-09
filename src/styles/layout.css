@@ -12,14 +12,13 @@ body {
 .slide-in-panel {
   position: relative;
   z-index: 0;
-  overflow: hidden;
+  overflow: visible;
   background: rgba(0, 0, 0, 0.35);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(8px);
-  transform: translateY(-120%);
-  max-height: 0;
-  animation: slide-panel-in 750ms ease-out 120ms forwards;
-  will-change: transform, max-height;
+  transform: translateY(-140%);
+  animation: slide-panel-in 850ms ease-out 120ms forwards;
+  will-change: transform;
 }
 
 .slide-in-panel__inner {
@@ -27,28 +26,25 @@ body {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   padding: var(--space-3) 0 var(--space-4);
 }
 
 .slide-in-panel__logo {
-  width: 100%;
-  max-width: none;
-  height: auto;
   display: block;
+  width: 100%;
+  height: auto;
 }
 
 @keyframes slide-panel-in {
   0% {
-    transform: translateY(-120%);
-    max-height: 0;
+    transform: translateY(-140%);
   }
   60% {
-    max-height: 240px;
+    transform: translateY(-10%);
   }
   100% {
     transform: translateY(0);
-    max-height: 240px;
   }
 }
 
@@ -56,7 +52,6 @@ body {
   .slide-in-panel {
     animation: none;
     transform: none;
-    max-height: none;
   }
 }
 
