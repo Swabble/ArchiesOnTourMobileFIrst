@@ -15,17 +15,14 @@ import Footer from '../components/Footer.astro';
 ---
 <BaseLayout>
   <Header />
+  <div class="slide-in-panel" aria-hidden="true">
+    <div class="container slide-in-panel__inner">
+      <p class="slide-in-panel__title">Archie on Tour</p>
+      <p class="slide-in-panel__subtitle">Foodtruck Catering direkt zu Ihrem Event</p>
+    </div>
+  </div>
   <main>
     <Hero />
-    <!-- Mobile Parallax Section -->
-    <div class="mobile-parallax" aria-hidden="true">
-      <div class="mobile-parallax__layer mobile-parallax__layer--svg">
-        <img src="/assets/your-background.svg" alt="" />
-      </div>
-      <div class="mobile-parallax__layer mobile-parallax__layer--burger">
-        <img src="/assets/AdobeStock_94926894.jpeg" alt="" />
-      </div>
-    </div>
     <OfferGrid />
     <MenuCTA />
     <ReferencesSection />
