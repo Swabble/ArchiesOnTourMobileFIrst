@@ -13,7 +13,7 @@ body {
   position: relative;
   z-index: 20;
   overflow: visible;
-  background: rgba(0, 0, 0, 0.35);
+  background: var(--color-accent);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(8px);
   transform: translateY(-120%);
@@ -30,15 +30,6 @@ body {
   flex-direction: column;
   align-items: center;
   padding: var(--space-3) 0 var(--space-4);
-}
-
-.slide-in-panel__logo {
-  display: block;
-  width: 100%;
-  height: auto;
-  max-width: none;
-  max-height: none;
-  pointer-events: auto;
 }
 
 @keyframes slide-panel-in {
