@@ -10,6 +10,8 @@
   --color-muted: #4a5568;
   --color-corporate-black: #0a0b0d;
   --color-corporate-white: #ffffff;
+  --logo-bg: var(--color-corporate-black);
+  --logo-text: var(--color-corporate-white);
   --header-height: 68px;
 
   --font-family-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -39,6 +41,12 @@
 
   --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.12);
   --shadow-strong: 0 12px 36px rgba(0, 0, 0, 0.18);
+}
+
+:root.dark,
+.dark {
+  --logo-bg: var(--color-corporate-white);
+  --logo-text: var(--color-corporate-black);
 }
 
 *, *::before, *::after {
