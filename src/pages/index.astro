@@ -12,18 +12,13 @@ import InquirySection from '../components/InquirySection.astro';
 import ContractModal from '../components/ContractModal.astro';
 import AboutSection from '../components/AboutSection.astro';
 import Footer from '../components/Footer.astro';
+import LogoGraphic from '../components/LogoGraphic.astro';
 ---
 <BaseLayout>
   <Header />
   <div class="slide-in-panel" aria-hidden="true">
     <div class="container slide-in-panel__inner">
-      <img
-        class="slide-in-panel__logo"
-        src="/assets/Logo.svg"
-        alt=""
-        aria-hidden="true"
-        loading="lazy"
-      />
+      <LogoGraphic />
     </div>
   </div>
   <main>
