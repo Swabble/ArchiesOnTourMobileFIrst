@@ -12,13 +12,17 @@ import InquirySection from '../components/InquirySection.astro';
 import ContractModal from '../components/ContractModal.astro';
 import AboutSection from '../components/AboutSection.astro';
 import Footer from '../components/Footer.astro';
-import LogoGraphic from '../components/LogoGraphic.astro';
 ---
 <BaseLayout>
   <Header />
   <div class="slide-in-panel" aria-hidden="true">
     <div class="slide-in-panel__inner">
-      <LogoGraphic />
+      <img
+        src="/assets/Logo.svg"
+        alt="Archies on Tour"
+        class="slide-in-panel__logo"
+        loading="lazy"
+      />
     </div>
   </div>
   <main>
