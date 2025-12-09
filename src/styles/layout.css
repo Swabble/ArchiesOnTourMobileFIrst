@@ -33,7 +33,7 @@ body {
 }
 
 .slide-in-panel__logo {
-  width: clamp(160px, 35vw, 320px);
+  width: 100%;
   height: auto;
   filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15));
   pointer-events: auto;
