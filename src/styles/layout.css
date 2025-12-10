@@ -10,6 +10,7 @@ body {
 }
 
 .slide-in-panel {
+  --slide-panel-height: 100vh;
   position: relative;
   z-index: 20;
   overflow: visible;
@@ -48,11 +49,11 @@ body {
     max-height: 0;
   }
   60% {
-    max-height: 100vh;
+    max-height: var(--slide-panel-height);
   }
   100% {
     transform: translateY(0);
-    max-height: 100vh;
+    max-height: var(--slide-panel-height);
   }
 }
 
@@ -60,7 +61,7 @@ body {
   .slide-in-panel {
     animation: none;
     transform: none;
-    max-height: none;
+    max-height: var(--slide-panel-height);
   }
 
   .slide-in-panel.is-ready {
