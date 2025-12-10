@@ -179,11 +179,11 @@ main.content-slide-down {
 @media (max-width: 767px) {
   /* Anchor the panel to the header edge on mobile with a slight overlap */
   .slide-in-panel {
-    --slide-panel-final-offset: calc(-1 * var(--header-height) + 5vh);
+    --slide-panel-final-offset: calc(-1 * var(--header-height) + 9vh);
   }
 
   main {
-    --content-final-offset: calc(-1 * var(--header-height) + 5vh);
+    --content-final-offset: calc(-1 * var(--header-height) + -1vh);
   }
 }
 
