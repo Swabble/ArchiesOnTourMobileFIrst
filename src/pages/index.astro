@@ -94,9 +94,24 @@ import Footer from '../components/Footer.astro';
 
       window.addEventListener('resize', updatePanelHeight, { passive: true });
 
+      // Start animation immediately after height is measured (no delay = no pop-in)
+      // Lock scroll during animation to prevent layout jumps
       window.setTimeout(() => {
+        // Lock body scroll to prevent auto-scroll during animation
+        document.body.classList.add('panel-animating');
+
+        // Use fixed positioning during animation to remove panel from document flow
+        slideInPanel.classList.add('is-animating');
+
+        // Trigger the slide-in animation
         slideInPanel.classList.add('is-ready');
-      }, 1000);
+
+        // After 4 second animation completes, restore normal flow and unlock scroll
+        window.setTimeout(() => {
+          slideInPanel.classList.remove('is-animating');
+          document.body.classList.remove('panel-animating');
+        }, 4000); // Match the animation duration (4000ms)
+      }, 100); // Short delay to ensure height is measured first
     });
   </script>
   <main>

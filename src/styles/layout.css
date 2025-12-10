@@ -9,6 +9,11 @@ body {
   background: var(--color-background);
 }
 
+/* Prevent scroll jumps during panel animation */
+body.panel-animating {
+  overflow: hidden;
+}
+
 .slide-in-panel {
   /* The panel itself animates; keep the logo inside so it inherits the movement. */
   --slide-panel-height: 0px;
@@ -20,14 +25,25 @@ body {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(8px);
   height: var(--slide-panel-height);
+  /* Set height immediately (not animated) to avoid layout shifts */
   max-height: var(--slide-panel-height);
+  /* Start off-screen, will slide down smoothly */
   transform: translateY(-100%);
-  will-change: transform, max-height;
+  will-change: transform;
   pointer-events: none;
 }
 
+/* During animation: use fixed positioning to remove from document flow and prevent layout shifts */
+.slide-in-panel.is-animating {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
 .slide-in-panel.is-ready {
-  animation: slide-panel-in 1800ms cubic-bezier(0.22, 1, 0.36, 1) 120ms forwards;
+  /* 4 second animation with smooth ease-out for deliberate, polished feel */
+  animation: slide-panel-in 4000ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .slide-in-panel__inner {
@@ -49,16 +65,12 @@ body {
 }
 
 @keyframes slide-panel-in {
+  /* Simplified: only animate transform, not max-height, to avoid layout changes and scroll jumps */
   0% {
     transform: translateY(-100%);
-    max-height: 0;
-  }
-  60% {
-    max-height: var(--slide-panel-height);
   }
   100% {
     transform: translateY(0);
-    max-height: var(--slide-panel-height);
   }
 }
 
