@@ -42,8 +42,8 @@ body {
   flex-direction: column;
   align-items: stretch;
   overflow: visible;
-  /* Reduced bottom padding for tighter spacing */
-  padding: var(--space-3) 0 var(--space-2);
+  /* Minimal bottom padding - tight to content */
+  padding: var(--space-3) 0 0;
 }
 
 .slide-in-panel__logo-container {
@@ -147,8 +147,8 @@ body {
 
 main {
   position: relative;
-  /* Reduced top padding for tighter spacing to panel */
-  padding-top: var(--space-3);
+  /* Minimal top padding - tight to panel */
+  padding-top: var(--space-1);
   background: var(--color-background);
   isolation: isolate;
   /* Start with negative margin to compensate for panel space, will animate to 0 */
