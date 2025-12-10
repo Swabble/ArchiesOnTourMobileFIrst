@@ -10,17 +10,23 @@ body {
 }
 
 .slide-in-panel {
+  /* The panel itself animates; keep the logo inside so it inherits the movement. */
+  --slide-panel-height: 0px;
   position: relative;
   z-index: 20;
-  overflow: visible;
+  overflow: hidden;
   background-color: var(--color-accent);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(8px);
+  height: var(--slide-panel-height);
+  max-height: var(--slide-panel-height);
   transform: translateY(-100%);
-  max-height: 0;
-  animation: slide-panel-in 750ms ease-out 120ms forwards;
   will-change: transform, max-height;
   pointer-events: none;
+}
+
+.slide-in-panel.is-ready {
+  animation: slide-panel-in 1100ms cubic-bezier(0.22, 1, 0.36, 1) 120ms forwards;
 }
 
 .slide-in-panel__inner {
@@ -28,13 +34,14 @@ body {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   padding: var(--space-3) 0 var(--space-4);
 }
 
 .slide-in-panel__logo {
   width: 100%;
   height: auto;
+  display: block;
   filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15));
   pointer-events: auto;
 }
@@ -45,19 +52,24 @@ body {
     max-height: 0;
   }
   60% {
-    max-height: 100vh;
+    max-height: var(--slide-panel-height);
   }
   100% {
     transform: translateY(0);
-    max-height: 100vh;
+    max-height: var(--slide-panel-height);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .slide-in-panel {
     animation: none;
-    transform: none;
+    height: auto;
     max-height: none;
+    transform: none;
+  }
+
+  .slide-in-panel.is-ready {
+    animation: none;
   }
 }
 
