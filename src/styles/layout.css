@@ -99,22 +99,22 @@ body {
 }
 
 @keyframes slide-logo-overlay {
-  /* Overlay (paths 28-34) ends 125px higher than main logo */
+  /* Overlay (paths 28-34) ends higher than main logo - responsive vh units */
   0% {
     transform: translateY(-100%);
   }
   100% {
-    transform: translateY(-125px);
+    transform: translateY(-12vh);
   }
 }
 
 @keyframes slide-panel-in {
-  /* Panel slides down but stops partially under header (top portion hidden) */
+  /* Panel slides down but stops partially under header - responsive vh units */
   0% {
     transform: translateY(-100%);
   }
   100% {
-    transform: translateY(-50px);
+    transform: translateY(-5vh);
   }
 }
 
@@ -123,7 +123,7 @@ body {
     animation: none;
     height: auto;
     max-height: none;
-    transform: translateY(-50px);
+    transform: translateY(-5vh);
   }
 
   .slide-in-panel.is-ready {
@@ -132,11 +132,11 @@ body {
 
   .slide-in-panel__logo-overlay {
     animation: none;
-    transform: translateY(-125px);
+    transform: translateY(-12vh);
   }
 
   main {
-    margin-top: -50px;
+    margin-top: -5vh;
     animation: none;
   }
 
@@ -168,7 +168,7 @@ main.content-slide-down {
     margin-top: calc(-1 * var(--slide-panel-height, 0px));
   }
   100% {
-    margin-top: -50px; /* Content 50px higher so panel overlaps it */
+    margin-top: -5vh; /* Content higher so panel overlaps - responsive vh units */
   }
 }
 
