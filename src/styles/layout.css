@@ -10,15 +10,17 @@ body {
 }
 
 .slide-in-panel {
-  --slide-panel-height: 100vh;
+  /* The panel itself animates; keep the logo inside so it inherits the movement. */
+  --slide-panel-height: 0px;
   position: relative;
   z-index: 20;
-  overflow: visible;
+  overflow: hidden;
   background-color: var(--color-accent);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(8px);
+  height: var(--slide-panel-height);
+  max-height: var(--slide-panel-height);
   transform: translateY(-100%);
-  max-height: 0;
   will-change: transform, max-height;
   pointer-events: none;
 }
@@ -61,16 +63,8 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .slide-in-panel {
     animation: none;
-    transform: none;
-    max-height: var(--slide-panel-height);
-  }
-
-  .slide-in-panel.is-ready {
-    animation: none;
-  }
-
-  .slide-in-panel.is-ready .slide-in-panel__logo {
-    animation: none;
+    height: auto;
+    max-height: none;
     transform: none;
   }
 

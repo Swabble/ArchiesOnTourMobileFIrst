@@ -72,6 +72,28 @@ import Footer from '../components/Footer.astro';
 
       if (!slideInPanel) return;
 
+      const inner = slideInPanel.querySelector('.slide-in-panel__inner');
+
+      if (!inner) return;
+
+      const updatePanelHeight = () => {
+        const { height } = inner.getBoundingClientRect();
+
+        // Tie the measured height directly to the animated panel so logo + background move together.
+        slideInPanel.style.setProperty('--slide-panel-height', `${height}px`);
+      };
+
+      const resizeObserver = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(updatePanelHeight);
+
+      updatePanelHeight();
+
+      if (resizeObserver) {
+        resizeObserver.observe(inner);
+        window.addEventListener('beforeunload', () => resizeObserver.disconnect());
+      }
+
+      window.addEventListener('resize', updatePanelHeight, { passive: true });
+
       window.setTimeout(() => {
         slideInPanel.classList.add('is-ready');
       }, 300);
