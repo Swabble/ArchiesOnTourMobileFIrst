@@ -17,7 +17,7 @@ body {
   z-index: 20;
   /* Allow the logo's shadow/glow to render outside the panel bounds while the panel moves. */
   overflow: visible;
-  background-color: var(--color-accent);
+  /* Removed background - panel is transparent, only logo visible */
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(8px);
   height: var(--slide-panel-height);
@@ -30,8 +30,8 @@ body {
 }
 
 .slide-in-panel.is-ready {
-  /* 4 second animation with smooth ease-out for deliberate, polished feel */
-  animation: slide-panel-in 4000ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  /* 6 second animation - slower and more deliberate than content movement */
+  animation: slide-panel-in 6000ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .slide-in-panel__inner {
