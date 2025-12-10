@@ -15,8 +15,9 @@ Für Produktions-Builds: `npm run build` und `npm run preview`.
 
 Legen Sie eine `.env` mit folgenden Schlüsseln an (siehe `.env.example`):
 
-- `PUBLIC_DRIVE_API_KEY` – Google API Key für Drive/Calendar.
-- `PUBLIC_MENU_FOLDER_ID` / `MENU_SHEET_URL` – Quelle der Menü-Daten (CSV/JSON oder Sheet-Export).
+- `PUBLIC_DRIVE_API_KEY` – Google API Key für Drive/Calendar (reicht als Lesezugriff für Sheets API).
+- `MENU_SHEET_ID` / `MENU_SHEET_RANGE` – Bevorzugt: Google Sheets API Range, kein Publish nötig.
+- `PUBLIC_MENU_FOLDER_ID` / `MENU_SHEET_URL` – Alternative Menü-Quellen (Drive-Ordner oder Sheet-Export).
 - `PUBLIC_GALLERY_FOLDER_ID` – Drive-Ordner für Galerie-Bilder.
 - `PUBLIC_CALENDAR_ID` – Google Calendar ID für Verfügbarkeiten.
 
@@ -24,7 +25,7 @@ Ohne gültige Keys greifen Fallback-Daten (Demo-Menü, Galerie-JSON, Beispielter
 
 ## Datenpflege
 
-- **Menü:** Pflege im angebundenen Google Sheet. Spalten sollten Titel/Name, Preis, Beschreibung, Einheit, Hinweise, Kategorie enthalten. Der Export-Link wird in `MENU_SHEET_URL` hinterlegt.
+- **Menü:** Pflege im angebundenen Google Sheet. Spalten sollten Titel/Name, Preis, Beschreibung, Einheit, Hinweise, Kategorie enthalten. Per `MENU_SHEET_ID` liest die Build-Logik direkt via Sheets API (nur Lesezugriff mit API Key, kein Publish des Sheets nötig). Alternativ kann weiterhin ein Export-Link in `MENU_SHEET_URL` oder ein Drive-Ordner genutzt werden.
 - **Galerie:** Standard-Fallback liegt unter `public/data/gallery.json` (Felder: `url`, `thumbnail`, `alt`). Bei aktiver Drive-Integration wird der Ordner per API geladen.
 - **Kalender:** Google Calendar muss öffentlich lesbar sein; ID in `PUBLIC_CALENDAR_ID` eintragen.
 
@@ -60,5 +61,6 @@ Für IONOS Deploy Now als statisches Deployment:
 Wichtige Deploy-Now-ENV-Variablen für die Menü-API (siehe `.env.example`):
 
 - `PUBLIC_DRIVE_API_KEY`
+- `MENU_SHEET_ID` / `MENU_SHEET_RANGE`
 - `PUBLIC_MENU_FOLDER_ID`
 - `MENU_SHEET_URL`
