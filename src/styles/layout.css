@@ -136,7 +136,7 @@ body {
   }
 
   main {
-    margin-top: 0;
+    margin-top: -50px;
     animation: none;
   }
 
@@ -166,7 +166,7 @@ main.content-slide-down {
     margin-top: calc(-1 * var(--slide-panel-height, 0px));
   }
   100% {
-    margin-top: 0;
+    margin-top: -50px; /* Content 50px higher so panel overlaps it */
   }
 }
 
