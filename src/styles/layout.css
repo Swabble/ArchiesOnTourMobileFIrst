@@ -83,6 +83,8 @@ body {
   display: block;
   /* Removed drop-shadow for clean appearance */
   pointer-events: auto;
+  /* Default end offset keeps overlay higher than base logo */
+  --logo-overlay-final-offset: -12vh;
 }
 
 /* Paths 28-34 use accent color for distinction */
@@ -106,7 +108,7 @@ body {
     transform: translateY(-100%);
   }
   100% {
-    transform: translateY(-12vh);
+    transform: translateY(var(--logo-overlay-final-offset));
   }
 }
 
@@ -134,7 +136,7 @@ body {
 
   .slide-in-panel__logo-overlay {
     animation: none;
-    transform: translateY(-12vh);
+    transform: translateY(var(--logo-overlay-final-offset));
   }
 
   main {
@@ -179,11 +181,16 @@ main.content-slide-down {
 @media (max-width: 767px) {
   /* Anchor the panel to the header edge on mobile with a slight overlap */
   .slide-in-panel {
-    --slide-panel-final-offset: calc(-1 * var(--header-height) + 9vh);
+    --slide-panel-final-offset: calc(-1 * var(--header-height) + 5vh);
   }
 
   main {
-    --content-final-offset: calc(-1 * var(--header-height) + -1vh);
+    --content-final-offset: calc(-1 * var(--header-height) + 5vh);
+  }
+
+  /* Sink the overlay further down on mobile so it sits lower over the logo */
+  .slide-in-panel__logo-overlay {
+    --logo-overlay-final-offset: -6vh;
   }
 }
 
