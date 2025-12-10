@@ -17,8 +17,9 @@ body {
   z-index: 20;
   /* Allow the logo's shadow/glow to render outside the panel bounds while the panel moves. */
   overflow: visible;
-  /* Removed background - panel is transparent, only logo visible */
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  /* Match website background for consistency */
+  background-color: var(--color-background);
+  /* Removed border - no white line between panel and content */
   backdrop-filter: blur(8px);
   height: var(--slide-panel-height);
   /* Set height immediately (not animated) to avoid layout shifts */
@@ -79,6 +80,11 @@ body {
   display: block;
   filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15));
   pointer-events: auto;
+}
+
+/* Paths 28-34 use accent color for distinction */
+.slide-in-panel__logo-overlay path {
+  fill: var(--color-accent);
 }
 
 /* Main logo slides with panel (6 seconds) */
