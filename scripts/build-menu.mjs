@@ -179,6 +179,65 @@ async function fetchSheet(url, logger = console) {
   }
 }
 
+async function fetchSheetWithApi(sheetId, apiKey, range = 'A1:Z', logger = console) {
+  const encodedRange = encodeURIComponent(range);
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodedRange}?key=${apiKey}`;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 8000);
+
+  log('info', 'Fetching menu via Sheets API', { sheetId, range });
+
+  try {
+    const response = await fetch(url, {
+      signal: controller.signal,
+      headers: { Accept: 'application/json' }
+    });
+
+    const body = await response.text();
+    let values = [];
+
+    try {
+      const parsed = JSON.parse(body);
+      values = Array.isArray(parsed?.values) ? parsed.values : [];
+    } catch (err) {
+      log('warn', 'Sheets API JSON parse failed', { message: err.message });
+    }
+
+    log('info', 'Sheets API response received', {
+      status: response.status,
+      valueRows: values.length,
+      range,
+      preview: body.slice(0, 200)
+    });
+
+    if (!response.ok) {
+      return { items: FALLBACK_ITEMS, status: response.status, source: 'sheet-api-error' };
+    }
+
+    const [headers, ...rows] = values;
+    if (!headers?.length) {
+      log('warn', 'Sheets API returned empty header row, using fallback');
+      return { items: FALLBACK_ITEMS, status: 204, source: 'sheet-api-empty' };
+    }
+
+    const items = parseMatrix(headers, rows, logger);
+    const source = items.length ? 'sheet-api' : 'fallback-empty';
+
+    log('info', 'Sheets API parsed menu', { range, itemCount: items.length });
+
+    if (!items.length) {
+      log('warn', 'Sheets API parsed menu empty, using fallback');
+    }
+
+    return { items: items.length ? items : FALLBACK_ITEMS, status: 200, source };
+  } catch (error) {
+    log('error', 'Sheets API fetch failed', { message: error.message, range });
+    return { items: FALLBACK_ITEMS, status: 502, source: 'sheet-api-exception' };
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 async function fetchDriveWorkbook(folderId, apiKey, logger = console) {
   const query = encodeURIComponent(`'${folderId}' in parents and mimeType != 'application/vnd.google-apps.folder' and trashed = false`);
   const listUrl =
@@ -244,11 +303,15 @@ async function writeMenuFile(payload) {
 }
 
 async function buildMenu() {
+  const sheetId = process.env.MENU_SHEET_ID;
+  const sheetRange = process.env.MENU_SHEET_RANGE || 'A1:Z';
   const sheetUrl = process.env.MENU_SHEET_URL;
   const driveFolderId = process.env.PUBLIC_MENU_FOLDER_ID;
   const driveApiKey = process.env.PUBLIC_DRIVE_API_KEY;
 
   log('info', 'Starting menu build', {
+    sheetId: sheetId ? '✓ Configured' : '✗ Missing',
+    sheetRange,
     sheetUrl: sheetUrl ? '✓ Configured' : '✗ Missing',
     driveFolderId: driveFolderId ? '✓ Configured' : '✗ Missing',
     driveApiKey: driveApiKey ? '✓ Configured' : '✗ Missing'
@@ -256,12 +319,17 @@ async function buildMenu() {
 
   let result = null;
 
-  if (sheetUrl) {
-    log('info', 'Attempting to fetch from Google Sheet');
+  if (sheetId && driveApiKey) {
+    log('info', 'Attempting Sheets API fetch first');
+    result = await fetchSheetWithApi(sheetId, driveApiKey, sheetRange);
+  }
+
+  if ((!result || result.source !== 'sheet-api') && sheetUrl) {
+    log('info', 'Attempting to fetch from Google Sheet export');
     result = await fetchSheet(sheetUrl);
   }
 
-  if ((!result || result.source !== 'sheet') && driveFolderId && driveApiKey) {
+  if ((!result || (result.source !== 'sheet-api' && result.source !== 'sheet')) && driveFolderId && driveApiKey) {
     log('info', 'Attempting to fetch from Google Drive folder');
     result = await fetchDriveWorkbook(driveFolderId, driveApiKey);
   }
