@@ -65,6 +65,17 @@ import Footer from '../components/Footer.astro';
       </svg>
     </div>
   </div>
+  <script>
+    window.addEventListener('load', () => {
+      const slideInPanel = document.querySelector('.slide-in-panel');
+
+      if (!slideInPanel) return;
+
+      window.setTimeout(() => {
+        slideInPanel.classList.add('is-ready');
+      }, 300);
+    });
+  </script>
   <main>
     <Hero />
     <OfferGrid />
