@@ -52,36 +52,6 @@ body {
   pointer-events: auto;
 }
 
-/* SVG paths start hidden and fade in */
-.slide-in-panel__logo path {
-  opacity: 0;
-}
-
-/* Paths 1-27: Normal speed fade-in (6 seconds) */
-.slide-in-panel.is-ready .slide-in-panel__logo path {
-  animation: fade-in-path 6000ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* Paths 28-34: Slower fade-in (8 seconds) */
-.slide-in-panel.is-ready .slide-in-panel__logo #logo-path-28,
-.slide-in-panel.is-ready .slide-in-panel__logo #logo-path-29,
-.slide-in-panel.is-ready .slide-in-panel__logo #logo-path-30,
-.slide-in-panel.is-ready .slide-in-panel__logo #logo-path-31,
-.slide-in-panel.is-ready .slide-in-panel__logo #logo-path-32,
-.slide-in-panel.is-ready .slide-in-panel__logo #logo-path-33,
-.slide-in-panel.is-ready .slide-in-panel__logo #logo-path-34 {
-  animation: fade-in-path 8000ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes fade-in-path {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
 @keyframes slide-panel-in {
   /* Simplified: only animate transform, not max-height, to avoid layout changes and scroll jumps */
   0% {
@@ -101,11 +71,6 @@ body {
   }
 
   .slide-in-panel.is-ready {
-    animation: none;
-  }
-
-  .slide-in-panel__logo path {
-    opacity: 1;
     animation: none;
   }
 
