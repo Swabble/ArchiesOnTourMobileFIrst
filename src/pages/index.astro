@@ -66,15 +66,28 @@ import Footer from '../components/Footer.astro';
     </div>
   </div>
   <script>
-    window.addEventListener('load', () => {
-      const slideInPanel = document.querySelector('.slide-in-panel');
+    if (typeof window !== 'undefined') {
+      const panel = document.querySelector('.slide-in-panel');
+      const logo = panel?.querySelector('.slide-in-panel__logo');
 
-      if (!slideInPanel) return;
+      const setPanelHeight = () => {
+        if (!panel || !logo) return;
 
-      window.setTimeout(() => {
-        slideInPanel.classList.add('is-ready');
-      }, 300);
-    });
+        const logoHeight = logo.getBoundingClientRect().height;
+        if (!logoHeight) return;
+
+        panel.style.setProperty('--slide-panel-height', `${Math.ceil(logoHeight)}px`);
+      };
+
+      const resizeObserver = logo ? new ResizeObserver(setPanelHeight) : null;
+
+      if (logo) {
+        resizeObserver?.observe(logo);
+      }
+      window.addEventListener('resize', setPanelHeight);
+
+      setPanelHeight();
+    }
   </script>
   <main>
     <Hero />
