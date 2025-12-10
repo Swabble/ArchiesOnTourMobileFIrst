@@ -172,7 +172,6 @@ header.site-header::after {
     background: transparent;
     padding: 0;
     transform: none;
-    transition: none;
     box-shadow: none;
     overflow-y: visible;
   }
@@ -180,7 +179,6 @@ header.site-header::after {
     opacity: 1;
     transform: none;
     position: relative;
-    transition: none;
   }
   .nav__list li:not(:last-child)::after {
     content: '';
