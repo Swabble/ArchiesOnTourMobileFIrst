@@ -37,7 +37,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0;
+  padding: var(--space-3) 0 var(--space-4);
 }
 
 .slide-in-panel__logo {
@@ -66,6 +66,15 @@ body {
     animation: none;
     transform: none;
     max-height: var(--slide-panel-height);
+  }
+
+  .slide-in-panel.is-ready {
+    animation: none;
+  }
+
+  .slide-in-panel.is-ready .slide-in-panel__logo {
+    animation: none;
+    transform: none;
   }
 }
 
