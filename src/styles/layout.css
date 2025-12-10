@@ -9,14 +9,10 @@ body {
   background: var(--color-background);
 }
 
-/* Prevent scroll jumps during panel animation */
-body.panel-animating {
-  overflow: hidden;
-}
-
 .slide-in-panel {
   /* The panel itself animates; keep the logo inside so it inherits the movement. */
   --slide-panel-height: 0px;
+  /* Keep in normal document flow so content is pushed down, not overlaid */
   position: relative;
   z-index: 20;
   /* Allow the logo's shadow/glow to render outside the panel bounds while the panel moves. */
@@ -31,14 +27,6 @@ body.panel-animating {
   transform: translateY(-100%);
   will-change: transform;
   pointer-events: none;
-}
-
-/* During animation: use fixed positioning to remove from document flow and prevent layout shifts */
-.slide-in-panel.is-animating {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
 }
 
 .slide-in-panel.is-ready {
