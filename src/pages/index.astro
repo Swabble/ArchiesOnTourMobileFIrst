@@ -107,17 +107,18 @@ import Footer from '../components/Footer.astro';
           }
         };
 
-        // Lock scroll position during animation
+        // Lock scroll position during initial animation phase
         window.addEventListener('scroll', lockScroll, { passive: false });
 
         // Trigger the slide-in animation
         slideInPanel.classList.add('is-ready');
 
-        // After 4 second animation completes, unlock scroll
+        // After 1.5 seconds, unlock scroll so user can scroll during rest of animation
+        // (Total animation is 4s, so user gets smooth start + 2.5s of scroll control)
         window.setTimeout(() => {
           scrollLockActive = false;
           window.removeEventListener('scroll', lockScroll);
-        }, 4000); // Match the animation duration (4000ms)
+        }, 1500); // Lock for first 1.5 seconds only
       }, 100); // Short delay to ensure height is measured first
     });
   </script>
