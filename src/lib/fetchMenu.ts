@@ -14,6 +14,15 @@ type MenuGroup = {
   categories: Record<string, MenuItem[]>;
 };
 
+type MenuFetchResult = {
+  items: MenuItem[];
+  source: string;
+  rawPayload: unknown;
+  ok: boolean;
+  status: number;
+  fetchedAt?: string;
+};
+
 function render(items: MenuItem[], keepErrorVisible = false) {
   const container = document.getElementById('menu-categories-container');
   const loading = document.getElementById('menu-loading');
@@ -96,13 +105,44 @@ function render(items: MenuItem[], keepErrorVisible = false) {
   });
 }
 
-async function fetchRemoteMenu(): Promise<{
-  items: MenuItem[];
-  source: string;
-  rawPayload: unknown;
-  ok: boolean;
-  status: number;
-}> {
+function formatDate(value?: string) {
+  if (!value) return '–';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleString('de-DE');
+}
+
+function describeSource(result: MenuFetchResult) {
+  if (!result.ok) return 'Fehler beim Laden – Fallback aktiv';
+  if (result.source === 'sheet') return 'Menü direkt aus Google Sheet geladen';
+  if (result.source === 'drive') return 'Menü aus Drive-Tabelle geladen';
+  if (result.source === 'fallback-empty') return 'Quelle leer – Fallback-Einträge genutzt';
+  if (result.source === 'missing-config') return 'Keine Sheet-URL konfiguriert – Fallback-Einträge';
+  if (result.source === 'api-fallback' || result.source === 'fallback') return 'API-Fallback aktiv';
+  return `Quelle: ${result.source}`;
+}
+
+function updateDebugPanel(result: MenuFetchResult) {
+  const debugCard = document.getElementById('menu-debug');
+  const status = document.getElementById('menu-debug-status');
+  const hint = document.getElementById('menu-debug-hint');
+  const source = document.getElementById('menu-debug-source');
+  const fetched = document.getElementById('menu-debug-fetched');
+  const count = document.getElementById('menu-debug-count');
+  const payload = document.getElementById('menu-debug-payload');
+
+  if (!debugCard || !status || !hint || !source || !fetched || !count || !payload) return;
+
+  debugCard.classList.remove('is-hidden');
+  status.textContent = result.ok ? `Status ${result.status}` : `Fehler ${result.status}`;
+  hint.textContent = describeSource(result);
+  source.textContent = result.source || 'unbekannt';
+  fetched.textContent = formatDate(result.fetchedAt);
+  count.textContent = String(result.items.length);
+  payload.textContent = JSON.stringify(result.rawPayload ?? {}, null, 2);
+}
+
+async function fetchRemoteMenu(): Promise<MenuFetchResult> {
   const apiUrl = '/menu.json';
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 8000);
@@ -121,6 +161,7 @@ async function fetchRemoteMenu(): Promise<{
     ? ((payload as { items?: MenuItem[] }).items as MenuItem[])
     : [];
   const sourceValue = (payload as { source?: string }).source ?? 'unknown';
+  const fetchedAt = (payload as { fetchedAt?: string }).fetchedAt;
 
   console.info(LOG_PREFIX, 'Menu API response received', {
     status: res.status,
@@ -131,6 +172,7 @@ async function fetchRemoteMenu(): Promise<{
   return {
     items: items.length ? items : FALLBACK_ITEMS,
     source: items.length ? sourceValue : 'fallback',
+    fetchedAt,
     rawPayload: payload,
     ok: res.ok,
     status: res.status
@@ -147,10 +189,20 @@ async function init() {
       error?.classList.remove('is-hidden');
     }
     render(result.items, !result.ok);
+    updateDebugPanel(result);
   } catch (err) {
     console.warn(LOG_PREFIX, 'Menu fallback after error', err);
     error?.classList.remove('is-hidden');
+    const fallbackResult: MenuFetchResult = {
+      items: FALLBACK_ITEMS,
+      source: 'exception',
+      fetchedAt: undefined,
+      rawPayload: { error: (err as Error).message },
+      ok: false,
+      status: 500
+    };
     render(FALLBACK_ITEMS, true);
+    updateDebugPanel(fallbackResult);
   }
 }
 
