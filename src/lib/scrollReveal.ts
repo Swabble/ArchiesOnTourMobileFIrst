@@ -12,6 +12,12 @@ if (typeof window !== 'undefined') {
       { threshold: 0.2 }
     );
 
-    document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+    const revealElements = Array.from(document.querySelectorAll<HTMLElement>('.reveal'));
+
+    revealElements.forEach((el, index) => {
+      const delay = Math.min(index * 120, 600);
+      el.style.setProperty('--reveal-delay', `${delay}ms`);
+      observer.observe(el);
+    });
   });
 }
