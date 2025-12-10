@@ -24,6 +24,37 @@ import menuScript from '../lib/fetchMenu.ts?url';
     <div id="menu-categories-container" class="menu-categories" aria-live="polite">
       <p class="menu-empty">Noch keine Produkte geladen.</p>
     </div>
+
+    <section id="menu-debug" class="menu-debug is-hidden" aria-live="polite">
+      <div class="menu-debug__header">
+        <div>
+          <p class="section-lead">Menü-Datenquelle</p>
+          <h3>Google Sheet / Static JSON</h3>
+        </div>
+        <div class="menu-debug__meta" id="menu-debug-status">Wird geladen …</div>
+      </div>
+      <p class="menu-debug__hint" id="menu-debug-hint">
+        Sobald das Menü geladen ist, erscheinen hier Status und Quelle (Sheet, Drive oder Fallback).
+      </p>
+      <dl class="menu-stats">
+        <div class="menu-stats__item">
+          <dt class="menu-stats__label">Quelle</dt>
+          <dd class="menu-stats__value" id="menu-debug-source">–</dd>
+        </div>
+        <div class="menu-stats__item">
+          <dt class="menu-stats__label">Einträge</dt>
+          <dd class="menu-stats__value" id="menu-debug-count">0</dd>
+        </div>
+        <div class="menu-stats__item">
+          <dt class="menu-stats__label">Stand</dt>
+          <dd class="menu-stats__value" id="menu-debug-fetched">–</dd>
+        </div>
+      </dl>
+      <details class="menu-json">
+        <summary>Letztes Payload</summary>
+        <pre class="menu-json__pre" id="menu-debug-payload">Warte auf Daten …</pre>
+      </details>
+    </section>
   </div>
 </section>
 <script type="module" src={menuScript} defer></script>
