@@ -73,6 +73,15 @@ body {
   .slide-in-panel.is-ready {
     animation: none;
   }
+
+  main {
+    margin-top: 0;
+    animation: none;
+  }
+
+  main.content-slide-down {
+    animation: none;
+  }
 }
 
 main {
@@ -80,13 +89,23 @@ main {
   padding-top: var(--space-6);
   background: var(--color-background);
   isolation: isolate;
+  /* Start with negative margin to compensate for panel space, will animate to 0 */
+  margin-top: calc(-1 * var(--slide-panel-height, 0px));
+  will-change: margin-top;
 }
 
-main {
-  position: relative;
-  padding-top: var(--space-6);
-  background: var(--color-background);
-  isolation: isolate;
+/* Animate main content down as panel slides in */
+main.content-slide-down {
+  animation: slide-content-down 4000ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slide-content-down {
+  0% {
+    margin-top: calc(-1 * var(--slide-panel-height, 0px));
+  }
+  100% {
+    margin-top: 0;
+  }
 }
 
 .section {

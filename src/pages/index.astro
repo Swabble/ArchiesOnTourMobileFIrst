@@ -76,11 +76,18 @@ import Footer from '../components/Footer.astro';
 
       if (!inner) return;
 
+      const mainElement = document.querySelector('main');
+
       const updatePanelHeight = () => {
         const { height } = inner.getBoundingClientRect();
 
         // Tie the measured height directly to the animated panel so logo + background move together.
         slideInPanel.style.setProperty('--slide-panel-height', `${height}px`);
+
+        // Also set on main so it knows how much to move
+        if (mainElement) {
+          mainElement.style.setProperty('--slide-panel-height', `${height}px`);
+        }
       };
 
       const resizeObserver = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(updatePanelHeight);
@@ -110,8 +117,11 @@ import Footer from '../components/Footer.astro';
         // Lock scroll position during initial animation phase
         window.addEventListener('scroll', lockScroll, { passive: false });
 
-        // Trigger the slide-in animation
+        // Trigger the slide-in animations (panel + content move together)
         slideInPanel.classList.add('is-ready');
+        if (mainElement) {
+          mainElement.classList.add('content-slide-down');
+        }
 
         // After 1.5 seconds, unlock scroll so user can scroll during rest of animation
         // (Total animation is 4s, so user gets smooth start + 2.5s of scroll control)
