@@ -105,26 +105,35 @@ header.site-header::after {
   transform: translateX(0);
 }
 
+/* Prevent desktop nav flicker by defaulting items to visible */
 .nav__list li {
-  opacity: 0;
-  transform: translateX(20px);
-  transition: opacity 0.4s ease, transform 0.4s ease;
-}
-
-.nav__list.open li {
   opacity: 1;
-  transform: translateX(0);
+  transform: none;
+  transition: none;
 }
 
-.nav__list.open li:nth-child(1) { transition-delay: 0.05s; }
-.nav__list.open li:nth-child(2) { transition-delay: 0.1s; }
-.nav__list.open li:nth-child(3) { transition-delay: 0.15s; }
-.nav__list.open li:nth-child(4) { transition-delay: 0.2s; }
-.nav__list.open li:nth-child(5) { transition-delay: 0.25s; }
-.nav__list.open li:nth-child(6) { transition-delay: 0.3s; }
-.nav__list.open li:nth-child(7) { transition-delay: 0.35s; }
-.nav__list.open li:nth-child(8) { transition-delay: 0.4s; }
-.nav__list.open li:nth-child(9) { transition-delay: 0.45s; }
+@media (max-width: 767px) {
+  .nav__list li {
+    opacity: 0;
+    transform: translateX(20px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+
+  .nav__list.open li {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .nav__list.open li:nth-child(1) { transition-delay: 0.05s; }
+  .nav__list.open li:nth-child(2) { transition-delay: 0.1s; }
+  .nav__list.open li:nth-child(3) { transition-delay: 0.15s; }
+  .nav__list.open li:nth-child(4) { transition-delay: 0.2s; }
+  .nav__list.open li:nth-child(5) { transition-delay: 0.25s; }
+  .nav__list.open li:nth-child(6) { transition-delay: 0.3s; }
+  .nav__list.open li:nth-child(7) { transition-delay: 0.35s; }
+  .nav__list.open li:nth-child(8) { transition-delay: 0.4s; }
+  .nav__list.open li:nth-child(9) { transition-delay: 0.45s; }
+}
 
 .nav__list li:not(:last-child)::after {
   content: '';
@@ -172,6 +181,7 @@ header.site-header::after {
     background: transparent;
     padding: 0;
     transform: none;
+    transition: none;
     box-shadow: none;
     overflow-y: visible;
   }
@@ -179,6 +189,7 @@ header.site-header::after {
     opacity: 1;
     transform: none;
     position: relative;
+    transition: none;
   }
   .nav__list li:not(:last-child)::after {
     content: '';
