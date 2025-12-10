@@ -181,16 +181,16 @@ main.content-slide-down {
 @media (max-width: 767px) {
   /* Anchor the panel to the header edge on mobile with a slight overlap */
   .slide-in-panel {
-    --slide-panel-final-offset: calc(-1 * var(--header-height) + 5vh);
+    --slide-panel-final-offset: calc(-1 * var(--header-height) + 8vh);
   }
 
   main {
-    --content-final-offset: calc(-1 * var(--header-height) + 5vh);
+    --content-final-offset: calc(-1 * var(--header-height) + 4vh);
   }
 
   /* Sink the overlay further down on mobile so it sits lower over the logo */
   .slide-in-panel__logo-overlay {
-    --logo-overlay-final-offset: -6vh;
+    --logo-overlay-final-offset: -4vh;
   }
 }
 
