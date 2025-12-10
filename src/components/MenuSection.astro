@@ -34,7 +34,8 @@ import menuScript from '../lib/fetchMenu.ts?url';
         <div class="menu-debug__meta" id="menu-debug-status">Wird geladen …</div>
       </div>
       <p class="menu-debug__hint" id="menu-debug-hint">
-        Sobald das Menü geladen ist, erscheinen hier Status und Quelle (Sheet, Drive oder Fallback).
+        Sobald das Menü geladen ist, erscheinen hier Status und Quelle (Sheets API, Sheet-Export, Drive oder Fallback).
+        Typische Fehlercodes: 403 (API-Key/Freigabe fehlt) oder 404 (ID/Range nicht gefunden).
       </p>
       <dl class="menu-stats">
         <div class="menu-stats__item">

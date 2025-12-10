@@ -113,8 +113,13 @@ function formatDate(value?: string) {
 }
 
 function describeSource(result: MenuFetchResult) {
-  if (!result.ok) return 'Fehler beim Laden – Fallback aktiv';
+  if (!result.ok) {
+    if (result.status === 403) return '403: API-Key oder Freigabe für Sheet/Drive fehlt';
+    if (result.status === 404) return '404: Sheet-ID, Range oder Drive-Datei nicht gefunden';
+    return 'Fehler beim Laden – Fallback aktiv';
+  }
   if (result.source === 'sheet') return 'Menü direkt aus Google Sheet geladen';
+  if (result.source === 'sheet-api') return 'Menü über Google Sheets API geladen';
   if (result.source === 'drive') return 'Menü aus Drive-Tabelle geladen';
   if (result.source === 'fallback-empty') return 'Quelle leer – Fallback-Einträge genutzt';
   if (result.source === 'missing-config') return 'Keine Sheet-URL konfiguriert – Fallback-Einträge';
