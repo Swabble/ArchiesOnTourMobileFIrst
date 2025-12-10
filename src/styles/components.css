@@ -5,14 +5,6 @@ body.menu-open {
   height: 100%;
 }
 
-header.site-header {
-  position: sticky;
-  top: 0;
-  z-index: 30;
-  backdrop-filter: blur(10px);
-  background: transparent;
-}
-
 header.site-header::after {
   content: '';
   position: absolute;
@@ -21,14 +13,6 @@ header.site-header::after {
   right: var(--space-4);
   height: 1px;
   background: rgba(255, 255, 255, 0.08);
-}
-
-.header__inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: var(--header-height);
-  gap: var(--space-4);
 }
 
 .logo {

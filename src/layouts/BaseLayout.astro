@@ -16,6 +16,27 @@ const { title = 'Archie on Tour – Foodtruck Catering', description = 'Foodtruc
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <script>
+      window.tailwind = window.tailwind || {};
+      window.tailwind.config = {
+        safelist: [
+          'translate-y-0',
+          '-translate-y-full',
+          'max-h-0',
+          'max-h-[var(--slide-panel-height)]',
+          'h-[var(--slide-panel-height)]',
+          'transition-[transform,max-height]',
+          'duration-[1100ms]',
+          'ease-[cubic-bezier(0.22,1,0.36,1)]',
+          'delay-150',
+          'motion-reduce:transition-none',
+          'motion-reduce:duration-0',
+          'motion-reduce:transform-none',
+          'motion-reduce:max-h-[var(--slide-panel-height)]'
+        ]
+      };
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link

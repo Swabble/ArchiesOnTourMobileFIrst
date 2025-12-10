@@ -15,10 +15,27 @@ import Footer from '../components/Footer.astro';
 ---
 <BaseLayout>
   <Header />
-  <div class="slide-in-panel" aria-hidden="true">
-    <div class="slide-in-panel__inner">
+  <div
+    class="slide-in-panel relative z-20 overflow-hidden bg-[var(--color-accent)] border-b border-white/10 backdrop-blur-md pointer-events-none transform-gpu h-[var(--slide-panel-height)] max-h-0 -translate-y-full transition-[transform,max-height] duration-[1100ms] ease-[cubic-bezier(0.22,1,0.36,1)] delay-150 motion-reduce:transition-none motion-reduce:duration-0 motion-reduce:transform-none motion-reduce:max-h-[var(--slide-panel-height)]"
+    aria-hidden="true"
+    data-slide-panel
+    style="--slide-panel-height: 0px;"
+  >
+    <div
+      class="slide-in-panel__inner flex w-full flex-col items-stretch pt-[var(--space-3)] pb-[var(--space-4)]"
+      data-slide-panel-inner
+    >
       <!-- Use viewBox-driven sizing so the logo can fill the panel width without inheriting the exported pixel dimensions. -->
-      <svg class="slide-in-panel__logo" role="img" aria-label="Archies on Tour" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="85.728 293.852 422.701 245.892" preserveAspectRatio="xMidYMid meet" xmlns:bx="https://boxy-svg.com">
+      <svg
+        class="slide-in-panel__logo block h-auto w-full drop-shadow-[0_8px_16px_rgba(0,0,0,0.15)] pointer-events-auto"
+        role="img"
+        aria-label="Archies on Tour"
+        xmlns="http://www.w3.org/2000/svg"
+        version="1.1"
+        viewBox="85.728 293.852 422.701 245.892"
+        preserveAspectRatio="xMidYMid meet"
+        xmlns:bx="https://boxy-svg.com"
+      >
         <defs>
           <clipPath id="clip-0">
             <rect x="78.794" y="199.733" width="422.705" height="245.902" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" transform="matrix(1, 0.000061, 0, 1, 6.92993, 94.087869)"/>
@@ -68,19 +85,22 @@ import Footer from '../components/Footer.astro';
   </div>
   <script>
     window.addEventListener('load', () => {
-      const slideInPanel = document.querySelector('.slide-in-panel');
+      const slideInPanel = document.querySelector('[data-slide-panel]');
 
       if (!slideInPanel) return;
 
-      const inner = slideInPanel.querySelector('.slide-in-panel__inner');
+      const inner = slideInPanel.querySelector('[data-slide-panel-inner]');
 
       if (!inner) return;
+
+      const readyClasses = ['translate-y-0', 'max-h-[var(--slide-panel-height)]'];
+      const initialClasses = ['-translate-y-full', 'max-h-0'];
 
       const updatePanelHeight = () => {
         const { height } = inner.getBoundingClientRect();
 
         // Tie the measured height directly to the animated panel so logo + background move together.
-        slideInPanel.style.setProperty('--slide-panel-height', `${height}px`);
+        slideInPanel.style.setProperty('--slide-panel-height', `${Math.round(height)}px`);
       };
 
       const resizeObserver = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(updatePanelHeight);
@@ -95,7 +115,8 @@ import Footer from '../components/Footer.astro';
       window.addEventListener('resize', updatePanelHeight, { passive: true });
 
       window.setTimeout(() => {
-        slideInPanel.classList.add('is-ready');
+        slideInPanel.classList.remove(...initialClasses);
+        slideInPanel.classList.add(...readyClasses);
       }, 300);
     });
   </script>
