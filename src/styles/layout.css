@@ -12,6 +12,8 @@ body {
 .slide-in-panel {
   /* The panel itself animates; keep the logo inside so it inherits the movement. */
   --slide-panel-height: 0px;
+  /* Default end position overlaps the header by 5vh */
+  --slide-panel-final-offset: -5vh;
   /* Keep in normal document flow so content is pushed down, not overlaid */
   position: relative;
   /* Lower z-index so content sits on top */
@@ -81,6 +83,8 @@ body {
   display: block;
   /* Removed drop-shadow for clean appearance */
   pointer-events: auto;
+  /* Default end offset keeps overlay higher than base logo */
+  --logo-overlay-final-offset: -12vh;
 }
 
 /* Paths 28-34 use accent color for distinction */
@@ -104,26 +108,26 @@ body {
     transform: translateY(-100%);
   }
   100% {
-    transform: translateY(-12vh);
+    transform: translateY(var(--logo-overlay-final-offset));
   }
 }
 
-@keyframes slide-panel-in {
-  /* Panel slides down but stops partially under header - responsive vh units */
-  0% {
-    transform: translateY(-100%);
+  @keyframes slide-panel-in {
+    /* Panel slides down but stops partially under header - responsive vh units */
+    0% {
+      transform: translateY(-100%);
+    }
+    100% {
+      transform: translateY(var(--slide-panel-final-offset));
+    }
   }
-  100% {
-    transform: translateY(-5vh);
-  }
-}
 
 @media (prefers-reduced-motion: reduce) {
   .slide-in-panel {
     animation: none;
     height: auto;
     max-height: none;
-    transform: translateY(-5vh);
+    transform: translateY(var(--slide-panel-final-offset));
   }
 
   .slide-in-panel.is-ready {
@@ -132,11 +136,11 @@ body {
 
   .slide-in-panel__logo-overlay {
     animation: none;
-    transform: translateY(-12vh);
+    transform: translateY(var(--logo-overlay-final-offset));
   }
 
   main {
-    margin-top: -5vh;
+    margin-top: var(--content-final-offset);
     animation: none;
   }
 
@@ -155,6 +159,8 @@ main {
   isolation: isolate;
   /* Start with negative margin to compensate for panel space, will animate to 0 */
   margin-top: calc(-1 * var(--slide-panel-height, 0px));
+  /* Default end position overlaps the header by 5vh */
+  --content-final-offset: -5vh;
   will-change: margin-top;
 }
 
@@ -163,12 +169,28 @@ main.content-slide-down {
   animation: slide-content-down 4000ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-@keyframes slide-content-down {
-  0% {
-    margin-top: calc(-1 * var(--slide-panel-height, 0px));
+  @keyframes slide-content-down {
+    0% {
+      margin-top: calc(-1 * var(--slide-panel-height, 0px));
+    }
+    100% {
+      margin-top: var(--content-final-offset); /* Content higher so panel overlaps - responsive vh units */
+    }
   }
-  100% {
-    margin-top: -5vh; /* Content higher so panel overlaps - responsive vh units */
+
+@media (max-width: 767px) {
+  /* Anchor the panel to the header edge on mobile with a slight overlap */
+  .slide-in-panel {
+    --slide-panel-final-offset: calc(-1 * var(--header-height) + 5vh);
+  }
+
+  main {
+    --content-final-offset: calc(-1 * var(--header-height) + 5vh);
+  }
+
+  /* Sink the overlay further down on mobile so it sits lower over the logo */
+  .slide-in-panel__logo-overlay {
+    --logo-overlay-final-offset: -6vh;
   }
 }
 
