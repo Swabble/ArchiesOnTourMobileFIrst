@@ -1,8 +1,5 @@
 ---
-import '../styles/tokens.css';
-import '../styles/layout.css';
-import '../styles/components.css';
-import '../styles/utilities.css';
+import '../styles/global.css';
 import scrollRevealScript from '../lib/scrollReveal.ts?url';
 import zoomGuardScript from '../lib/zoomGuard.ts?url';
 import desktopLayoutScript from '../lib/desktopLayout.ts?url';
@@ -16,27 +13,6 @@ const { title = 'Archie on Tour – Foodtruck Catering', description = 'Foodtruc
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <script>
-      window.tailwind = window.tailwind || {};
-      window.tailwind.config = {
-        safelist: [
-          'translate-y-0',
-          '-translate-y-full',
-          'max-h-0',
-          'max-h-[var(--slide-panel-height)]',
-          'h-[var(--slide-panel-height)]',
-          'transition-[transform,max-height]',
-          'duration-[1100ms]',
-          'ease-[cubic-bezier(0.22,1,0.36,1)]',
-          'delay-150',
-          'motion-reduce:transition-none',
-          'motion-reduce:duration-0',
-          'motion-reduce:transform-none',
-          'motion-reduce:max-h-[var(--slide-panel-height)]'
-        ]
-      };
-    </script>
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -46,7 +22,7 @@ const { title = 'Archie on Tour – Foodtruck Catering', description = 'Foodtruc
     <link rel="manifest" href="/site.webmanifest" />
     <link rel="icon" href="/favicon.ico" />
   </head>
-  <body>
+  <body class="bg-background text-text">
     <slot />
     <script type="module" src={scrollRevealScript}></script>
     <script type="module" src={zoomGuardScript}></script>
