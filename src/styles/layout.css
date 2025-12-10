@@ -84,7 +84,7 @@ body {
 
 /* Paths 28-34 use accent color for distinction */
 .slide-in-panel__logo-overlay path {
-  fill: var(--color-accent);
+  fill: var(--color-secondary);
 }
 
 /* Main logo slides with panel (6 seconds) */
