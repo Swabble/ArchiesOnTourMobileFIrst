@@ -5,7 +5,6 @@ const track = document.getElementById('carousel-track') as HTMLElement | null;
 const dots = document.getElementById('carousel-dots');
 const loadingBox = document.getElementById('gallery-loading');
 const errorBox = document.getElementById('gallery-error');
-const debugBox = document.getElementById('gallery-debug');
 
 const lightboxImage = document.getElementById('lightbox-image') as HTMLImageElement | null;
 const lightboxCounter = document.getElementById('lightbox-counter');
@@ -181,56 +180,14 @@ function goTo(next: number) {
   }
 }
 
-type GalleryDebug = {
-  status: string;
-  apiKeyPresent: boolean;
-  folderId?: string;
-  fileCount?: number;
-  sample?: { name?: string; thumbnail?: string };
-  error?: string;
-};
-
-function renderDebug(info: GalleryDebug) {
-  if (!debugBox) return;
-
-  const { status, apiKeyPresent, folderId, fileCount, sample, error } = info;
-
-  const metaItems = [
-    `API Key: ${apiKeyPresent ? 'gesetzt' : 'fehlt'}`,
-    `Folder ID: ${folderId ? folderId : 'nicht konfiguriert'}`,
-    `Gefundene Dateien: ${typeof fileCount === 'number' ? fileCount : '–'}`
-  ];
-
-  const sampleBlock = sample
-    ? `<div class="debug-sample"><div>Beispiel:</div><div>Name: ${sample.name || '–'}</div><div>Thumbnail: ${sample.thumbnail || '–'}</div></div>`
-    : '';
-
-  const errorBlock = error ? `<div class="debug-error">${error}</div>` : '';
-
-  debugBox.innerHTML = `
-    <div class="debug-status"><strong>Status:</strong> ${status}</div>
-    <div class="debug-meta">${metaItems.join(' · ')}</div>
-    ${sampleBlock}
-    ${errorBlock}
-  `;
-  debugBox.classList.remove('is-hidden');
-}
-
 async function loadImages() {
   loadingBox?.classList.remove('is-hidden');
-
-  const debug: GalleryDebug = {
-    status: 'Warte auf Drive-Antwort …',
-    apiKeyPresent: Boolean(import.meta.env.PUBLIC_DRIVE_API_KEY),
-    folderId: import.meta.env.PUBLIC_GALLERY_FOLDER_ID
-  };
 
   try {
     const apiKey = import.meta.env.PUBLIC_DRIVE_API_KEY;
     const folderId = import.meta.env.PUBLIC_GALLERY_FOLDER_ID;
 
     if (apiKey && folderId) {
-      renderDebug(debug);
       const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+mimeType+contains+'image/'and+trashed=false&fields=files(id,name,thumbnailLink,webContentLink)&supportsAllDrives=true&key=${apiKey}`;
 
       const res = await fetch(url);
@@ -256,36 +213,18 @@ async function loadImages() {
           alt: file.name || 'Galeriebild'
         };
       }).filter((img: { url?: string; thumbnail?: string }) => Boolean(img.url && img.thumbnail));
-
-      debug.status = 'Drive-Antwort erhalten';
-      debug.fileCount = state.images.length;
-      debug.sample = data.files?.[0];
     }
 
     if (!state.images.length) {
       const fallback = await fetch('/data/gallery.json');
       state.images = await fallback.json();
-
-      debug.status = 'Fallback aktiv – keine Drive-Daten';
-      debug.error = !apiKey || !folderId ? 'API Key oder Folder ID fehlen' : 'Drive-Antwort ohne Bilder';
-      debug.fileCount = state.images.length;
-      debug.sample = state.images[0];
     }
-    renderDebug(debug);
     renderCarousel();
     schedulePreload();
   } catch (error) {
     errorBox?.classList.remove('is-hidden');
     const fallback = await fetch('/data/gallery.json');
     state.images = await fallback.json();
-    renderDebug({
-      status: 'Fehler beim Abruf der Drive-Daten',
-      apiKeyPresent: Boolean(import.meta.env.PUBLIC_DRIVE_API_KEY),
-      folderId: import.meta.env.PUBLIC_GALLERY_FOLDER_ID,
-      fileCount: state.images.length,
-      sample: state.images[0],
-      error: error instanceof Error ? error.message : 'Unbekannter Fehler'
-    });
     renderCarousel();
     schedulePreload();
   } finally {
