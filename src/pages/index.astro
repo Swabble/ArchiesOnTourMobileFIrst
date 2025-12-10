@@ -65,6 +65,27 @@ import Footer from '../components/Footer.astro';
       </svg>
     </div>
   </div>
+  <script>
+    if (typeof window !== 'undefined') {
+      const panel = document.querySelector('.slide-in-panel');
+      const inner = panel?.querySelector('.slide-in-panel__inner');
+
+      const setPanelHeight = () => {
+        if (!panel || !inner) return;
+
+        panel.style.setProperty('--slide-panel-height', `${inner.scrollHeight}px`);
+      };
+
+      const resizeObserver = inner ? new ResizeObserver(setPanelHeight) : null;
+
+      if (inner) {
+        resizeObserver?.observe(inner);
+      }
+      window.addEventListener('resize', setPanelHeight);
+
+      setPanelHeight();
+    }
+  </script>
   <main>
     <Hero />
     <OfferGrid />
