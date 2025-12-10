@@ -1,0 +1,76 @@
+/* SVG Color Adjustments for Dark Mode */
+
+/*
+  This file contains CSS rules to adjust SVG colors in dark mode.
+  SVGs can be styled using CSS filters, fill/stroke properties, or color inheritance.
+*/
+
+/* SVG Icons - Use currentColor for easy theming */
+svg {
+  color: inherit;
+  transition: color 0.3s ease, fill 0.3s ease, stroke 0.3s ease;
+}
+
+/* Inline SVGs that use fill attribute */
+[data-theme="dark"] svg[fill]:not([fill="none"]) {
+  /* Adjust fill colors in dark mode if needed */
+  filter: brightness(1.1);
+}
+
+/* Inline SVGs that use stroke attribute */
+[data-theme="dark"] svg[stroke]:not([stroke="none"]) {
+  /* Adjust stroke colors in dark mode if needed */
+  filter: brightness(1.1);
+}
+
+/* Logo SVG - keep vibrant in both modes */
+.logo svg,
+.logo img[src*=".svg"] {
+  transition: filter 0.3s ease;
+}
+
+[data-theme="dark"] .logo svg,
+[data-theme="dark"] .logo img[src*=".svg"] {
+  filter: brightness(1.2) saturate(1.1);
+}
+
+/* Decorative SVGs in backgrounds - adjust opacity in dark mode */
+[data-theme="dark"] .section svg,
+[data-theme="dark"] .hero svg {
+  opacity: 0.8;
+}
+
+/* Icon SVGs in cards and components */
+.offer-card__icon svg,
+.menu-card svg {
+  color: var(--color-primary);
+  transition: color 0.3s ease;
+}
+
+[data-theme="dark"] .offer-card__icon svg,
+[data-theme="dark"] .menu-card svg {
+  color: var(--color-primary);
+  filter: brightness(1.1);
+}
+
+/* Navigation and UI SVGs */
+.nav__link svg,
+.btn svg,
+.back-button svg {
+  color: currentColor;
+}
+
+/* Carousel and gallery SVGs */
+.carousel-nav svg,
+.lightbox-control svg {
+  color: var(--color-corporate-white);
+}
+
+/* Form and input SVGs */
+.form__field svg {
+  color: var(--color-muted);
+}
+
+[data-theme="dark"] .form__field svg {
+  color: var(--color-text-subtle);
+}

@@ -1,12 +1,19 @@
+---
+import ThemeToggle from './ThemeToggle.astro';
+---
+
 <header class="site-header" aria-label="Hauptnavigation">
   <div class="container header__inner">
     <a class="logo" href="/" aria-label="Archie on Tour Startseite">
       <img src="/assets/Logo.svg" alt="Archie Logo" width="36" height="36" />
       <span>Archie on Tour</span>
     </a>
-    <button class="nav__toggle" aria-expanded="false" aria-controls="nav-menu" aria-label="Navigation umschalten">
-      ☰
-    </button>
+    <div class="header__actions">
+      <ThemeToggle />
+      <button class="nav__toggle" aria-expanded="false" aria-controls="nav-menu" aria-label="Navigation umschalten">
+        ☰
+      </button>
+    </div>
     <div class="nav__overlay"></div>
     <nav>
       <ul id="nav-menu" class="nav__list">

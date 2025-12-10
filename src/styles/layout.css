@@ -17,13 +17,14 @@ body {
   /* Allow the logo's shadow/glow to render outside the panel bounds while the panel moves. */
   overflow: visible;
   background-color: var(--color-accent);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid var(--border-subtle);
   backdrop-filter: blur(8px);
   height: var(--slide-panel-height);
   max-height: var(--slide-panel-height);
   transform: translateY(-100%);
   will-change: transform, max-height;
   pointer-events: none;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .slide-in-panel.is-ready {
@@ -103,11 +104,12 @@ main {
   bottom: var(--space-3);
   left: clamp(var(--space-3), 10vw, 10rem);
   right: clamp(var(--space-3), 10vw, 10rem);
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--glass-bg);
   border-radius: var(--radius-xl);
   backdrop-filter: blur(10px);
   box-shadow: var(--shadow-soft);
   z-index: -1;
+  transition: background 0.3s ease;
 }
 
 @media (max-width: 767px) {

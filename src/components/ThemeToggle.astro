@@ -1,0 +1,147 @@
+---
+// Theme Toggle Component - Switches between Dark and Light Mode
+---
+
+<button
+  id="theme-toggle"
+  class="theme-toggle"
+  aria-label="Toggle dark/light mode"
+  title="Theme wechseln"
+>
+  <svg class="theme-icon theme-icon--sun" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="5"></circle>
+    <line x1="12" y1="1" x2="12" y2="3"></line>
+    <line x1="12" y1="21" x2="12" y2="23"></line>
+    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+    <line x1="1" y1="12" x2="3" y2="12"></line>
+    <line x1="21" y1="12" x2="23" y2="12"></line>
+    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+  </svg>
+  <svg class="theme-icon theme-icon--moon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+  </svg>
+</button>
+
+<style>
+  .theme-toggle {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-pill);
+    background: var(--color-surface);
+    border: 1px solid var(--border-subtle);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .theme-toggle:hover {
+    background: var(--color-surface-elevated);
+    box-shadow: var(--shadow-strong);
+    transform: scale(1.05);
+  }
+
+  .theme-toggle:active {
+    transform: scale(0.95);
+  }
+
+  .theme-icon {
+    position: absolute;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    color: var(--color-text);
+  }
+
+  /* Sun icon visible in light mode */
+  .theme-icon--sun {
+    opacity: 1;
+    transform: rotate(0deg);
+  }
+
+  .theme-icon--moon {
+    opacity: 0;
+    transform: rotate(-90deg);
+  }
+
+  /* Moon icon visible in dark mode */
+  [data-theme="dark"] .theme-icon--sun {
+    opacity: 0;
+    transform: rotate(90deg);
+  }
+
+  [data-theme="dark"] .theme-icon--moon {
+    opacity: 1;
+    transform: rotate(0deg);
+  }
+</style>
+
+<script>
+  // Theme Toggle Logic with localStorage persistence
+  const STORAGE_KEY = 'archies-theme';
+  const THEME_DARK = 'dark';
+  const THEME_LIGHT = 'light';
+
+  // Get theme from localStorage or system preference
+  function getInitialTheme(): string {
+    // Check localStorage first
+    const savedTheme = localStorage.getItem(STORAGE_KEY);
+    if (savedTheme) {
+      return savedTheme;
+    }
+
+    // Check system preference
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      return THEME_DARK;
+    }
+
+    // Default to light mode
+    return THEME_LIGHT;
+  }
+
+  // Apply theme to document
+  function applyTheme(theme: string) {
+    if (theme === THEME_DARK) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+    }
+    localStorage.setItem(STORAGE_KEY, theme);
+  }
+
+  // Toggle theme
+  function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === THEME_DARK ? THEME_LIGHT : THEME_DARK;
+    applyTheme(newTheme);
+  }
+
+  // Initialize theme on page load
+  const initialTheme = getInitialTheme();
+  applyTheme(initialTheme);
+
+  // Add click listener to toggle button
+  const toggleButton = document.getElementById('theme-toggle');
+  if (toggleButton) {
+    toggleButton.addEventListener('click', toggleTheme);
+  }
+
+  // Listen for system theme changes
+  if (window.matchMedia) {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+      // Only auto-switch if user hasn't manually set a preference
+      if (!localStorage.getItem(STORAGE_KEY)) {
+        applyTheme(e.matches ? THEME_DARK : THEME_LIGHT);
+      }
+    });
+  }
+
+  // Handle page navigation (for Astro's view transitions or SPA-like navigation)
+  document.addEventListener('astro:page-load', () => {
+    const theme = getInitialTheme();
+    applyTheme(theme);
+  });
+</script>

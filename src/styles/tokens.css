@@ -1,17 +1,61 @@
 :root {
+  /* Light Mode (Default/Bright Mode) Colors */
   --color-primary: #ff715b;
   --color-secondary: #ffb347;
   --color-accent: #3dd6a0;
-  --color-background: #1a1a18;
-  --color-surface: rgba(255, 255, 255, 0.92);
-  --color-surface-strong: rgba(255, 255, 255, 0.98);
-  --color-text: #ffffff;
-  --color-text-subtle: rgba(255, 255, 255, 0.75);
-  --color-muted: #4a5568;
+  --color-background: #f8f9fa;
+  --color-surface: #ffffff;
+  --color-surface-strong: #ffffff;
+  --color-surface-elevated: #ffffff;
+  --color-text: #0f1115;
+  --color-text-subtle: #4a5568;
+  --color-muted: #6b7280;
   --color-corporate-black: #0a0b0d;
   --color-corporate-white: #ffffff;
-  --header-height: 68px;
 
+  /* Shadows for Light Mode */
+  --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --shadow-strong: 0 12px 36px rgba(0, 0, 0, 0.12);
+
+  /* Border colors */
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  --border-medium: rgba(0, 0, 0, 0.12);
+
+  /* Overlay backgrounds */
+  --overlay-bg: rgba(0, 0, 0, 0.7);
+  --glass-bg: rgba(255, 255, 255, 0.8);
+
+  --header-height: 68px;
+}
+
+/* Dark Mode Colors */
+[data-theme="dark"] {
+  --color-primary: #ff8b78;
+  --color-secondary: #ffc266;
+  --color-accent: #5de4b3;
+  --color-background: #0f1115;
+  --color-surface: #1a1d23;
+  --color-surface-strong: #ffffff;
+  --color-surface-elevated: #242831;
+  --color-text: #e8eaed;
+  --color-text-subtle: rgba(255, 255, 255, 0.7);
+  --color-muted: #9ca3af;
+
+  /* Shadows for Dark Mode - more subtle */
+  --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-strong: 0 12px 36px rgba(0, 0, 0, 0.6);
+
+  /* Border colors for dark mode */
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-medium: rgba(255, 255, 255, 0.12);
+
+  /* Overlay backgrounds */
+  --overlay-bg: rgba(0, 0, 0, 0.85);
+  --glass-bg: rgba(26, 29, 35, 0.8);
+}
+
+/* Typography, Spacing, and Border Radius (shared across themes) */
+:root {
   --font-family-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;
@@ -36,9 +80,6 @@
   --radius-lg: 18px;
   --radius-xl: 28px;
   --radius-pill: 999px;
-
-  --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.12);
-  --shadow-strong: 0 12px 36px rgba(0, 0, 0, 0.18);
 }
 
 *, *::before, *::after {
@@ -50,12 +91,13 @@ body {
   margin: 0;
   padding: 0;
   font-family: var(--font-family-sans);
-  background: #1a1a18;
+  background: var(--color-background);
   color: var(--color-text);
   scroll-behavior: smooth;
   touch-action: pan-x pan-y;
   min-height: 100%;
   overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 a {
@@ -67,6 +109,18 @@ img {
   max-width: 100%;
   display: block;
   border-radius: var(--radius-md);
+  transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
+/* SVG and image adjustments for dark mode */
+[data-theme="dark"] img {
+  /* Reduce brightness slightly for better dark mode aesthetics */
+  filter: brightness(0.9);
+}
+
+/* Logo specific adjustments - keep logo bright in dark mode */
+[data-theme="dark"] .logo img {
+  filter: brightness(1.1);
 }
 
 :focus-visible {
