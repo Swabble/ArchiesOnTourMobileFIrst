@@ -27,22 +27,19 @@ body {
   animation: slide-panel-in 750ms ease-out 120ms forwards;
 }
 
-.slide-in-panel.is-ready .slide-in-panel__logo {
-  animation: slide-panel-in 750ms ease-out 120ms forwards;
-}
-
 .slide-in-panel__inner {
   width: 100%;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   padding: var(--space-3) 0 var(--space-4);
 }
 
 .slide-in-panel__logo {
   width: 100%;
   height: auto;
+  display: block;
   filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15));
   pointer-events: auto;
 }
@@ -75,6 +72,10 @@ body {
   .slide-in-panel.is-ready .slide-in-panel__logo {
     animation: none;
     transform: none;
+  }
+
+  .slide-in-panel.is-ready {
+    animation: none;
   }
 }
 
