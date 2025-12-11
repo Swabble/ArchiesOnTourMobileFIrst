@@ -15,6 +15,8 @@ body {
   --slide-panel-height: 0px;
   /* Default end position overlaps the header by 5vh */
   --slide-panel-final-offset: -5vh;
+  /* Scroll-driven offset so the panel can glide out of view behind content. */
+  --slide-panel-parallax-offset: 0px;
   /* Keep in normal document flow so content is pushed down, not overlaid */
   position: relative;
   /* Lower z-index so content sits on top */
@@ -28,7 +30,7 @@ body {
   /* Set height immediately (not animated) to avoid layout shifts */
   max-height: var(--slide-panel-height);
   /* Start off-screen, will slide down smoothly */
-  transform: translateY(-100%);
+  transform: translateY(calc(-100% + var(--slide-panel-parallax-offset, 0px)));
   will-change: transform;
   pointer-events: none;
 }
@@ -116,10 +118,10 @@ body {
   @keyframes slide-panel-in {
     /* Panel slides down but stops partially under header - responsive vh units */
     0% {
-      transform: translateY(-100%);
+      transform: translateY(calc(-100% + var(--slide-panel-parallax-offset, 0px)));
     }
     100% {
-      transform: translateY(var(--slide-panel-final-offset));
+      transform: translateY(calc(var(--slide-panel-final-offset) + var(--slide-panel-parallax-offset, 0px)));
     }
   }
 
@@ -128,6 +130,7 @@ body {
     animation: none;
     height: auto;
     max-height: none;
+    --slide-panel-parallax-offset: 0px;
     transform: translateY(var(--slide-panel-final-offset));
   }
 
@@ -156,7 +159,12 @@ main {
   z-index: 10;
   /* Minimal top padding - tight to panel */
   padding-top: var(--space-1);
+  /* Slight translucency keeps the sliding panel subtly visible behind content surfaces */
+  --content-surface-opacity: 85%;
   background: var(--color-background);
+  @supports (background: color-mix(in srgb, black 50%, white 50%)) {
+    background: color-mix(in srgb, var(--color-background) var(--content-surface-opacity), transparent);
+  }
   isolation: isolate;
   /* Start with negative margin to compensate for panel space, will animate to 0 */
   margin-top: calc(-1 * var(--slide-panel-height, 0px));

@@ -58,6 +58,9 @@ function renderGrid(
     cell.innerHTML = `
       <div class="calendar__day-header">
         <div class="calendar__day-number">${day}</div>
+        <span class="calendar__day-status ${hasEvents ? 'calendar__day-status--busy' : 'calendar__day-status--free'}">
+          ${hasEvents ? 'Belegt' : 'Frei'}
+        </span>
       </div>
       <div class="calendar__event-bar ${hasEvents ? 'calendar__event-bar--busy' : ''}" aria-hidden="true"></div>
     `;
@@ -240,8 +243,6 @@ function init() {
       status.style.display = 'none';
     } catch (err) {
       console.warn('Calendar Fehler', err);
-      grid.style.display = 'grid';
-      weekdays.style.display = 'grid';
       grid.innerHTML = '';
       status.textContent = 'Kalender konnte nicht geladen werden. Bitte API-Konfiguration prüfen.';
       status.style.display = 'inline-flex';
