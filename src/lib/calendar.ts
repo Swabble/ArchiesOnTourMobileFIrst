@@ -47,41 +47,40 @@ function renderGrid(
   const days = new Date(reference.getFullYear(), reference.getMonth() + 1, 0).getDate();
   for (let day = 1; day <= days; day++) {
     const cell = document.createElement('div');
-    cell.className = 'calendar__day';
     const date = new Date(reference.getFullYear(), reference.getMonth(), day);
     const key = formatDateKey(date);
     const matches = events.filter((evt) => formatDateKey(new Date(evt.start)) === key);
+    cell.className = `calendar__day ${matches.length ? 'calendar__day--busy' : 'calendar__day--free'}`;
     cell.dataset.dateKey = key;
+
+    const hasEvents = matches.length > 0;
+
     cell.innerHTML = `
-      <div class="calendar__day-number">${day}</div>
-      <div class="calendar__markers" aria-hidden="true"></div>
+      <div class="calendar__day-header">
+        <div class="calendar__day-number">${day}</div>
+      </div>
       <div class="calendar__chips" aria-hidden="true"></div>
+      <div class="calendar__event-bar ${hasEvents ? 'calendar__event-bar--busy' : ''}" aria-hidden="true"></div>
     `;
-    const markerContainer = cell.querySelector('.calendar__markers');
-    const chipContainer = cell.querySelector('.calendar__chips');
-    matches.slice(0, 4).forEach((evt) => {
-      const marker = document.createElement('span');
-      marker.className = 'calendar__marker';
-      marker.title = evt.title;
-      markerContainer?.appendChild(marker);
-    });
-    if (matches.length > 4) {
-      const more = document.createElement('span');
-      more.className = 'calendar__marker calendar__marker--count';
-      more.textContent = `+${matches.length - 4}`;
-      markerContainer?.appendChild(more);
+
+    if (hasEvents) {
+      cell.setAttribute('aria-label', `${day}. ${monthFormatter.format(reference)} – Termine vorhanden`);
     }
+
+    const chipContainer = cell.querySelector('.calendar__chips');
+
     matches.slice(0, 3).forEach((evt) => {
-      const badge = document.createElement('div');
-      badge.className = 'calendar__badge';
-      badge.textContent = evt.title;
-      chipContainer?.appendChild(badge);
+      const chip = document.createElement('span');
+      chip.className = 'calendar__chip';
+      chip.textContent = evt.title;
+      chipContainer?.appendChild(chip);
     });
-    if (matches.length > 4) {
+
+    if (matches.length > 3) {
       const more = document.createElement('span');
-      more.className = 'calendar__marker calendar__marker--count';
-      more.textContent = `+${matches.length - 4}`;
-      markerContainer?.appendChild(more);
+      more.className = 'calendar__chip calendar__chip--count';
+      more.textContent = `+${matches.length - 3} weitere`;
+      chipContainer?.appendChild(more);
     }
     cell.addEventListener('mouseenter', () => onDayHover(matches.length ? key : undefined));
     cell.addEventListener('mouseleave', () => onDayHover(undefined));
