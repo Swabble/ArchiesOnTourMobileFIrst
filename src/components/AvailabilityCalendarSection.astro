@@ -7,20 +7,21 @@ import calendarScript from '../lib/calendar.ts?url';
       <p class="eyebrow">Events &amp; Auftritte</p>
       <h2>Erlebe Archie live und in Farbe</h2>
       <p class="subtitle">
-        Übersichtliche Planung mit direkter Anbindung an den Kalender. Tippe oder fahre über ein Datum, um die passenden
-        Termine hervorzuheben.
+        Schlanke Navigation, klares Raster und gut lesbare Karten – optimiert für Smartphones und große Displays.
       </p>
     </div>
     <div class="card calendar-card">
+      <div class="calendar-card__backdrop"></div>
       <header class="calendar-toolbar">
         <div class="calendar-nav">
           <button id="calendar-prev" class="btn btn-secondary" aria-label="Vorheriger Monat">❮</button>
           <div class="calendar-month">
+            <span class="month-label">Kalender</span>
             <strong id="calendar-month"></strong>
           </div>
           <button id="calendar-next" class="btn btn-secondary" aria-label="Nächster Monat">❯</button>
         </div>
-        <div class="calendar-legend">
+        <div class="calendar-legend" aria-label="Legende der angezeigten Termine">
           <span class="legend-dot legend-dot--primary"></span>
           <span>Bestätigte Termine</span>
         </div>
@@ -28,7 +29,8 @@ import calendarScript from '../lib/calendar.ts?url';
       <div id="calendar-status" class="price-pill calendar-status" aria-live="polite">Kalender wird geladen …</div>
       <div class="calendar-layout">
         <div class="calendar-board">
-          <div id="calendar-weekdays" class="calendar__weekdays">
+          <p class="mobile-helper">Tippe auf einen Tag, um die Termine hervorzuheben.</p>
+          <div id="calendar-weekdays" class="calendar__weekdays" aria-hidden="true">
             {['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'].map((d) => (
               <div class="calendar__weekday">{d}</div>
             ))}
@@ -38,13 +40,24 @@ import calendarScript from '../lib/calendar.ts?url';
         <aside class="calendar-panel">
           <div class="panel-header">
             <div>
-              <p class="eyebrow">Nächste Events</p>
-              <h3>Alle Termine im Detail</h3>
+              <p class="eyebrow">Tagesansicht</p>
+              <h3>Termine zum gewählten Datum</h3>
             </div>
           </div>
           <div id="calendar-events" class="cards calendar__event-list"></div>
         </aside>
       </div>
+    </div>
+    <div class="card month-events">
+      <header class="month-events__header">
+        <div>
+          <p class="eyebrow">Monatsübersicht</p>
+          <h3>Alle Termine dieses Monats</h3>
+          <p class="subtitle">Immer vollständig sichtbar – perfekt für schnelles Scrollen am Smartphone.</p>
+        </div>
+        <div class="pill-muted">Automatisch mit dem gewählten Monat synchronisiert</div>
+      </header>
+      <div id="calendar-month-events" class="month-events__list"></div>
     </div>
   </div>
 </section>
@@ -74,12 +87,28 @@ import calendarScript from '../lib/calendar.ts?url';
   }
 
   #verfuegbarkeit .calendar-card {
-    background: radial-gradient(circle at 30% 20%, rgba(255, 113, 91, 0.08), transparent 45%),
-      radial-gradient(circle at 70% 40%, rgba(74, 200, 255, 0.1), transparent 42%),
-      linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.9));
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 12px 42px rgba(15, 17, 21, 0.12);
+    position: relative;
     overflow: hidden;
+    background: linear-gradient(150deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.92)),
+      radial-gradient(circle at 20% 20%, rgba(255, 113, 91, 0.08), transparent 35%),
+      radial-gradient(circle at 80% 10%, rgba(74, 200, 255, 0.12), transparent 38%);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 20px 60px rgba(15, 17, 21, 0.18);
+    backdrop-filter: blur(6px);
+  }
+
+  #verfuegbarkeit .calendar-card__backdrop {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% -10%, rgba(255, 179, 71, 0.16), transparent 42%),
+      linear-gradient(120deg, rgba(15, 17, 21, 0.04), rgba(15, 17, 21, 0));
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  #verfuegbarkeit .calendar-card > * {
+    position: relative;
+    z-index: 1;
   }
 
   #verfuegbarkeit .calendar-toolbar {
@@ -88,7 +117,7 @@ import calendarScript from '../lib/calendar.ts?url';
     align-items: center;
     gap: var(--space-2);
     flex-wrap: wrap;
-    padding: var(--space-2) var(--space-2) var(--space-3);
+    padding: var(--space-3) var(--space-3) var(--space-2);
     border-bottom: 1px solid rgba(15, 17, 21, 0.06);
   }
 
@@ -101,6 +130,13 @@ import calendarScript from '../lib/calendar.ts?url';
   #verfuegbarkeit .calendar-month {
     display: grid;
     gap: 2px;
+  }
+
+  #verfuegbarkeit .month-label {
+    font-size: var(--font-size-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-muted);
   }
 
   #verfuegbarkeit .btn-secondary {
@@ -129,7 +165,7 @@ import calendarScript from '../lib/calendar.ts?url';
   }
 
   #verfuegbarkeit .calendar-status {
-    margin: 0 var(--space-1) var(--space-2);
+    margin: 0 var(--space-2) var(--space-2);
   }
 
   #verfuegbarkeit .calendar-legend {
@@ -138,6 +174,9 @@ import calendarScript from '../lib/calendar.ts?url';
     gap: var(--space-1);
     font-size: var(--font-size-sm);
     color: var(--color-muted);
+    padding: 10px 14px;
+    background: rgba(15, 17, 21, 0.04);
+    border-radius: 12px;
   }
 
   #verfuegbarkeit .legend-dot {
@@ -152,23 +191,20 @@ import calendarScript from '../lib/calendar.ts?url';
     box-shadow: 0 0 0 4px rgba(255, 113, 91, 0.18);
   }
 
-  #verfuegbarkeit .calendar-status {
-    margin: 0 var(--space-1) var(--space-2);
-  }
-
   #verfuegbarkeit .calendar__weekdays {
     background: rgba(255, 113, 91, 0.08);
     padding: var(--space-2);
     border-radius: var(--radius-md);
+    margin-bottom: var(--space-2);
   }
 
   #verfuegbarkeit .calendar-layout {
     width: 100%;
     display: grid;
     gap: var(--space-3);
-    grid-template-columns: minmax(340px, 1.05fr) minmax(320px, 0.95fr);
+    grid-template-columns: minmax(360px, 1.05fr) minmax(320px, 0.95fr);
     align-items: start;
-    padding: 0 var(--space-1) var(--space-3);
+    padding: 0 var(--space-2) var(--space-3);
     box-sizing: border-box;
   }
 
@@ -181,7 +217,7 @@ import calendarScript from '../lib/calendar.ts?url';
   #verfuegbarkeit #calendar-weekdays,
   #verfuegbarkeit #calendar-grid {
     display: grid;
-    grid-template-columns: repeat(7, minmax(2.75rem, 1fr));
+    grid-template-columns: repeat(7, minmax(2.85rem, 1fr));
     gap: var(--space-1);
     width: 100%;
     min-width: 360px;
@@ -194,6 +230,15 @@ import calendarScript from '../lib/calendar.ts?url';
   #verfuegbarkeit .calendar__weekday {
     text-align: center;
     font-weight: 600;
+    color: #656b77;
+    letter-spacing: 0.02em;
+  }
+
+  #verfuegbarkeit .mobile-helper {
+    display: none;
+    color: var(--color-muted);
+    font-size: var(--font-size-sm);
+    padding: 0 var(--space-1);
   }
 
   @media (max-width: 720px) {
@@ -206,20 +251,13 @@ import calendarScript from '../lib/calendar.ts?url';
 
     #verfuegbarkeit .calendar-layout {
       grid-template-columns: 1fr;
+      gap: var(--space-2);
     }
 
     #verfuegbarkeit .calendar-toolbar {
       flex-direction: column;
       align-items: flex-start;
-    }
-
-    #verfuegbarkeit .calendar-layout {
-      grid-template-columns: 1fr;
-    }
-
-    #verfuegbarkeit .calendar-toolbar {
-      flex-direction: column;
-      align-items: flex-start;
+      gap: var(--space-2);
     }
 
     #verfuegbarkeit #calendar-weekdays {
@@ -230,6 +268,25 @@ import calendarScript from '../lib/calendar.ts?url';
     #verfuegbarkeit .calendar__weekday {
       font-size: var(--font-size-sm);
     }
+
+    #verfuegbarkeit .calendar-board {
+      background: rgba(15, 17, 21, 0.02);
+      border-radius: var(--radius-lg);
+      padding: var(--space-2);
+    }
+
+    #verfuegbarkeit .mobile-helper {
+      display: block;
+      margin-bottom: var(--space-1);
+    }
+
+    #verfuegbarkeit .calendar-panel {
+      padding: var(--space-2);
+    }
+
+    #verfuegbarkeit .month-events__list {
+      padding: var(--space-2);
+    }
   }
 
   @media (max-width: 520px) {
@@ -238,37 +295,26 @@ import calendarScript from '../lib/calendar.ts?url';
       grid-template-columns: repeat(7, minmax(2.15rem, 1fr));
       min-width: 320px;
     }
-  }
 
-  @media (min-width: 960px) {
+    #verfuegbarkeit .calendar-nav {
+      width: 100%;
+      justify-content: space-between;
+    }
+
     #verfuegbarkeit .calendar__day {
-      align-items: stretch;
-      text-align: left;
-      gap: 8px;
-      padding: var(--space-2);
-      min-height: 5rem;
+      min-height: 3.6rem;
     }
 
-    #verfuegbarkeit .calendar__day-number {
-      align-self: flex-start;
-    }
-
-    #verfuegbarkeit .calendar__markers {
-      display: none;
-    }
-
-    #verfuegbarkeit .calendar__chips {
-      display: grid;
-      gap: 4px;
-      margin-top: 2px;
-      justify-items: start;
+    #verfuegbarkeit .month-event,
+    #verfuegbarkeit .calendar__event {
+      grid-template-columns: 1fr;
     }
   }
 
   #verfuegbarkeit .calendar__day {
     border: 1px solid rgba(15, 17, 21, 0.06);
-    background: #fbfbfc;
-    border-radius: 10px;
+    background: linear-gradient(180deg, #fdfdff, #f7f8fb);
+    border-radius: 12px;
     transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease, background 160ms ease;
     min-height: 4.1rem;
     padding: var(--space-1);
@@ -276,20 +322,26 @@ import calendarScript from '../lib/calendar.ts?url';
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 6px;
     text-align: center;
   }
 
+  #verfuegbarkeit .calendar__day:hover {
+    border-color: rgba(255, 113, 91, 0.35);
+    box-shadow: 0 10px 26px rgba(255, 113, 91, 0.12);
+    transform: translateY(-1px);
+  }
+
   #verfuegbarkeit .calendar__day--active {
-    border-color: rgba(255, 113, 91, 0.45);
-    box-shadow: 0 6px 18px rgba(255, 113, 91, 0.15);
+    border-color: rgba(255, 113, 91, 0.6);
+    box-shadow: 0 14px 32px rgba(255, 113, 91, 0.18);
     transform: translateY(-2px);
     background: linear-gradient(180deg, rgba(255, 113, 91, 0.08), #fffaf7);
   }
 
   #verfuegbarkeit .calendar__day-number {
     color: #0f1115;
-    font-weight: 700;
+    font-weight: 800;
     font-size: 1.05rem;
   }
 
@@ -312,22 +364,6 @@ import calendarScript from '../lib/calendar.ts?url';
     background: linear-gradient(135deg, #ff715b, #ffb347);
     border: 1px solid rgba(255, 113, 91, 0.35);
     box-shadow: 0 0 0 3px rgba(255, 113, 91, 0.14);
-  }
-
-  #verfuegbarkeit .calendar__marker--count {
-    min-width: 22px;
-    height: 12px;
-    border-radius: 999px;
-    background: rgba(15, 17, 21, 0.08);
-    color: #0f1115;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: var(--font-size-xs);
-    font-weight: 700;
-    border: 1px solid rgba(15, 17, 21, 0.14);
-    box-shadow: 0 0 0 2px rgba(15, 17, 21, 0.04);
-    padding: 0 6px;
   }
 
   #verfuegbarkeit .calendar__marker--count {
@@ -376,7 +412,7 @@ import calendarScript from '../lib/calendar.ts?url';
   #verfuegbarkeit .pill-muted {
     background: rgba(15, 17, 21, 0.06);
     border-radius: 999px;
-    padding: 4px 10px;
+    padding: 6px 12px;
     font-size: var(--font-size-xs);
     color: var(--color-muted);
   }
@@ -454,6 +490,94 @@ import calendarScript from '../lib/calendar.ts?url';
   #verfuegbarkeit .event-description {
     margin: 0;
     color: var(--color-text);
+  }
+
+  #verfuegbarkeit .month-events {
+    margin-top: var(--space-3);
+    background: linear-gradient(180deg, rgba(15, 17, 21, 0.03), rgba(255, 255, 255, 0.9));
+    border: 1px solid rgba(15, 17, 21, 0.05);
+    box-shadow: 0 18px 50px rgba(15, 17, 21, 0.12);
+  }
+
+  #verfuegbarkeit .month-events__header {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-2);
+    align-items: flex-start;
+    flex-wrap: wrap;
+    padding: var(--space-3) var(--space-3) 0;
+  }
+
+  #verfuegbarkeit .month-events__list {
+    display: grid;
+    gap: var(--space-2);
+    padding: var(--space-3);
+  }
+
+  #verfuegbarkeit .month-event {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-2);
+    align-items: center;
+    border: 1px solid rgba(15, 17, 21, 0.08);
+    border-radius: var(--radius-md);
+    padding: var(--space-2);
+    background: white;
+    transition: box-shadow 160ms ease, transform 160ms ease, border-color 160ms ease;
+  }
+
+  #verfuegbarkeit .month-event:hover {
+    border-color: rgba(255, 113, 91, 0.35);
+    box-shadow: 0 12px 26px rgba(15, 17, 21, 0.12);
+    transform: translateY(-2px);
+  }
+
+  #verfuegbarkeit .month-event--active {
+    border-color: rgba(255, 113, 91, 0.5);
+    box-shadow: 0 14px 32px rgba(255, 113, 91, 0.18);
+    transform: translateY(-2px);
+  }
+
+  #verfuegbarkeit .month-event__title {
+    margin: 0 0 4px 0;
+  }
+
+  #verfuegbarkeit .month-event__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    color: var(--color-muted);
+    font-size: var(--font-size-sm);
+  }
+
+  #verfuegbarkeit .calendar__empty {
+    margin: 0;
+    color: var(--color-muted);
+  }
+
+  @media (min-width: 960px) {
+    #verfuegbarkeit .calendar__day {
+      align-items: stretch;
+      text-align: left;
+      gap: 10px;
+      padding: var(--space-2);
+      min-height: 5rem;
+    }
+
+    #verfuegbarkeit .calendar__day-number {
+      align-self: flex-start;
+    }
+
+    #verfuegbarkeit .calendar__markers {
+      display: none;
+    }
+
+    #verfuegbarkeit .calendar__chips {
+      display: grid;
+      gap: 4px;
+      margin-top: 2px;
+      justify-items: start;
+    }
   }
 </style>
 <script type="module" src={calendarScript} defer></script>
