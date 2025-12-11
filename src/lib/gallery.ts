@@ -14,6 +14,101 @@ let state = {
   currentIndex: 0
 };
 
+type GalleryDebugState = {
+  status: string;
+  hint: string;
+  error?: string;
+  fileCount: number;
+  thumbnails: { loaded: number; failed: number };
+  full: { loaded: number; failed: number };
+  failedUrls: string[];
+};
+
+const loadStatus = new Map<string, 'loaded' | 'failed'>();
+
+const debug: GalleryDebugState = {
+  status: 'Galerie wird geladen …',
+  hint: 'Zählt erfolgreiche vs. fehlgeschlagene Bildaufrufe.',
+  fileCount: 0,
+  thumbnails: { loaded: 0, failed: 0 },
+  full: { loaded: 0, failed: 0 },
+  failedUrls: []
+};
+
+const debugElements = {
+  card: document.getElementById('gallery-debug'),
+  status: document.getElementById('gallery-debug-status'),
+  hint: document.getElementById('gallery-debug-hint'),
+  thumbnails: document.getElementById('gallery-debug-thumbnails'),
+  full: document.getElementById('gallery-debug-full'),
+  failures: document.getElementById('gallery-debug-failures') as HTMLUListElement | null
+};
+
+function renderDebug(state: GalleryDebugState) {
+  const { card, status, hint, thumbnails, full, failures } = debugElements;
+  if (!card || !status || !hint || !thumbnails || !full || !failures) return;
+
+  card.classList.remove('is-hidden');
+  status.textContent = state.error ? `${state.status} – ${state.error}` : state.status;
+  hint.textContent = state.hint || '';
+  thumbnails.textContent = `${state.thumbnails.loaded} geladen / ${state.thumbnails.failed} Fehler`;
+  full.textContent = `${state.full.loaded} geladen / ${state.full.failed} Fehler`;
+
+  failures.innerHTML = '';
+  if (!state.failedUrls.length) {
+    const item = document.createElement('li');
+    item.textContent = 'Keine Fehler protokolliert.';
+    failures.appendChild(item);
+  } else {
+    state.failedUrls.forEach((url) => {
+      const item = document.createElement('li');
+      item.textContent = url;
+      failures.appendChild(item);
+    });
+  }
+}
+
+function resetLoadStats() {
+  debug.thumbnails = { loaded: 0, failed: 0 };
+  debug.full = { loaded: 0, failed: 0 };
+  debug.failedUrls = [];
+  loadStatus.clear();
+}
+
+function recordLoadOutcome(type: 'thumbnail' | 'full', url: string, success: boolean) {
+  if (!url) return;
+
+  const key = `${type}:${url}`;
+  const bucket = type === 'thumbnail' ? debug.thumbnails : debug.full;
+  const previous = loadStatus.get(key);
+
+  if (previous === (success ? 'loaded' : 'failed')) return;
+
+  if (previous === 'loaded' && !success) {
+    bucket.loaded = Math.max(0, bucket.loaded - 1);
+  }
+
+  if (previous === 'failed' && success) {
+    bucket.failed = Math.max(0, bucket.failed - 1);
+    debug.failedUrls = debug.failedUrls.filter((entry) => entry !== url);
+  }
+
+  if (success) {
+    bucket.loaded += 1;
+  } else {
+    bucket.failed += 1;
+    if (!debug.failedUrls.includes(url)) {
+      debug.failedUrls.push(url);
+    }
+  }
+
+  loadStatus.set(key, success ? 'loaded' : 'failed');
+  renderDebug(debug);
+}
+
+lightboxImage?.addEventListener('load', () => recordLoadOutcome('full', lightboxImage.src, true));
+lightboxImage?.addEventListener('error', () => recordLoadOutcome('full', lightboxImage.src, false));
+
 function setBodyScroll(disable: boolean) {
   if (!document.body) return;
   document.body.classList.toggle('no-scroll', disable);
@@ -94,8 +189,16 @@ function renderCarousel() {
     const item = document.createElement('button');
     item.className = 'carousel-item';
     item.dataset.index = String(index);
-    const loading = index < EAGER_THUMBNAIL_COUNT ? 'eager' : 'lazy';
-    item.innerHTML = `<img src="${img.thumbnail}" alt="${img.alt}" loading="${loading}" />`;
+    const loading: 'eager' | 'lazy' = index < EAGER_THUMBNAIL_COUNT ? 'eager' : 'lazy';
+
+    const imgElement = document.createElement('img');
+    imgElement.src = img.thumbnail;
+    imgElement.alt = img.alt;
+    imgElement.loading = loading;
+    imgElement.addEventListener('load', () => recordLoadOutcome('thumbnail', img.thumbnail, true));
+    imgElement.addEventListener('error', () => recordLoadOutcome('thumbnail', img.thumbnail, false));
+
+    item.appendChild(imgElement);
     // Lightbox disabled - click does nothing
     // item.addEventListener('click', () => openLightbox(index));
     track.appendChild(item);
@@ -107,19 +210,26 @@ function renderCarousel() {
   scrollToItem(state.currentIndex, false);
 }
 
-function preloadSequential(urls: string[]) {
+function preloadSequential(items: { url: string; type: 'thumbnail' | 'full' }[]) {
   let index = 0;
 
   const loadNext = () => {
-    if (index >= urls.length) return;
+    if (index >= items.length) return;
+    const { url, type } = items[index];
     const img = new Image();
-    const handle = () => {
+    const handleSuccess = () => {
+      recordLoadOutcome(type, url, true);
       index += 1;
       loadNext();
     };
-    img.onload = handle;
-    img.onerror = handle;
-    img.src = urls[index];
+    const handleError = () => {
+      recordLoadOutcome(type, url, false);
+      index += 1;
+      loadNext();
+    };
+    img.onload = handleSuccess;
+    img.onerror = handleError;
+    img.src = url;
   };
 
   loadNext();
@@ -131,8 +241,8 @@ function schedulePreload() {
   const startPreload = () => {
     const remainingThumbnails = state.images
       .slice(EAGER_THUMBNAIL_COUNT)
-      .map((image) => image.thumbnail);
-    const fullImages = state.images.map((image) => image.url);
+      .map((image) => ({ url: image.thumbnail, type: 'thumbnail' as const }));
+    const fullImages = state.images.map((image) => ({ url: image.url, type: 'full' as const }));
     preloadSequential([...remainingThumbnails, ...fullImages]);
   };
 
@@ -179,6 +289,7 @@ function goTo(next: number) {
 }
 
 async function loadImages() {
+  renderDebug(debug);
   try {
     const apiKey = import.meta.env.PUBLIC_DRIVE_API_KEY;
     const folderId = import.meta.env.PUBLIC_GALLERY_FOLDER_ID;
@@ -193,7 +304,9 @@ async function loadImages() {
         state.images = staticItems;
         debug.status = 'Statische Galerie-Daten geladen';
         debug.fileCount = state.images.length;
-        debug.sample = state.images[0];
+        debug.error = undefined;
+        debug.hint = `Build-Daten genutzt (${state.images.length} Bilder)`;
+        resetLoadStats();
         renderDebug(debug);
         renderCarousel();
         schedulePreload();
@@ -201,6 +314,8 @@ async function loadImages() {
       }
     } catch (error) {
       debug.error = 'Statische Galerie-Daten nicht lesbar';
+      debug.hint = 'Statisches JSON konnte nicht geparst werden';
+      renderDebug(debug);
     }
 
     // 2) Fallback: Live-Abruf während der Laufzeit
@@ -230,17 +345,34 @@ async function loadImages() {
           alt: file.name || 'Galeriebild'
         };
       }).filter((img: { url?: string; thumbnail?: string }) => Boolean(img.url && img.thumbnail));
+
+      debug.status = 'Live-Daten aus Google Drive geladen';
+      debug.error = undefined;
+      debug.fileCount = state.images.length;
+      debug.hint = `Drive-API-Ergebnis (${state.images.length} Dateien)`;
     }
 
     if (!state.images.length) {
       const fallback = await fetch('/data/gallery.json');
       state.images = await fallback.json();
+      debug.status = 'Fallback /data/gallery.json';
+      debug.error = debug.error || 'Live-Daten nicht verfügbar';
+      debug.fileCount = state.images.length;
+      debug.hint = `Fallback aktiviert (${state.images.length} Bilder)`;
     }
+    resetLoadStats();
+    renderDebug(debug);
     renderCarousel();
     schedulePreload();
   } catch {
     const fallback = await fetch('/data/gallery.json');
     state.images = await fallback.json();
+    debug.status = 'Fehler beim Laden der Galerie';
+    debug.error = 'Fallback aktiv';
+    debug.fileCount = state.images.length;
+    debug.hint = 'Fällt auf statische Daten zurück';
+    resetLoadStats();
+    renderDebug(debug);
     renderCarousel();
     schedulePreload();
   }
