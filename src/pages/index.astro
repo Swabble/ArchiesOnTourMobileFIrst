@@ -170,9 +170,12 @@ import Footer from '../components/Footer.astro';
           }
 
           // Create a spacer to maintain layout (no horizontal overflow)
+          // IMPORTANT: Spacer height = visible panel height in viewport
+          // Not full panel height, to prevent extra scroll space
+          const visiblePanelHeight = slideInPanel.offsetHeight + exactTopPosition; // Panel height + offset from top
           const spacer = document.createElement('div');
           spacer.className = 'slide-in-panel-spacer';
-          spacer.style.height = `${slideInPanel.offsetHeight}px`;
+          spacer.style.height = `${Math.max(0, visiblePanelHeight)}px`; // Prevent negative height
           spacer.style.width = '100%';
           spacer.style.maxWidth = '100vw';
           slideInPanel.parentNode.insertBefore(spacer, slideInPanel);

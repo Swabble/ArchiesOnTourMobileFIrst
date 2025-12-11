@@ -1,6 +1,14 @@
 html {
   overflow-x: hidden;
-  overflow-y: auto; /* Only one vertical scrollbar */
+  overflow-y: auto;
+  /* Hide scrollbar but keep functionality */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+/* Hide scrollbar for Chrome/Safari/Opera */
+html::-webkit-scrollbar {
+  display: none;
 }
 
 .container {
@@ -13,9 +21,9 @@ body {
   position: relative;
   background: var(--color-background);
   overflow-x: hidden;
-  /* Ensure only one scrollbar */
-  height: 100%;
-  width: 100%;
+  /* Prevent extra scroll space */
+  min-height: 100vh;
+  max-height: fit-content;
 }
 
 /* Prevent spacer from causing overflow */
