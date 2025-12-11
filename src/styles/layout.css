@@ -15,8 +15,6 @@ body {
   --slide-panel-height: 0px;
   /* Default end position overlaps the header by 5vh */
   --slide-panel-final-offset: -5vh;
-  /* Parallax offset composes with animation so both transforms stack. */
-  --slide-panel-parallax-offset: 0px;
   /* Keep in normal document flow so content is pushed down, not overlaid */
   position: relative;
   /* Lower z-index so content sits on top */
@@ -30,7 +28,7 @@ body {
   /* Set height immediately (not animated) to avoid layout shifts */
   max-height: var(--slide-panel-height);
   /* Start off-screen, will slide down smoothly */
-  transform: translateY(calc(-100% + var(--slide-panel-parallax-offset, 0px)));
+  transform: translateY(-100%);
   will-change: transform;
   pointer-events: none;
 }
@@ -118,10 +116,10 @@ body {
   @keyframes slide-panel-in {
     /* Panel slides down but stops partially under header - responsive vh units */
     0% {
-      transform: translateY(calc(-100% + var(--slide-panel-parallax-offset, 0px)));
+      transform: translateY(-100%);
     }
     100% {
-      transform: translateY(calc(var(--slide-panel-final-offset) + var(--slide-panel-parallax-offset, 0px)));
+      transform: translateY(var(--slide-panel-final-offset));
     }
   }
 
@@ -130,9 +128,7 @@ body {
     animation: none;
     height: auto;
     max-height: none;
-    /* Disable parallax when reducing motion for accessibility. */
-    --slide-panel-parallax-offset: 0px;
-    transform: translateY(calc(var(--slide-panel-final-offset) + var(--slide-panel-parallax-offset, 0px)));
+    transform: translateY(var(--slide-panel-final-offset));
   }
 
   .slide-in-panel.is-ready {
