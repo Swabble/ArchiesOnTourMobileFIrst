@@ -54,15 +54,18 @@ function renderGrid(
     cell.dataset.dateKey = key;
 
     const hasEvents = matches.length > 0;
-    const eventLabel = hasEvents ? `${matches.length} Termin${matches.length === 1 ? '' : 'e'}` : 'Frei';
 
     cell.innerHTML = `
       <div class="calendar__day-header">
         <div class="calendar__day-number">${day}</div>
-        <span class="calendar__badge ${hasEvents ? 'calendar__badge--busy' : 'calendar__badge--free'}">${eventLabel}</span>
       </div>
       <div class="calendar__chips" aria-hidden="true"></div>
+      <div class="calendar__event-bar ${hasEvents ? 'calendar__event-bar--busy' : ''}" aria-hidden="true"></div>
     `;
+
+    if (hasEvents) {
+      cell.setAttribute('aria-label', `${day}. ${monthFormatter.format(reference)} – Termine vorhanden`);
+    }
 
     const chipContainer = cell.querySelector('.calendar__chips');
 
