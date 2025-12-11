@@ -28,16 +28,23 @@
   </div>
 </header>
 <script>
+  const header = document.querySelector('.site-header');
   const toggle = document.querySelector('.nav__toggle');
   const list = document.querySelector('.nav__list');
   const overlay = document.querySelector('.nav__overlay');
   const links = document.querySelectorAll('.nav__link');
+
+  const updateHeaderState = () => {
+    const shouldSolid = window.scrollY > 8 || list?.classList.contains('open');
+    header?.classList.toggle('is-solid', shouldSolid);
+  };
 
   const closeMenu = () => {
     list?.classList.remove('open');
     overlay?.classList.remove('active');
     toggle?.setAttribute('aria-expanded', 'false');
     document.body.classList.remove('menu-open');
+    updateHeaderState();
   };
 
   const openMenu = () => {
@@ -45,7 +52,12 @@
     overlay?.classList.add('active');
     toggle?.setAttribute('aria-expanded', 'true');
     document.body.classList.add('menu-open');
+    updateHeaderState();
   };
+
+  updateHeaderState();
+
+  window.addEventListener('scroll', updateHeaderState, { passive: true });
 
   toggle?.addEventListener('click', () => {
     const isOpen = list?.classList.contains('open');
