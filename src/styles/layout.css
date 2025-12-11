@@ -14,11 +14,8 @@ body {
   --slide-panel-height: 0px;
   /* Default end position overlaps the header by 5vh */
   --slide-panel-final-offset: -5vh;
-  /* Fixed position so it stays in place as background when scrolling */
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  /* Start as relative to push content down, will become fixed after animation */
+  position: relative;
   /* Lower z-index so content sits on top */
   z-index: 1;
   /* Allow the logo's shadow/glow to render outside the panel bounds while the panel moves. */
@@ -33,6 +30,14 @@ body {
   transform: translateY(-100%);
   will-change: transform;
   pointer-events: none;
+}
+
+/* After animation, panel becomes fixed background */
+.slide-in-panel.is-fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
 }
 
 .slide-in-panel.is-ready {
@@ -143,10 +148,8 @@ body {
   }
 
   main {
-    margin-top: 0;
+    margin-top: var(--content-final-offset);
     animation: none;
-    opacity: 1;
-    transform: none;
   }
 
   main.content-slide-down {
@@ -160,10 +163,11 @@ main {
   z-index: 10;
   /* Minimal top padding - tight to panel */
   padding-top: var(--space-1);
-  background: var(--color-background);
+  /* Transparent background so panel shows through */
+  background: transparent;
   isolation: isolate;
-  /* Panel is now fixed, so content flows normally without negative margin */
-  margin-top: 0;
+  /* Start with negative margin to compensate for panel space, will animate to final offset */
+  margin-top: calc(-1 * var(--slide-panel-height, 0px));
   /* Default end position overlaps the header by 5vh */
   --content-final-offset: -5vh;
   will-change: margin-top;
@@ -176,12 +180,10 @@ main.content-slide-down {
 
   @keyframes slide-content-down {
     0% {
-      opacity: 0.8;
-      transform: translateY(-2vh);
+      margin-top: calc(-1 * var(--slide-panel-height, 0px));
     }
     100% {
-      opacity: 1;
-      transform: translateY(0);
+      margin-top: var(--content-final-offset);
     }
   }
 

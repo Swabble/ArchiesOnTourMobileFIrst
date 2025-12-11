@@ -141,6 +141,18 @@ import Footer from '../components/Footer.astro';
           scrollLockActive = false;
           window.removeEventListener('scroll', lockScroll);
         }, 1500); // Lock for first 1.5 seconds only
+
+        // After panel animation completes (6s), make it fixed so it stays in background while scrolling
+        window.setTimeout(() => {
+          // Create a spacer element to maintain layout space where panel was
+          const spacer = document.createElement('div');
+          spacer.className = 'slide-in-panel-spacer';
+          spacer.style.height = `${slideInPanel.offsetHeight}px`;
+          slideInPanel.parentNode.insertBefore(spacer, slideInPanel);
+
+          // Now make panel fixed - it becomes background
+          slideInPanel.classList.add('is-fixed');
+        }, 6000); // After 6 second animation completes
       }, 100); // Short delay to ensure height is measured first
     });
   </script>
