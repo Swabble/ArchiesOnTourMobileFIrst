@@ -361,9 +361,33 @@ import calendarScript from '../lib/calendar.ts?url';
     letter-spacing: 0.01em;
   }
 
+  #verfuegbarkeit .calendar__day-status {
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    border: 1px solid rgba(15, 17, 21, 0.08);
+    background: rgba(15, 17, 21, 0.04);
+    color: #0f1115;
+  }
+
+  #verfuegbarkeit .calendar__day-status--busy {
+    background: rgba(255, 113, 91, 0.14);
+    border-color: rgba(255, 113, 91, 0.35);
+    color: #9c2a17;
+  }
+
+  #verfuegbarkeit .calendar__day-status--free {
+    background: rgba(16, 185, 129, 0.12);
+    border-color: rgba(16, 185, 129, 0.28);
+    color: #0b714a;
+  }
+
   #verfuegbarkeit .calendar__event-bar {
     width: 100%;
-    height: 8px;
+    height: 10px;
     border-radius: 999px;
     background: rgba(15, 17, 21, 0.05);
     border: 1px solid rgba(15, 17, 21, 0.08);
