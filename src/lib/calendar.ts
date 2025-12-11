@@ -1,10 +1,25 @@
+type CalendarView = 'day' | 'week' | 'month' | 'agenda';
+
 const monthFormatter = new Intl.DateTimeFormat('de-DE', { month: 'long', year: 'numeric' });
+const dayFormatter = new Intl.DateTimeFormat('de-DE', {
+  weekday: 'long',
+  day: '2-digit',
+  month: 'long',
+  year: 'numeric'
+});
 
 function formatTimeRange(start: Date, end: Date) {
   return `${start.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })} – ${end.toLocaleTimeString('de-DE', {
     hour: '2-digit',
     minute: '2-digit'
   })}`;
+}
+
+function formatDateKey(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 function normalizeDate(dateInput: { date?: string; dateTime?: string }) {
@@ -17,33 +32,65 @@ function normalizeDate(dateInput: { date?: string; dateTime?: string }) {
   return new Date();
 }
 
-function renderMonthGrid(grid: HTMLElement, reference: Date) {
+function renderGrid(
+  events: any[],
+  grid: HTMLElement,
+  reference: Date,
+  onDayHover: (dateKey?: string) => void
+) {
   grid.innerHTML = '';
-  grid.setAttribute('aria-label', `Kalenderübersicht für ${formatLabel(reference)}`);
-
   const firstDay = new Date(reference.getFullYear(), reference.getMonth(), 1);
   const offset = (firstDay.getDay() + 6) % 7;
-  const totalDays = new Date(reference.getFullYear(), reference.getMonth() + 1, 0).getDate();
-
   for (let i = 0; i < offset; i++) {
-    const spacer = document.createElement('div');
-    spacer.className = 'month-grid__spacer';
-    spacer.setAttribute('aria-hidden', 'true');
-    grid.appendChild(spacer);
+    grid.appendChild(document.createElement('div'));
   }
-
-  for (let day = 1; day <= totalDays; day++) {
+  const days = new Date(reference.getFullYear(), reference.getMonth() + 1, 0).getDate();
+  for (let day = 1; day <= days; day++) {
     const cell = document.createElement('div');
-    cell.className = 'month-grid__day';
-    cell.textContent = String(day);
-    cell.setAttribute('aria-label', `${day}. ${formatLabel(reference)}`);
+    const date = new Date(reference.getFullYear(), reference.getMonth(), day);
+    const key = formatDateKey(date);
+    const matches = events.filter((evt) => formatDateKey(new Date(evt.start)) === key);
+    cell.className = `card calendar__day ${matches.length ? 'calendar__day--busy' : 'calendar__day--free'}`;
+    cell.dataset.dateKey = key;
+
+    const hasEvents = matches.length > 0;
+
+    cell.innerHTML = `
+      <div class="calendar__day-header">
+        <div class="calendar__day-number">${day}</div>
+        <span class="calendar__day-status ${hasEvents ? 'calendar__day-status--busy' : 'calendar__day-status--free'}">
+          ${hasEvents ? 'Belegt' : 'Frei'}
+        </span>
+      </div>
+      <div class="calendar__chips" aria-hidden="true"></div>
+      <div class="calendar__event-bar ${hasEvents ? 'calendar__event-bar--busy' : ''}" aria-hidden="true"></div>
+    `;
+
+    cell.setAttribute('aria-label', `${day}. ${monthFormatter.format(reference)} – ${hasEvents ? 'Termine vorhanden' : 'keine Termine'}`);
+
+    const chipContainer = cell.querySelector('.calendar__chips');
+
+    matches.slice(0, 3).forEach((evt) => {
+      const chip = document.createElement('span');
+      chip.className = 'calendar__chip';
+      chip.textContent = evt.title;
+      chipContainer?.appendChild(chip);
+    });
+
+    if (matches.length > 3) {
+      const more = document.createElement('span');
+      more.className = 'calendar__chip calendar__chip--count';
+      more.textContent = `+${matches.length - 3} weitere`;
+      chipContainer?.appendChild(more);
+    }
+    cell.addEventListener('mouseenter', () => onDayHover(matches.length ? key : undefined));
+    cell.addEventListener('mouseleave', () => onDayHover(undefined));
     grid.appendChild(cell);
   }
 }
 
-function renderMonthEvents(events: any[], list: HTMLElement, reference: Date) {
+function renderMonthEvents(events: any[], list: HTMLElement, onEventHover: (dateKey?: string) => void) {
   list.innerHTML = '';
-  list.setAttribute('aria-label', `Terminliste für ${formatLabel(reference)}`);
 
   if (!events.length) {
     const empty = document.createElement('p');
@@ -58,6 +105,9 @@ function renderMonthEvents(events: any[], list: HTMLElement, reference: Date) {
   sorted.forEach((evt) => {
     const item = document.createElement('article');
     item.className = 'month-event';
+
+    const eventDateKey = formatDateKey(new Date(evt.start));
+    item.dataset.dateKey = eventDateKey;
 
     const start = new Date(evt.start);
     const end = new Date(evt.end);
@@ -83,7 +133,26 @@ function renderMonthEvents(events: any[], list: HTMLElement, reference: Date) {
       </div>
     `;
 
+    item.addEventListener('mouseenter', () => onEventHover(eventDateKey));
+    item.addEventListener('mouseleave', () => onEventHover(undefined));
+
     list.appendChild(item);
+  });
+}
+
+function highlightMonthEvents(list: HTMLElement, highlightDateKey?: string) {
+  const hasHighlight = Boolean(highlightDateKey);
+  list.querySelectorAll<HTMLElement>('.month-event').forEach((item) => {
+    const matches = hasHighlight && item.dataset.dateKey === highlightDateKey;
+    item.classList.toggle('month-event--active', matches);
+  });
+}
+
+function highlightDay(grid: HTMLElement, highlightDateKey?: string) {
+  const hasHighlight = Boolean(highlightDateKey);
+  grid.querySelectorAll<HTMLElement>('.calendar__day').forEach((cell) => {
+    const matches = hasHighlight && cell.dataset.dateKey === highlightDateKey;
+    cell.classList.toggle('calendar__day--active', matches);
   });
 }
 
@@ -101,10 +170,6 @@ function getDateRange(reference: Date) {
 
 function formatLabel(reference: Date) {
   return monthFormatter.format(reference);
-}
-
-function isWithinRange(date: Date, start: Date, end: Date) {
-  return date.getTime() >= start.getTime() && date.getTime() <= end.getTime();
 }
 
 let cachedStaticEvents: any[] | null = null;
@@ -138,14 +203,14 @@ async function loadStaticEvents() {
 }
 
 async function fetchEvents(reference: Date) {
-  const { start, end } = getDateRange(reference);
   const staticEvents = await loadStaticEvents();
   if (staticEvents?.length) {
-    return staticEvents.filter((evt) => isWithinRange(new Date(evt.start), start, end));
+    return staticEvents;
   }
 
   const apiKey = import.meta.env.PUBLIC_DRIVE_API_KEY;
   const calendarId = import.meta.env.PUBLIC_CALENDAR_ID;
+  const { start, end } = getDateRange(reference);
   if (!apiKey || !calendarId) {
     throw new Error('Calendar configuration fehlt');
   }
@@ -155,15 +220,13 @@ async function fetchEvents(reference: Date) {
   const res = await fetch(url);
   if (!res.ok) throw new Error('Calendar fetch failed');
   const data = await res.json();
-  return (data.items || [])
-    .map((item: any) => ({
-      id: item.id,
-      title: item.summary,
-      location: item.location,
-      start: normalizeDate(item.start),
-      end: normalizeDate(item.end)
-    }))
-    .filter((item: any) => isWithinRange(new Date(item.start), start, end));
+  return (data.items || []).map((item: any) => ({
+    id: item.id,
+    title: item.summary,
+    location: item.location,
+    start: normalizeDate(item.start),
+    end: normalizeDate(item.end)
+  }));
 }
 
 function init() {
@@ -171,34 +234,30 @@ function init() {
   const monthList = document.getElementById('calendar-month-events');
   const status = document.getElementById('calendar-status');
   const monthLabel = document.getElementById('calendar-month');
-  const prevButton = document.getElementById('calendar-prev');
-  const nextButton = document.getElementById('calendar-next');
-  if (!grid || !monthList || !status || !monthLabel || !prevButton || !nextButton) return;
+  if (!grid || !monthList || !status || !monthLabel) return;
   let reference = new Date();
+  let activeDateKey: string | undefined;
 
-  function updateNavigationLabels() {
-    const prevMonth = new Date(reference.getFullYear(), reference.getMonth() - 1, 1);
-    const nextMonth = new Date(reference.getFullYear(), reference.getMonth() + 1, 1);
-    prevButton.setAttribute('aria-label', `Vorheriger Monat: ${formatLabel(prevMonth)}`);
-    nextButton.setAttribute('aria-label', `Nächster Monat: ${formatLabel(nextMonth)}`);
+  function handleHover(dateKey?: string) {
+    activeDateKey = dateKey;
+    highlightMonthEvents(monthList, dateKey);
+    highlightDay(grid, dateKey);
   }
 
   async function load() {
     status.textContent = 'Kalender wird geladen …';
     status.style.display = 'inline-flex';
     monthLabel.textContent = formatLabel(reference);
-    updateNavigationLabels();
     try {
       const events = await fetchEvents(reference);
-      renderMonthGrid(grid, reference);
-      renderMonthEvents(events, monthList, reference);
+      renderGrid(events, grid, reference, handleHover);
+      renderMonthEvents(events, monthList, handleHover);
+      handleHover(undefined);
       status.textContent = '';
       status.style.display = 'none';
     } catch (err) {
       console.warn('Calendar Fehler', err);
       grid.innerHTML = '';
-      monthList.innerHTML = '';
-      monthList.setAttribute('aria-label', `Terminliste für ${formatLabel(reference)}`);
       status.textContent = 'Kalender konnte nicht geladen werden. Bitte API-Konfiguration prüfen.';
       status.style.display = 'inline-flex';
     }
@@ -209,8 +268,8 @@ function init() {
     load();
   }
 
-  prevButton.addEventListener('click', () => shiftReference(-1));
-  nextButton.addEventListener('click', () => shiftReference(1));
+  document.getElementById('calendar-prev')?.addEventListener('click', () => shiftReference(-1));
+  document.getElementById('calendar-next')?.addEventListener('click', () => shiftReference(1));
 
   load();
 }
