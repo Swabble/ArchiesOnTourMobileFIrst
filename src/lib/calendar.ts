@@ -230,12 +230,11 @@ async function fetchEvents(reference: Date) {
 }
 
 function init() {
-  const grid = document.getElementById('calendar-grid');
+  const grid = document.getElementById('calendar-month-grid');
   const monthList = document.getElementById('calendar-month-events');
   const status = document.getElementById('calendar-status');
   const monthLabel = document.getElementById('calendar-month');
-  const weekdays = document.getElementById('calendar-weekdays');
-  if (!grid || !monthList || !status || !monthLabel || !weekdays) return;
+  if (!grid || !monthList || !status || !monthLabel) return;
   let reference = new Date();
   let activeDateKey: string | undefined;
 
@@ -251,8 +250,6 @@ function init() {
     monthLabel.textContent = formatLabel(reference);
     try {
       const events = await fetchEvents(reference);
-      weekdays.style.display = 'grid';
-      grid.style.display = 'grid';
       renderGrid(events, grid, reference, handleHover);
       renderMonthEvents(events, monthList, handleHover);
       handleHover(undefined);
@@ -260,8 +257,6 @@ function init() {
       status.style.display = 'none';
     } catch (err) {
       console.warn('Calendar Fehler', err);
-      grid.style.display = 'grid';
-      weekdays.style.display = 'grid';
       grid.innerHTML = '';
       status.textContent = 'Kalender konnte nicht geladen werden. Bitte API-Konfiguration prüfen.';
       status.style.display = 'inline-flex';
