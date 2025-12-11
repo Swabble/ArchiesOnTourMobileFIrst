@@ -13,12 +13,12 @@ header.site-header {
   z-index: 30;
   width: 100%;
   backdrop-filter: blur(10px);
-  background: rgba(10, 11, 13, 0.35);
+  background: rgba(6, 7, 9, 0.7);
   transition: background 0.25s ease, box-shadow 0.25s ease;
 }
 
 header.site-header.is-solid {
-  background: rgba(10, 11, 13, 0.92);
+  background: rgba(6, 7, 9, 0.7);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
 }
 
@@ -172,10 +172,6 @@ header.site-header::after {
   .nav__toggle {
     display: none;
   }
-  header.site-header {
-    background: transparent;
-    border-bottom: none;
-  }
   .nav__overlay {
     display: none;
   }
@@ -188,6 +184,7 @@ header.site-header::after {
     align-items: center;
     gap: var(--space-2);
     background: transparent;
+    backdrop-filter: none;
     padding: 0;
     transform: none;
     transition: none;
@@ -215,9 +212,11 @@ header.site-header::after {
     padding: var(--space-2) var(--space-3);
     font-size: var(--font-size-base);
     text-align: center;
+    background: transparent;
   }
   .nav__link:hover {
-    background: rgba(255, 255, 255, 0.12);
+    background: transparent;
+    color: var(--color-primary);
     transform: none;
   }
 }
