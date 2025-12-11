@@ -73,8 +73,9 @@ async function fetchGallery() {
   const fallbackItems = await readJsonFallback(GALLERY_OUTPUT_PATH, []);
 
   if (!apiKey || !folderId) {
-    log('warn', 'Gallery-Konfiguration fehlt, verwende Fallback');
-    return { items: fallbackItems, source: 'missing-config' };
+    const message = 'Gallery-Konfiguration fehlt (PUBLIC_DRIVE_API_KEY / PUBLIC_GALLERY_FOLDER_ID)';
+    log('error', message);
+    throw new Error(message);
   }
 
   const query = encodeURIComponent(`'${folderId}' in parents and mimeType contains 'image/' and trashed = false`);
@@ -128,11 +129,15 @@ async function buildGallery() {
       source: result.source,
       fetchedAt: new Date().toISOString()
     };
-    await writeJson(GALLERY_OUTPUT_PATH, payload.items ? payload.items : []);
+    await writeJson(GALLERY_OUTPUT_PATH, payload);
     log('info', 'Galerie-Datei geschrieben', { path: GALLERY_OUTPUT_PATH, itemCount: payload.items.length });
   } catch (error) {
     log('error', 'Galerie-Build fehlgeschlagen, schreibe Fallback', { message: error.message });
-    await writeJson(GALLERY_OUTPUT_PATH, fallbackItems);
+    await writeJson(GALLERY_OUTPUT_PATH, {
+      items: fallbackItems,
+      source: 'config-missing',
+      fetchedAt: new Date().toISOString()
+    });
   }
 }
 
