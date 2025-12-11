@@ -13,12 +13,12 @@ header.site-header {
   z-index: 30;
   width: 100%;
   backdrop-filter: blur(10px);
-  background: rgba(6, 7, 9, 0.65);
+  background: rgba(6, 7, 9, 0.7);
   transition: background 0.25s ease, box-shadow 0.25s ease;
 }
 
 header.site-header.is-solid {
-  background: rgba(6, 7, 9, 0.98);
+  background: rgba(6, 7, 9, 0.7);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
 }
 
