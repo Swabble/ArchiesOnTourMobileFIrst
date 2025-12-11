@@ -8,6 +8,13 @@ const dayFormatter = new Intl.DateTimeFormat('de-DE', {
   year: 'numeric'
 });
 
+function formatTimeRange(start: Date, end: Date) {
+  return `${start.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })} – ${end.toLocaleTimeString('de-DE', {
+    hour: '2-digit',
+    minute: '2-digit'
+  })}`;
+}
+
 function formatDateKey(date: Date) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -122,7 +129,7 @@ function renderList(
     const weekdayLabel = start.toLocaleDateString('de-DE', { weekday: 'short' });
     const dayNumber = start.toLocaleDateString('de-DE', { day: '2-digit' });
     const monthLabel = start.toLocaleDateString('de-DE', { month: 'short' });
-    const timeRange = `${start.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })} – ${end.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}`;
+    const timeRange = formatTimeRange(start, end);
 
     item.innerHTML = `
       <div class="event-date">
@@ -150,11 +157,70 @@ function renderList(
   });
 }
 
+function renderMonthEvents(events: any[], list: HTMLElement, onEventHover: (dateKey?: string) => void) {
+  list.innerHTML = '';
+
+  if (!events.length) {
+    const empty = document.createElement('p');
+    empty.className = 'calendar__empty';
+    empty.textContent = 'Keine Termine in diesem Monat.';
+    list.appendChild(empty);
+    return;
+  }
+
+  const sorted = [...events].sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
+
+  sorted.forEach((evt) => {
+    const item = document.createElement('article');
+    item.className = 'month-event';
+
+    const eventDateKey = formatDateKey(new Date(evt.start));
+    item.dataset.dateKey = eventDateKey;
+
+    const start = new Date(evt.start);
+    const end = new Date(evt.end);
+    const weekdayLabel = start.toLocaleDateString('de-DE', { weekday: 'short' });
+    const dayLabel = start.toLocaleDateString('de-DE', { day: '2-digit' });
+    const monthLabel = start.toLocaleDateString('de-DE', { month: 'short' });
+    const timeRange = formatTimeRange(start, end);
+
+    item.innerHTML = `
+      <div class="event-date">
+        <span class="weekday">${weekdayLabel}</span>
+        <span class="day-number">${dayLabel}</span>
+        <span class="weekday">${monthLabel}</span>
+      </div>
+      <div class="event-content">
+        <div class="event-header">
+          <h4 class="month-event__title">${evt.title}</h4>
+        </div>
+        <div class="month-event__meta">
+          <span class="meta-chip">🕑 ${timeRange}</span>
+          ${evt.location ? `<span class="meta-chip">📍 ${evt.location}</span>` : ''}
+        </div>
+      </div>
+    `;
+
+    item.addEventListener('mouseenter', () => onEventHover(eventDateKey));
+    item.addEventListener('mouseleave', () => onEventHover(undefined));
+
+    list.appendChild(item);
+  });
+}
+
 function highlightEvents(list: HTMLElement, highlightDateKey?: string) {
   const hasHighlight = Boolean(highlightDateKey);
   list.querySelectorAll<HTMLElement>('.calendar__event').forEach((item) => {
     const matches = hasHighlight && item.dataset.dateKey === highlightDateKey;
     item.classList.toggle('calendar__event--active', matches);
+  });
+}
+
+function highlightMonthEvents(list: HTMLElement, highlightDateKey?: string) {
+  const hasHighlight = Boolean(highlightDateKey);
+  list.querySelectorAll<HTMLElement>('.month-event').forEach((item) => {
+    const matches = hasHighlight && item.dataset.dateKey === highlightDateKey;
+    item.classList.toggle('month-event--active', matches);
   });
 }
 
@@ -242,10 +308,11 @@ async function fetchEvents(reference: Date) {
 function init() {
   const grid = document.getElementById('calendar-grid');
   const list = document.getElementById('calendar-events');
+  const monthList = document.getElementById('calendar-month-events');
   const status = document.getElementById('calendar-status');
   const monthLabel = document.getElementById('calendar-month');
   const weekdays = document.getElementById('calendar-weekdays');
-  if (!grid || !list || !status || !monthLabel || !weekdays) return;
+  if (!grid || !list || !monthList || !status || !monthLabel || !weekdays) return;
   let reference = new Date();
   let currentEvents: any[] = [];
   let activeDateKey: string | undefined;
@@ -257,6 +324,7 @@ function init() {
       renderList(currentEvents, list, handleHover, activeDateKey);
     }
     highlightEvents(list, dateKey);
+    highlightMonthEvents(monthList, dateKey);
     highlightDay(grid, dateKey);
   }
 
@@ -270,6 +338,7 @@ function init() {
       weekdays.style.display = 'grid';
       grid.style.display = 'grid';
       renderGrid(events, grid, reference, handleHover);
+      renderMonthEvents(events, monthList, handleHover);
       handleHover(undefined);
       status.textContent = '';
       status.style.display = 'none';
