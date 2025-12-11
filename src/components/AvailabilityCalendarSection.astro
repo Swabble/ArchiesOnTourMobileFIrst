@@ -10,20 +10,21 @@ import calendarScript from '../lib/calendar.ts?url';
         Schlanke Navigation, klares Raster und gut lesbare Karten – optimiert für Smartphones und große Displays.
       </p>
     </div>
-    <div class="card calendar-card">
-      <div class="calendar-card__backdrop"></div>
-      <header class="calendar-toolbar">
-        <div class="calendar-nav">
+
+    <div class="card month-view-card">
+      <header class="month-view__header">
+        <div>
+          <p class="eyebrow">Kalender</p>
+          <h3>Monatsübersicht</h3>
+          <p class="subtitle">Wechsle zwischen den Monaten und sieh alle Termine kompakt auf einen Blick.</p>
+        </div>
+        <div class="month-controls" aria-label="Kalender Navigation">
           <button id="calendar-prev" class="btn btn-secondary" aria-label="Vorheriger Monat">❮</button>
-          <div class="calendar-month">
-            <span class="month-label">Kalender</span>
+          <div class="month-label">
+            <span class="month-label__hint">Aktueller Monat</span>
             <strong id="calendar-month"></strong>
           </div>
           <button id="calendar-next" class="btn btn-secondary" aria-label="Nächster Monat">❯</button>
-        </div>
-        <div class="calendar-legend" aria-label="Legende der angezeigten Termine">
-          <span class="legend-dot legend-dot--primary"></span>
-          <span>Bestätigte Termine</span>
         </div>
       </header>
       <div id="calendar-status" class="price-pill calendar-status" aria-live="polite">Kalender wird geladen …</div>
@@ -38,17 +39,6 @@ import calendarScript from '../lib/calendar.ts?url';
           <div id="calendar-grid" class="grid"></div>
         </div>
       </div>
-    </div>
-    <div class="card month-events">
-      <header class="month-events__header">
-        <div>
-          <p class="eyebrow">Monatsübersicht</p>
-          <h3>Alle Termine dieses Monats</h3>
-          <p class="subtitle">Immer vollständig sichtbar – perfekt für schnelles Scrollen am Smartphone.</p>
-        </div>
-        <div class="pill-muted">Automatisch mit dem gewählten Monat synchronisiert</div>
-      </header>
-      <div id="calendar-month-events" class="month-events__list"></div>
     </div>
   </div>
 </section>
@@ -77,102 +67,72 @@ import calendarScript from '../lib/calendar.ts?url';
     margin: 0;
   }
 
-  #verfuegbarkeit .calendar-card {
-    position: relative;
-    overflow: hidden;
-    background: linear-gradient(150deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.92)),
-      radial-gradient(circle at 20% 20%, rgba(255, 113, 91, 0.08), transparent 35%),
-      radial-gradient(circle at 80% 10%, rgba(74, 200, 255, 0.12), transparent 38%);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 20px 60px rgba(15, 17, 21, 0.18);
-    backdrop-filter: blur(6px);
+  #verfuegbarkeit .month-view-card {
+    padding: var(--space-3);
+    display: grid;
+    gap: var(--space-3);
   }
 
-  #verfuegbarkeit .calendar-card__backdrop {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at 50% -10%, rgba(255, 179, 71, 0.16), transparent 42%),
-      linear-gradient(120deg, rgba(15, 17, 21, 0.04), rgba(15, 17, 21, 0));
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  #verfuegbarkeit .calendar-card > * {
-    position: relative;
-    z-index: 1;
-  }
-
-  #verfuegbarkeit .calendar-toolbar {
+  #verfuegbarkeit .month-view__header {
     display: flex;
     justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+  }
+
+  #verfuegbarkeit .month-controls {
+    display: inline-flex;
     align-items: center;
     gap: var(--space-2);
-    flex-wrap: wrap;
-    padding: var(--space-3) var(--space-3) var(--space-2);
-    border-bottom: 1px solid rgba(15, 17, 21, 0.06);
-  }
-
-  #verfuegbarkeit .calendar-nav {
-    display: flex;
-    gap: var(--space-3);
-    align-items: center;
-  }
-
-  #verfuegbarkeit .calendar-month {
-    display: grid;
-    gap: 2px;
+    padding: 8px 10px;
+    background: var(--color-surface-strong);
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(15, 17, 21, 0.06);
+    box-shadow: 0 10px 26px rgba(15, 17, 21, 0.08);
   }
 
   #verfuegbarkeit .month-label {
+    display: grid;
+    gap: 2px;
+    text-align: center;
+  }
+
+  #verfuegbarkeit .month-label__hint {
     font-size: var(--font-size-xs);
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--color-muted);
   }
 
+  #verfuegbarkeit #calendar-month {
+    font-size: 1.2rem;
+    color: #0f1115;
+    text-transform: capitalize;
+  }
+
   #verfuegbarkeit .btn-secondary {
     background: #f2f2f4;
     color: #0f1115;
     border: 1px solid rgba(15, 17, 21, 0.14);
-    box-shadow: 0 14px 30px rgba(15, 17, 21, 0.12);
     padding: var(--space-2);
     border-radius: 12px;
     width: 3rem;
     height: 3rem;
-    font-size: 1.35rem;
+    font-size: 1.2rem;
     font-weight: 700;
   }
 
   #verfuegbarkeit .btn-secondary:hover,
   #verfuegbarkeit .btn-secondary:focus-visible {
     background: #e7e8eb;
-    box-shadow: 0 16px 36px rgba(15, 17, 21, 0.18);
-  }
-
-  #verfuegbarkeit #calendar-month {
-    font-size: 1.25rem;
-    color: #0f1115;
-    text-transform: capitalize;
+    box-shadow: 0 14px 30px rgba(15, 17, 21, 0.12);
   }
 
   #verfuegbarkeit .calendar-status {
-    margin: 0 var(--space-2) var(--space-2);
-  }
-
-  #verfuegbarkeit .calendar-legend {
     display: inline-flex;
-    align-items: center;
-    gap: var(--space-1);
-    font-size: var(--font-size-sm);
-    color: var(--color-muted);
-    padding: 10px 14px;
-    background: rgba(15, 17, 21, 0.04);
-    border-radius: 12px;
-  }
-
-  #verfuegbarkeit .legend-dot {
-    width: 10px;
-    height: 10px;
+    width: fit-content;
+    padding: 8px 12px;
     border-radius: 999px;
     display: inline-block;
   }
@@ -205,10 +165,9 @@ import calendarScript from '../lib/calendar.ts?url';
     padding-bottom: var(--space-1);
   }
 
-  #verfuegbarkeit #calendar-weekdays,
-  #verfuegbarkeit #calendar-grid {
+  #verfuegbarkeit .month-view__grid {
     display: grid;
-    grid-template-columns: repeat(7, minmax(2.85rem, 1fr));
+    grid-template-columns: repeat(7, minmax(2.6rem, 1fr));
     gap: var(--space-1);
     width: 100%;
     min-width: 360px;
@@ -351,15 +310,12 @@ import calendarScript from '../lib/calendar.ts?url';
   }
 
   #verfuegbarkeit .calendar__day-number {
-    color: #0f1115;
     font-weight: 800;
     font-size: 1.25rem;
     letter-spacing: 0.01em;
   }
 
-  #verfuegbarkeit .calendar__event-bar {
-    width: 100%;
-    height: 8px;
+  #verfuegbarkeit .calendar__day-status {
     border-radius: 999px;
     background: rgba(15, 17, 21, 0.05);
     border: 1px solid rgba(15, 17, 21, 0.08);
@@ -415,18 +371,11 @@ import calendarScript from '../lib/calendar.ts?url';
     gap: 6px;
   }
 
-  #verfuegbarkeit .event-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-1);
-  }
-
-  #verfuegbarkeit .event-title {
+  #verfuegbarkeit .month-event__title {
     margin: 0;
   }
 
-  #verfuegbarkeit .event-meta {
+  #verfuegbarkeit .month-event__meta {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-2);
@@ -443,78 +392,23 @@ import calendarScript from '../lib/calendar.ts?url';
     background: rgba(15, 17, 21, 0.04);
   }
 
-  #verfuegbarkeit .event-description {
-    margin: 0;
-    color: var(--color-text);
-  }
-
-  #verfuegbarkeit .month-events {
-    margin-top: var(--space-3);
-    background: linear-gradient(180deg, rgba(15, 17, 21, 0.03), rgba(255, 255, 255, 0.9));
-    border: 1px solid rgba(15, 17, 21, 0.05);
-    box-shadow: 0 18px 50px rgba(15, 17, 21, 0.12);
-  }
-
-  #verfuegbarkeit .month-events__header {
-    display: flex;
-    justify-content: space-between;
-    gap: var(--space-2);
-    align-items: flex-start;
-    flex-wrap: wrap;
-    padding: var(--space-3) var(--space-3) 0;
-  }
-
-  #verfuegbarkeit .month-events__list {
-    display: grid;
-    gap: var(--space-2);
-    padding: var(--space-3);
-  }
-
-  #verfuegbarkeit .month-event {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: var(--space-2);
-    align-items: center;
-    border: 1px solid rgba(15, 17, 21, 0.08);
-    border-radius: var(--radius-md);
-    padding: var(--space-2);
-    background: white;
-    transition: box-shadow 160ms ease, transform 160ms ease, border-color 160ms ease;
-  }
-
-  #verfuegbarkeit .month-event:hover {
-    border-color: rgba(255, 113, 91, 0.35);
-    box-shadow: 0 12px 26px rgba(15, 17, 21, 0.12);
-    transform: translateY(-2px);
-  }
-
-  #verfuegbarkeit .month-event--active {
-    border-color: rgba(255, 113, 91, 0.5);
-    box-shadow: 0 14px 32px rgba(255, 113, 91, 0.18);
-    transform: translateY(-2px);
-  }
-
-  #verfuegbarkeit .month-event__title {
-    margin: 0 0 4px 0;
-  }
-
-  #verfuegbarkeit .month-event__meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
-    color: var(--color-muted);
-    font-size: var(--font-size-sm);
-  }
-
   #verfuegbarkeit .calendar__empty {
     margin: 0;
     color: var(--color-muted);
   }
 
-  @media (min-width: 960px) {
-    #verfuegbarkeit .calendar__day {
-      gap: var(--space-2);
-      min-height: 5.2rem;
+  @media (max-width: 720px) {
+    #verfuegbarkeit .month-view-card {
+      padding: var(--space-2);
+    }
+
+    #verfuegbarkeit .month-controls {
+      width: 100%;
+      justify-content: center;
+    }
+
+    #verfuegbarkeit .month-view__grid {
+      grid-template-columns: repeat(7, minmax(2.2rem, 1fr));
     }
   }
 </style>

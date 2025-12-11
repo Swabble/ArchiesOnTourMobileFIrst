@@ -1,5 +1,3 @@
-import type { } from './menuTypes';
-
 const overlay = document.getElementById('lightbox-overlay') as HTMLElement | null;
 const track = document.getElementById('carousel-track') as HTMLElement | null;
 const dots = document.getElementById('carousel-dots');
@@ -180,62 +178,19 @@ function goTo(next: number) {
 
 async function loadImages() {
   try {
-    const apiKey = import.meta.env.PUBLIC_DRIVE_API_KEY;
-    const folderId = import.meta.env.PUBLIC_GALLERY_FOLDER_ID;
+    const staticRes = await fetch('/data/gallery.json');
+    const staticPayload = await staticRes.json();
+    const staticItems = Array.isArray(staticPayload?.items)
+      ? staticPayload.items
+      : Array.isArray(staticPayload)
+        ? staticPayload
+        : [];
 
-    // 1) Versuche zuerst, die während des Builds erzeugten Daten zu laden
-    try {
-      const staticRes = await fetch('/data/gallery.json');
-      const staticPayload = await staticRes.json();
-      const staticItems = Array.isArray(staticPayload?.items) ? staticPayload.items : Array.isArray(staticPayload) ? staticPayload : [];
-
-      if (staticItems.length) {
-        state.images = staticItems;
-        debug.status = 'Statische Galerie-Daten geladen';
-        debug.fileCount = state.images.length;
-        debug.sample = state.images[0];
-        renderDebug(debug);
-        renderCarousel();
-        schedulePreload();
-        return;
-      }
-    } catch (error) {
-      debug.error = 'Statische Galerie-Daten nicht lesbar';
+    if (!staticItems.length) {
+      throw new Error('Keine statischen Galerie-Daten');
     }
 
-    // 2) Fallback: Live-Abruf während der Laufzeit
-    if (apiKey && folderId) {
-      const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+mimeType+contains+'image/'and+trashed=false&fields=files(id,name,thumbnailLink,webContentLink)&supportsAllDrives=true&key=${apiKey}`;
-
-      const res = await fetch(url);
-
-      if (!res.ok) {
-        await res.text();
-        throw new Error(`Drive request failed: ${res.status}`);
-      }
-
-      const data = await res.json();
-
-      state.images = (data.files || []).map((file: any) => {
-        const fileId = file.id;
-
-        // Use Google Drive's public image URLs
-        // These work for files in a publicly shared folder
-        const url = `https://drive.google.com/uc?export=view&id=${fileId}`;
-        const thumbUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w600`;
-
-        return {
-          url,
-          thumbnail: thumbUrl,
-          alt: file.name || 'Galeriebild'
-        };
-      }).filter((img: { url?: string; thumbnail?: string }) => Boolean(img.url && img.thumbnail));
-    }
-
-    if (!state.images.length) {
-      const fallback = await fetch('/data/gallery.json');
-      state.images = await fallback.json();
-    }
+    state.images = staticItems;
     renderCarousel();
     schedulePreload();
   } catch {
