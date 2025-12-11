@@ -62,27 +62,10 @@ function renderGrid(
           ${hasEvents ? 'Belegt' : 'Frei'}
         </span>
       </div>
-      <div class="calendar__chips" aria-hidden="true"></div>
       <div class="calendar__event-bar ${hasEvents ? 'calendar__event-bar--busy' : ''}" aria-hidden="true"></div>
     `;
 
     cell.setAttribute('aria-label', `${day}. ${monthFormatter.format(reference)} – ${hasEvents ? 'Termine vorhanden' : 'keine Termine'}`);
-
-    const chipContainer = cell.querySelector('.calendar__chips');
-
-    matches.slice(0, 3).forEach((evt) => {
-      const chip = document.createElement('span');
-      chip.className = 'calendar__chip';
-      chip.textContent = evt.title;
-      chipContainer?.appendChild(chip);
-    });
-
-    if (matches.length > 3) {
-      const more = document.createElement('span');
-      more.className = 'calendar__chip calendar__chip--count';
-      more.textContent = `+${matches.length - 3} weitere`;
-      chipContainer?.appendChild(more);
-    }
     cell.addEventListener('mouseenter', () => onDayHover(matches.length ? key : undefined));
     cell.addEventListener('mouseleave', () => onDayHover(undefined));
     grid.appendChild(cell);
@@ -104,7 +87,7 @@ function renderMonthEvents(events: any[], list: HTMLElement, onEventHover: (date
 
   sorted.forEach((evt) => {
     const item = document.createElement('article');
-    item.className = 'month-event';
+    item.className = 'card month-event';
 
     const eventDateKey = formatDateKey(new Date(evt.start));
     item.dataset.dateKey = eventDateKey;
@@ -230,11 +213,12 @@ async function fetchEvents(reference: Date) {
 }
 
 function init() {
-  const grid = document.getElementById('calendar-month-grid');
+  const grid = document.getElementById('calendar-grid');
   const monthList = document.getElementById('calendar-month-events');
   const status = document.getElementById('calendar-status');
   const monthLabel = document.getElementById('calendar-month');
-  if (!grid || !monthList || !status || !monthLabel) return;
+  const weekdays = document.getElementById('calendar-weekdays');
+  if (!grid || !monthList || !status || !monthLabel || !weekdays) return;
   let reference = new Date();
   let activeDateKey: string | undefined;
 
@@ -250,6 +234,8 @@ function init() {
     monthLabel.textContent = formatLabel(reference);
     try {
       const events = await fetchEvents(reference);
+      weekdays.style.display = 'grid';
+      grid.style.display = 'grid';
       renderGrid(events, grid, reference, handleHover);
       renderMonthEvents(events, monthList, handleHover);
       handleHover(undefined);
