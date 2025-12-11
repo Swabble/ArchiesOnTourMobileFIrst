@@ -169,33 +169,8 @@ import Footer from '../components/Footer.astro';
           const logoRect = logoOverlay ? logoOverlay.getBoundingClientRect() : null;
           const logoExactTop = logoRect ? logoRect.top : 0;
 
-          // CRITICAL FIX: Calculate spacer height accounting for content overlap
-          // Get content final offset to prevent double scroll space
-          const contentFinalOffsetStr = getComputedStyle(mainElement).getPropertyValue('--content-final-offset').trim();
-
-          // Convert vh to px if needed
-          let contentOffsetPx = 0;
-          if (contentFinalOffsetStr.includes('vh')) {
-            const vhValue = parseFloat(contentFinalOffsetStr);
-            contentOffsetPx = (vhValue / 100) * window.innerHeight;
-          } else if (contentFinalOffsetStr.includes('calc')) {
-            // For calc expressions, use the measured main element position
-            const mainRect = mainElement.getBoundingClientRect();
-            contentOffsetPx = mainRect.top - (panelRect.top + panelRect.height);
-          } else {
-            contentOffsetPx = parseFloat(contentFinalOffsetStr);
-          }
-
-          // Spacer = visible panel height + content offset (accounts for overlap)
-          const visiblePanelHeight = slideInPanel.offsetHeight + exactTopPosition;
-          const spacerHeight = Math.max(0, visiblePanelHeight + contentOffsetPx);
-
-          const spacer = document.createElement('div');
-          spacer.className = 'slide-in-panel-spacer';
-          spacer.style.height = `${spacerHeight}px`;
-          spacer.style.width = '100%';
-          spacer.style.maxWidth = '100vw';
-          slideInPanel.parentNode.insertBefore(spacer, slideInPanel);
+          // NO SPACER NEEDED!
+          // Panel becomes fixed (out of flow), main content stays where it is
 
           // Switch to fixed position
           slideInPanel.classList.add('is-fixed');

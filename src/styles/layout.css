@@ -142,9 +142,9 @@ body {
   /* Inherits parent panel animation */
 }
 
-/* Overlay logo slides slower (10 seconds) */
+/* Overlay logo slides at SAME speed as panel (6s) - synchronized! */
 .slide-in-panel.is-ready .slide-in-panel__logo-overlay {
-  animation: slide-logo-overlay 10000ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: slide-logo-overlay 6000ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes slide-logo-overlay {
