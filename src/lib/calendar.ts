@@ -47,10 +47,10 @@ function renderGrid(
   const days = new Date(reference.getFullYear(), reference.getMonth() + 1, 0).getDate();
   for (let day = 1; day <= days; day++) {
     const cell = document.createElement('div');
-    cell.className = 'calendar__day';
     const date = new Date(reference.getFullYear(), reference.getMonth(), day);
     const key = formatDateKey(date);
     const matches = events.filter((evt) => formatDateKey(new Date(evt.start)) === key);
+    cell.className = `calendar__day ${matches.length ? 'calendar__day--busy' : 'calendar__day--free'}`;
     cell.dataset.dateKey = key;
 
     const hasEvents = matches.length > 0;
