@@ -21,7 +21,6 @@ function initMobileLayout() {
       return;
     }
 
-    const headerHeight = header.offsetHeight;
     const svgHeight = svgLayer.naturalHeight || svgLayer.offsetHeight;
 
     // Calculate proper scale for SVG to fit viewport width
@@ -44,7 +43,7 @@ function initMobileLayout() {
     const sectionSpacing = sectionMargin * 2 + sectionPadding * 2;
 
     // Position main content to start after header and parallax artwork
-    main.style.paddingTop = `${headerHeight + scaledHeight}px`;
+    main.style.paddingTop = `${scaledHeight}px`;
 
     // Set parallax container height to match scaled artwork plus standard section spacing
     parallaxContainer.style.height = `${scaledHeight + sectionSpacing}px`;
