@@ -88,7 +88,66 @@ import Footer from '../components/Footer.astro';
 
       if (!inner) return;
 
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
       const mainElement = document.querySelector('main');
+
+      let isPanelRemoved = false;
+
+      const setParallaxOffset = () => {
+        if (!inner || prefersReducedMotion.matches || isPanelRemoved) {
+          slideInPanel.style.setProperty('--slide-panel-parallax-offset', '0px');
+          return;
+        }
+
+        const parallaxFactor = 5;
+        const rawOffset = window.scrollY * parallaxFactor;
+
+        slideInPanel.style.setProperty('--slide-panel-parallax-offset', `${rawOffset}px`);
+      };
+
+      const detachPanelIfOffscreen = () => {
+        if (isPanelRemoved) return;
+
+        const rect = slideInPanel.getBoundingClientRect();
+        const isBelowViewport = rect.top >= window.innerHeight;
+
+        if (!isBelowViewport) return;
+
+        isPanelRemoved = true;
+
+        if (resizeObserver) {
+          resizeObserver.disconnect();
+        }
+
+        window.removeEventListener('resize', updatePanelHeight);
+        window.removeEventListener('scroll', handleScroll);
+
+        const panelHeight = rect.height;
+
+        slideInPanel.remove();
+
+        if (mainElement) {
+          mainElement.style.setProperty('--slide-panel-height', '0px');
+        }
+
+        // Keep the user anchored on the same content after removal.
+        if (panelHeight > 0) {
+          window.scrollBy({ top: panelHeight, behavior: 'auto' });
+        }
+      };
+
+      let isTicking = false;
+      const handleScroll = () => {
+        if (isTicking || isPanelRemoved) return;
+        isTicking = true;
+
+        window.requestAnimationFrame(() => {
+          setParallaxOffset();
+          detachPanelIfOffscreen();
+          isTicking = false;
+        });
+      };
 
       const updatePanelHeight = () => {
         const { height } = inner.getBoundingClientRect();
@@ -105,6 +164,8 @@ import Footer from '../components/Footer.astro';
       const resizeObserver = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(updatePanelHeight);
 
       updatePanelHeight();
+      setParallaxOffset();
+      detachPanelIfOffscreen();
 
       if (resizeObserver) {
         resizeObserver.observe(inner);
@@ -112,6 +173,11 @@ import Footer from '../components/Footer.astro';
       }
 
       window.addEventListener('resize', updatePanelHeight, { passive: true });
+
+      if (!prefersReducedMotion.matches) {
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        window.addEventListener('beforeunload', () => window.removeEventListener('scroll', handleScroll));
+      }
 
       // Start animation immediately after height is measured (no delay = no pop-in)
       window.setTimeout(() => {
