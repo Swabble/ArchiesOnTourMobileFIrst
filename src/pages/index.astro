@@ -113,7 +113,7 @@ import Footer from '../components/Footer.astro';
 
       window.addEventListener('resize', updatePanelHeight, { passive: true });
 
-      // Start animation immediately after height is measured (no delay = no pop-in)
+      // Start animation 1s after height is measured to give the page time to settle
       window.setTimeout(() => {
         // Save initial scroll position to prevent browser auto-scroll during animation
         // (as panel pushes content down, browser tries to keep elements in view)
@@ -141,7 +141,7 @@ import Footer from '../components/Footer.astro';
           scrollLockActive = false;
           window.removeEventListener('scroll', lockScroll);
         }, 1500); // Lock for first 1.5 seconds only
-      }, 100); // Short delay to ensure height is measured first
+      }, 1000); // Delay the animation start by 1 second
     });
   </script>
   <main>
