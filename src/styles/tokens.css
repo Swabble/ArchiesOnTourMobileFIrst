@@ -59,8 +59,25 @@ body {
 }
 
 a {
-  color: inherit;
-  text-decoration: none;
+  color: #1f8bff;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.15em;
+  transition: color 0.2s ease, text-decoration-color 0.2s ease,
+    text-decoration-thickness 0.2s ease;
+}
+
+a:hover,
+a:focus {
+  color: #8bd6ff;
+  text-decoration-color: currentColor;
+  text-decoration-thickness: 2.5px;
+}
+
+a:focus-visible {
+  outline: 3px solid #8bd6ff;
+  outline-offset: 4px;
+  border-radius: 4px;
 }
 
 img {
@@ -69,7 +86,7 @@ img {
   border-radius: var(--radius-md);
 }
 
-:focus-visible {
+:focus-visible:not(a) {
   outline: 2px solid var(--color-primary);
   outline-offset: 3px;
 }
