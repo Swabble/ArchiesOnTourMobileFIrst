@@ -159,7 +159,12 @@ main {
   z-index: 10;
   /* Minimal top padding - tight to panel */
   padding-top: var(--space-1);
+  /* Slight translucency keeps the sliding panel subtly visible behind content surfaces */
+  --content-surface-opacity: 92%;
   background: var(--color-background);
+  @supports (background: color-mix(in srgb, black 50%, white 50%)) {
+    background: color-mix(in srgb, var(--color-background) var(--content-surface-opacity), transparent);
+  }
   isolation: isolate;
   /* Start with negative margin to compensate for panel space, will animate to 0 */
   margin-top: calc(-1 * var(--slide-panel-height, 0px));

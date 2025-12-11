@@ -99,7 +99,7 @@ import Footer from '../components/Footer.astro';
         }
 
         const height = inner.getBoundingClientRect().height;
-        const parallaxFactor = 0.35;
+        const parallaxFactor = 0.65;
         const rawOffset = window.scrollY * parallaxFactor;
         const maxOffset = Math.max(height + window.innerHeight, 0);
         const clampedOffset = Math.min(rawOffset, maxOffset);
