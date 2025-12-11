@@ -11,6 +11,35 @@ import galleryScript from '../lib/gallery.ts?url';
       <button class="carousel-nav carousel-nav-next" aria-label="Nächstes Bild">›</button>
       <div id="carousel-dots" class="carousel-dots" role="tablist"></div>
     </div>
+
+    <section id="gallery-debug" class="menu-debug gallery-debug is-hidden" aria-live="polite">
+      <div class="menu-debug__header">
+        <div>
+          <p class="section-lead">Galerie-Lade-Status</p>
+          <h3>Thumbnails &amp; Vollbilder</h3>
+        </div>
+        <div class="menu-debug__meta" id="gallery-debug-status">Wartet auf Daten …</div>
+      </div>
+      <p class="menu-debug__hint" id="gallery-debug-hint">
+        Zeigt, ob Bilder korrekt laden oder wegen CORS/404 blockieren. Jeder Lade- bzw. Fehlversuch wird gezählt.
+      </p>
+      <dl class="menu-stats">
+        <div class="menu-stats__item">
+          <dt class="menu-stats__label">Thumbnails</dt>
+          <dd class="menu-stats__value" id="gallery-debug-thumbnails">0 geladen / 0 Fehler</dd>
+        </div>
+        <div class="menu-stats__item">
+          <dt class="menu-stats__label">Vollbilder</dt>
+          <dd class="menu-stats__value" id="gallery-debug-full">0 geladen / 0 Fehler</dd>
+        </div>
+      </dl>
+      <details class="menu-json">
+        <summary>Problematische URLs</summary>
+        <ul class="gallery-debug__list" id="gallery-debug-failures">
+          <li>Keine Fehler protokolliert.</li>
+        </ul>
+      </details>
+    </section>
   </div>
   <div id="lightbox-overlay" class="lightbox-overlay" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="lightbox-content">
