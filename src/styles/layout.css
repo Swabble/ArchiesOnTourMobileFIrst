@@ -1,3 +1,7 @@
+html {
+  overflow-x: hidden;
+}
+
 .container {
   width: min(1100px, 100%);
   margin: 0 auto;
@@ -7,6 +11,7 @@
 body {
   position: relative;
   background: var(--color-background);
+  overflow-x: hidden;
 }
 
 .slide-in-panel {
@@ -58,7 +63,10 @@ body {
 
 .slide-in-panel__logo-container {
   position: relative;
-  width: 100%;
+  /* Make SVGs wider so they extend beyond viewport */
+  width: 130%;
+  /* Center the oversized SVG */
+  left: -15%;
   height: auto;
 }
 

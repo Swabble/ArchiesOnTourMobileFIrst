@@ -144,8 +144,12 @@ import Footer from '../components/Footer.astro';
 
         // After panel animation completes (6s), make it fixed so it stays in background while scrolling
         window.setTimeout(() => {
-          // Get the final transform value from CSS variable
-          const finalOffset = getComputedStyle(slideInPanel).getPropertyValue('--slide-panel-final-offset');
+          // Get computed values to prevent jump
+          const panelRect = slideInPanel.getBoundingClientRect();
+          const finalOffset = getComputedStyle(slideInPanel).getPropertyValue('--slide-panel-final-offset').trim();
+
+          const logoOverlay = slideInPanel.querySelector('.slide-in-panel__logo-overlay');
+          const logoFinalOffset = logoOverlay ? getComputedStyle(logoOverlay).getPropertyValue('--logo-overlay-final-offset').trim() : '0px';
 
           // Create a spacer element to maintain layout space where panel was
           const spacer = document.createElement('div');
@@ -153,14 +157,21 @@ import Footer from '../components/Footer.astro';
           spacer.style.height = `${slideInPanel.offsetHeight}px`;
           slideInPanel.parentNode.insertBefore(spacer, slideInPanel);
 
-          // Set the final transform position before switching to fixed
-          slideInPanel.style.transform = `translateY(${finalOffset})`;
+          // Preserve exact position by getting current transform before switching to fixed
+          const currentTransform = getComputedStyle(slideInPanel).transform;
 
-          // Now make panel fixed - it becomes background at its final animated position
+          // Make panel fixed first
           slideInPanel.classList.add('is-fixed');
 
-          // Get references to logo overlay and burger image
-          const logoOverlay = slideInPanel.querySelector('.slide-in-panel__logo-overlay');
+          // Immediately set transform to prevent any jump
+          slideInPanel.style.transform = `translateY(${finalOffset})`;
+
+          // Set logo overlay position
+          if (logoOverlay) {
+            logoOverlay.style.transform = `translateY(${logoFinalOffset})`;
+          }
+
+          // Get references for parallax
           const burgerImage = document.querySelector('.burger-parallax');
           const menuSection = document.querySelector('#menu-cta');
 
@@ -182,7 +193,7 @@ import Footer from '../components/Footer.astro';
                 // Logo disappears faster than panel (80% of scroll speed)
                 if (logoOverlay) {
                   const logoParallaxY = scrollY * 0.8;
-                  logoOverlay.style.transform = `translateY(calc(var(--logo-overlay-final-offset) + ${logoParallaxY}px))`;
+                  logoOverlay.style.transform = `translateY(calc(${logoFinalOffset} + ${logoParallaxY}px))`;
                 }
 
                 // Burger image slides down from top, aligning with menu section center
