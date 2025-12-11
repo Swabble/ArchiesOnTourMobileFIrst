@@ -35,6 +35,7 @@ Ohne gültige Keys greifen Fallback-Daten (Demo-Menü, Galerie-JSON, Beispielter
 - `npm run format` – Prettier.
 - `npm run test:e2e` – Playwright Grundgerüst.
 - `npm run validate:data` – Prüft Galerie-JSON auf Pflichtfelder.
+- `npm run build:data` – Ruft Drive/Sheets/Calendar APIs im Build auf und schreibt statische JSON-/Asset-Dateien unter `public/`.
 
 ## Release-Checkliste
 

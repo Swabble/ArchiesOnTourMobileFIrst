@@ -182,7 +182,42 @@ function formatLabel(reference: Date) {
   return monthFormatter.format(reference);
 }
 
+let cachedStaticEvents: any[] | null = null;
+
+function normalizeEventDates(evt: any) {
+  const normalize = (value: any) => {
+    if (value instanceof Date) return value;
+    if (typeof value === 'string') return normalizeDate({ dateTime: value });
+    return normalizeDate(value || {});
+  };
+
+  return {
+    ...evt,
+    start: normalize(evt.start),
+    end: normalize(evt.end)
+  };
+}
+
+async function loadStaticEvents() {
+  if (cachedStaticEvents) return cachedStaticEvents;
+  try {
+    const response = await fetch('/data/calendar.json');
+    if (!response.ok) return null;
+    const payload = await response.json();
+    const events = Array.isArray(payload?.events) ? payload.events : Array.isArray(payload) ? payload : [];
+    cachedStaticEvents = events.map((evt: any) => normalizeEventDates(evt));
+    return cachedStaticEvents;
+  } catch (error) {
+    return null;
+  }
+}
+
 async function fetchEvents(reference: Date) {
+  const staticEvents = await loadStaticEvents();
+  if (staticEvents?.length) {
+    return staticEvents;
+  }
+
   const apiKey = import.meta.env.PUBLIC_DRIVE_API_KEY;
   const calendarId = import.meta.env.PUBLIC_CALENDAR_ID;
   const { start, end } = getDateRange(reference);

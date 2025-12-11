@@ -220,7 +220,7 @@ async function loadImages() {
   loadingBox?.classList.remove('is-hidden');
 
   const debug: GalleryDebug = {
-    status: 'Warte auf Drive-Antwort …',
+    status: 'Lade Galerie-Daten …',
     apiKeyPresent: Boolean(import.meta.env.PUBLIC_DRIVE_API_KEY),
     folderId: import.meta.env.PUBLIC_GALLERY_FOLDER_ID
   };
@@ -229,6 +229,27 @@ async function loadImages() {
     const apiKey = import.meta.env.PUBLIC_DRIVE_API_KEY;
     const folderId = import.meta.env.PUBLIC_GALLERY_FOLDER_ID;
 
+    // 1) Versuche zuerst, die während des Builds erzeugten Daten zu laden
+    try {
+      const staticRes = await fetch('/data/gallery.json');
+      const staticPayload = await staticRes.json();
+      const staticItems = Array.isArray(staticPayload?.items) ? staticPayload.items : Array.isArray(staticPayload) ? staticPayload : [];
+
+      if (staticItems.length) {
+        state.images = staticItems;
+        debug.status = 'Statische Galerie-Daten geladen';
+        debug.fileCount = state.images.length;
+        debug.sample = state.images[0];
+        renderDebug(debug);
+        renderCarousel();
+        schedulePreload();
+        return;
+      }
+    } catch (error) {
+      debug.error = 'Statische Galerie-Daten nicht lesbar';
+    }
+
+    // 2) Fallback: Live-Abruf während der Laufzeit
     if (apiKey && folderId) {
       renderDebug(debug);
       const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+mimeType+contains+'image/'and+trashed=false&fields=files(id,name,thumbnailLink,webContentLink)&supportsAllDrives=true&key=${apiKey}`;
