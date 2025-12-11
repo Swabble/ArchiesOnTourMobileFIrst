@@ -33,6 +33,13 @@
   const overlay = document.querySelector('.nav__overlay');
   const links = document.querySelectorAll('.nav__link');
 
+  const triggerDesktopAnimation = () => {
+    if (!list || !window.matchMedia('(min-width: 768px)').matches) return;
+
+    list.classList.add('desktop-animate');
+    requestAnimationFrame(() => list.classList.add('desktop-show'));
+  };
+
   const closeMenu = () => {
     list?.classList.remove('open');
     overlay?.classList.remove('active');
@@ -61,4 +68,6 @@
   links.forEach(link => {
     link.addEventListener('click', closeMenu);
   });
+
+  triggerDesktopAnimation();
 </script>
