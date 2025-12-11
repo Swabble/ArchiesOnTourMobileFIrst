@@ -335,8 +335,8 @@ export async function buildMenu() {
   }
 
   if (!result) {
-    log('warn', 'Menu sources missing, using fallback items');
-    result = { items: FALLBACK_ITEMS, status: 200, source: 'missing-config' };
+    log('error', 'Menu sources missing (sheetId/sheetUrl/driveFolderId), using fallback items');
+    result = { items: FALLBACK_ITEMS, status: 200, source: 'config-missing' };
   }
 
   const payload = {
