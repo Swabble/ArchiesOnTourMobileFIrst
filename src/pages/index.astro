@@ -99,9 +99,9 @@ import Footer from '../components/Footer.astro';
         }
 
         const height = inner.getBoundingClientRect().height;
-        const parallaxFactor = 0.65;
+        const parallaxFactor = 1.35;
         const rawOffset = window.scrollY * parallaxFactor;
-        const maxOffset = Math.max(height + window.innerHeight, 0);
+        const maxOffset = Math.max(height + window.innerHeight + height * 0.5, 0);
         const clampedOffset = Math.min(rawOffset, maxOffset);
 
         slideInPanel.style.setProperty('--slide-panel-parallax-offset', `${clampedOffset}px`);

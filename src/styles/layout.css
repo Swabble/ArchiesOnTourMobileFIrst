@@ -160,7 +160,7 @@ main {
   /* Minimal top padding - tight to panel */
   padding-top: var(--space-1);
   /* Slight translucency keeps the sliding panel subtly visible behind content surfaces */
-  --content-surface-opacity: 92%;
+  --content-surface-opacity: 85%;
   background: var(--color-background);
   @supports (background: color-mix(in srgb, black 50%, white 50%)) {
     background: color-mix(in srgb, var(--color-background) var(--content-surface-opacity), transparent);
