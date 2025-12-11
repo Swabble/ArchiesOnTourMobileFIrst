@@ -146,36 +146,53 @@ import Footer from '../components/Footer.astro';
         window.setTimeout(() => {
           const logoOverlay = slideInPanel.querySelector('.slide-in-panel__logo-overlay');
 
-          // STEP 1: Measure position FIRST while animation is still running
+          // STEP 1: Get final CSS transform values from variables
+          const finalOffset = getComputedStyle(slideInPanel).getPropertyValue('--slide-panel-final-offset').trim();
+          const logoFinalOffset = logoOverlay ? getComputedStyle(logoOverlay).getPropertyValue('--logo-overlay-final-offset').trim() : '0px';
+
+          // STEP 2: Apply final transform values BEFORE stopping animation (prevents jump)
+          slideInPanel.style.transform = `translateY(${finalOffset})`;
+          if (logoOverlay) {
+            logoOverlay.style.transform = `translateY(${logoFinalOffset})`;
+          }
+
+          // STEP 3: NOW stop animations (no jump because transform is already set)
+          slideInPanel.style.animation = 'none';
+          if (logoOverlay) {
+            logoOverlay.style.animation = 'none';
+          }
+
+          // STEP 4: Measure positions AFTER setting transforms (accurate positions)
           const panelRect = slideInPanel.getBoundingClientRect();
           const exactTopPosition = panelRect.top;
 
           const logoRect = logoOverlay ? logoOverlay.getBoundingClientRect() : null;
           const logoExactTop = logoRect ? logoRect.top : 0;
 
-          // STEP 2: Get final CSS transform values from variables
-          const finalOffset = getComputedStyle(slideInPanel).getPropertyValue('--slide-panel-final-offset').trim();
-          const logoFinalOffset = logoOverlay ? getComputedStyle(logoOverlay).getPropertyValue('--logo-overlay-final-offset').trim() : '0px';
+          // CRITICAL FIX: Calculate spacer height accounting for content overlap
+          // Get content final offset to prevent double scroll space
+          const contentFinalOffsetStr = getComputedStyle(mainElement).getPropertyValue('--content-final-offset').trim();
 
-          // STEP 3: Apply final transform values BEFORE stopping animation (prevents jump)
-          slideInPanel.style.transform = `translateY(${finalOffset})`;
-          if (logoOverlay) {
-            logoOverlay.style.transform = `translateY(${logoFinalOffset})`;
+          // Convert vh to px if needed
+          let contentOffsetPx = 0;
+          if (contentFinalOffsetStr.includes('vh')) {
+            const vhValue = parseFloat(contentFinalOffsetStr);
+            contentOffsetPx = (vhValue / 100) * window.innerHeight;
+          } else if (contentFinalOffsetStr.includes('calc')) {
+            // For calc expressions, use the measured main element position
+            const mainRect = mainElement.getBoundingClientRect();
+            contentOffsetPx = mainRect.top - (panelRect.top + panelRect.height);
+          } else {
+            contentOffsetPx = parseFloat(contentFinalOffsetStr);
           }
 
-          // STEP 4: NOW stop animations (no jump because transform is already set)
-          slideInPanel.style.animation = 'none';
-          if (logoOverlay) {
-            logoOverlay.style.animation = 'none';
-          }
+          // Spacer = visible panel height + content offset (accounts for overlap)
+          const visiblePanelHeight = slideInPanel.offsetHeight + exactTopPosition;
+          const spacerHeight = Math.max(0, visiblePanelHeight + contentOffsetPx);
 
-          // Create a spacer to maintain layout (no horizontal overflow)
-          // IMPORTANT: Spacer height = visible panel height in viewport
-          // Not full panel height, to prevent extra scroll space
-          const visiblePanelHeight = slideInPanel.offsetHeight + exactTopPosition; // Panel height + offset from top
           const spacer = document.createElement('div');
           spacer.className = 'slide-in-panel-spacer';
-          spacer.style.height = `${Math.max(0, visiblePanelHeight)}px`; // Prevent negative height
+          spacer.style.height = `${spacerHeight}px`;
           spacer.style.width = '100%';
           spacer.style.maxWidth = '100vw';
           slideInPanel.parentNode.insertBefore(spacer, slideInPanel);
