@@ -922,7 +922,15 @@ header.site-header::after {
 
 @media (min-width: 768px) {
   .form__grid {
-    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    column-gap: var(--space-4);
+    row-gap: var(--space-4);
+  }
+}
+
+@media (min-width: 1024px) {
+  .form__grid {
+    grid-template-columns: repeat(2, minmax(280px, 1fr));
   }
 }
 
