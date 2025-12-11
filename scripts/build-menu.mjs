@@ -302,7 +302,7 @@ async function writeMenuFile(payload) {
   log('info', 'Menu file written', { path: OUTPUT_PATH, itemCount: payload.items.length, source: payload.source });
 }
 
-async function buildMenu() {
+export async function buildMenu() {
   const sheetId = process.env.MENU_SHEET_ID;
   const sheetRange = process.env.MENU_SHEET_RANGE || 'A1:Z';
   const sheetUrl = process.env.MENU_SHEET_URL;
@@ -348,8 +348,12 @@ async function buildMenu() {
   await writeMenuFile(payload);
 }
 
-buildMenu().catch(async (error) => {
-  log('error', 'Menu build failed, writing fallback', { message: error.message });
-  await writeMenuFile({ items: FALLBACK_ITEMS, source: 'build-error', fetchedAt: new Date().toISOString() });
-  process.exitCode = 1;
-});
+if (import.meta.url === `file://${process.argv[1]}`) {
+  buildMenu().catch(async (error) => {
+    log('error', 'Menu build failed, writing fallback', { message: error.message });
+    await writeMenuFile({ items: FALLBACK_ITEMS, source: 'build-error', fetchedAt: new Date().toISOString() });
+    process.exitCode = 1;
+  });
+}
+
+export { FALLBACK_ITEMS, OUTPUT_PATH as MENU_OUTPUT_PATH };
