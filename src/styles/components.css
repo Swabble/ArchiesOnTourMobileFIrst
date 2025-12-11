@@ -47,6 +47,7 @@ header.site-header::after {
   color: var(--color-corporate-white);
   font-weight: 700;
   letter-spacing: 0.5px;
+  text-decoration: none;
 }
 
 .nav__toggle {
@@ -161,6 +162,7 @@ header.site-header::after {
   font-weight: 500;
   display: block;
   text-align: left;
+  text-decoration: none;
 }
 
 .nav__link:hover {
@@ -261,9 +263,10 @@ header.site-header::after {
 }
 
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.12);
+  background: #1f2a37;
   color: var(--color-corporate-white);
-  border-color: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.24);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.28);
 }
 
 .card {
@@ -922,7 +925,15 @@ header.site-header::after {
 
 @media (min-width: 768px) {
   .form__grid {
-    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    column-gap: var(--space-4);
+    row-gap: var(--space-4);
+  }
+}
+
+@media (min-width: 1024px) {
+  .form__grid {
+    grid-template-columns: repeat(2, minmax(280px, 1fr));
   }
 }
 
