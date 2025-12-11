@@ -92,28 +92,59 @@ import Footer from '../components/Footer.astro';
 
       const mainElement = document.querySelector('main');
 
+      let isPanelRemoved = false;
+
       const setParallaxOffset = () => {
-        if (!inner || prefersReducedMotion.matches) {
+        if (!inner || prefersReducedMotion.matches || isPanelRemoved) {
           slideInPanel.style.setProperty('--slide-panel-parallax-offset', '0px');
           return;
         }
 
-        const height = inner.getBoundingClientRect().height;
-        const parallaxFactor = 1.35;
+        const parallaxFactor = 2;
         const rawOffset = window.scrollY * parallaxFactor;
-        const maxOffset = Math.max(height + window.innerHeight + height * 0.5, 0);
-        const clampedOffset = Math.min(rawOffset, maxOffset);
 
-        slideInPanel.style.setProperty('--slide-panel-parallax-offset', `${clampedOffset}px`);
+        slideInPanel.style.setProperty('--slide-panel-parallax-offset', `${rawOffset}px`);
+      };
+
+      const detachPanelIfOffscreen = () => {
+        if (isPanelRemoved) return;
+
+        const rect = slideInPanel.getBoundingClientRect();
+        const isBelowViewport = rect.top >= window.innerHeight;
+
+        if (!isBelowViewport) return;
+
+        isPanelRemoved = true;
+
+        if (resizeObserver) {
+          resizeObserver.disconnect();
+        }
+
+        window.removeEventListener('resize', updatePanelHeight);
+        window.removeEventListener('scroll', handleScroll);
+
+        const panelHeight = rect.height;
+
+        slideInPanel.remove();
+
+        if (mainElement) {
+          mainElement.style.setProperty('--slide-panel-height', '0px');
+        }
+
+        // Keep the user anchored on the same content after removal.
+        if (panelHeight > 0) {
+          window.scrollBy({ top: panelHeight, behavior: 'auto' });
+        }
       };
 
       let isTicking = false;
       const handleScroll = () => {
-        if (isTicking) return;
+        if (isTicking || isPanelRemoved) return;
         isTicking = true;
 
         window.requestAnimationFrame(() => {
           setParallaxOffset();
+          detachPanelIfOffscreen();
           isTicking = false;
         });
       };
@@ -134,6 +165,7 @@ import Footer from '../components/Footer.astro';
 
       updatePanelHeight();
       setParallaxOffset();
+      detachPanelIfOffscreen();
 
       if (resizeObserver) {
         resizeObserver.observe(inner);
