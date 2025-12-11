@@ -63,10 +63,10 @@ body {
 
 .slide-in-panel__logo-container {
   position: relative;
-  /* Make SVGs wider so they extend beyond viewport */
-  width: 130%;
+  /* Make SVGs 110% wider for parallax wobble room (5% on each side) */
+  width: 110%;
   /* Center the oversized SVG */
-  left: -15%;
+  left: -5%;
   height: auto;
 }
 

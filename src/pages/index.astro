@@ -144,12 +144,14 @@ import Footer from '../components/Footer.astro';
 
         // After panel animation completes (6s), make it fixed so it stays in background while scrolling
         window.setTimeout(() => {
-          // Get computed values to prevent jump
-          const panelRect = slideInPanel.getBoundingClientRect();
-          const finalOffset = getComputedStyle(slideInPanel).getPropertyValue('--slide-panel-final-offset').trim();
-
           const logoOverlay = slideInPanel.querySelector('.slide-in-panel__logo-overlay');
-          const logoFinalOffset = logoOverlay ? getComputedStyle(logoOverlay).getPropertyValue('--logo-overlay-final-offset').trim() : '0px';
+
+          // CRITICAL: Get exact pixel position from viewport top BEFORE changing position
+          const panelRect = slideInPanel.getBoundingClientRect();
+          const exactTopPosition = panelRect.top; // Distance from viewport top in pixels
+
+          const logoRect = logoOverlay ? logoOverlay.getBoundingClientRect() : null;
+          const logoExactTop = logoRect ? logoRect.top : 0;
 
           // Create a spacer element to maintain layout space where panel was
           const spacer = document.createElement('div');
@@ -157,18 +159,23 @@ import Footer from '../components/Footer.astro';
           spacer.style.height = `${slideInPanel.offsetHeight}px`;
           slideInPanel.parentNode.insertBefore(spacer, slideInPanel);
 
-          // Preserve exact position by getting current transform before switching to fixed
-          const currentTransform = getComputedStyle(slideInPanel).transform;
+          // Stop CSS animations before switching to fixed (prevents animation conflict)
+          slideInPanel.style.animation = 'none';
+          if (logoOverlay) {
+            logoOverlay.style.animation = 'none';
+          }
 
-          // Make panel fixed first
+          // Switch to fixed position
           slideInPanel.classList.add('is-fixed');
 
-          // Immediately set transform to prevent any jump
-          slideInPanel.style.transform = `translateY(${finalOffset})`;
+          // Set exact pixel position from top (no transform needed - prevents jump)
+          slideInPanel.style.top = `${exactTopPosition}px`;
+          slideInPanel.style.transform = 'none'; // Clear any transform
 
-          // Set logo overlay position
+          // Set logo exact position relative to panel
           if (logoOverlay) {
-            logoOverlay.style.transform = `translateY(${logoFinalOffset})`;
+            const logoOffsetFromPanel = logoExactTop - exactTopPosition;
+            logoOverlay.style.transform = `translateY(${logoOffsetFromPanel}px)`;
           }
 
           // Get references for parallax
@@ -188,12 +195,15 @@ import Footer from '../components/Footer.astro';
                 // Slight rotation wobble
                 const wobbleRotate = Math.sin(scrollY * 0.008) * 2;
 
-                slideInPanel.style.transform = `translateY(calc(${finalOffset} + ${parallaxY}px)) translateX(${wobbleX}px) rotate(${wobbleRotate}deg)`;
+                // Use exact top position + parallax offset
+                slideInPanel.style.top = `${exactTopPosition + parallaxY}px`;
+                slideInPanel.style.transform = `translateX(${wobbleX}px) rotate(${wobbleRotate}deg)`;
 
                 // Logo disappears faster than panel (80% of scroll speed)
                 if (logoOverlay) {
                   const logoParallaxY = scrollY * 0.8;
-                  logoOverlay.style.transform = `translateY(calc(${logoFinalOffset} + ${logoParallaxY}px))`;
+                  const logoOffsetFromPanel = logoExactTop - exactTopPosition;
+                  logoOverlay.style.transform = `translateY(${logoOffsetFromPanel + logoParallaxY}px)`;
                 }
 
                 // Burger image slides down from top, aligning with menu section center
