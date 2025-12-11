@@ -146,19 +146,28 @@ import Footer from '../components/Footer.astro';
         window.setTimeout(() => {
           const logoOverlay = slideInPanel.querySelector('.slide-in-panel__logo-overlay');
 
-          // Stop CSS animations FIRST to freeze current position
-          slideInPanel.style.animation = 'none';
-          if (logoOverlay) {
-            logoOverlay.style.animation = 'none';
-          }
-
-          // CRITICAL: Get exact pixel position AFTER stopping animation
-          // This ensures we capture the frozen position, not mid-animation
+          // STEP 1: Measure position FIRST while animation is still running
           const panelRect = slideInPanel.getBoundingClientRect();
           const exactTopPosition = panelRect.top;
 
           const logoRect = logoOverlay ? logoOverlay.getBoundingClientRect() : null;
           const logoExactTop = logoRect ? logoRect.top : 0;
+
+          // STEP 2: Get final CSS transform values from variables
+          const finalOffset = getComputedStyle(slideInPanel).getPropertyValue('--slide-panel-final-offset').trim();
+          const logoFinalOffset = logoOverlay ? getComputedStyle(logoOverlay).getPropertyValue('--logo-overlay-final-offset').trim() : '0px';
+
+          // STEP 3: Apply final transform values BEFORE stopping animation (prevents jump)
+          slideInPanel.style.transform = `translateY(${finalOffset})`;
+          if (logoOverlay) {
+            logoOverlay.style.transform = `translateY(${logoFinalOffset})`;
+          }
+
+          // STEP 4: NOW stop animations (no jump because transform is already set)
+          slideInPanel.style.animation = 'none';
+          if (logoOverlay) {
+            logoOverlay.style.animation = 'none';
+          }
 
           // Create a spacer to maintain layout (no horizontal overflow)
           const spacer = document.createElement('div');
@@ -175,10 +184,10 @@ import Footer from '../components/Footer.astro';
           slideInPanel.style.top = `${exactTopPosition}px`;
           slideInPanel.style.transform = 'none';
 
-          // Calculate logo offset from panel - this is the FROZEN position
+          // Calculate logo offset from panel - using measured positions
           const logoOffsetFromPanel = logoExactTop - exactTopPosition;
 
-          // Set logo position (frozen, no jump)
+          // Set logo position
           if (logoOverlay) {
             logoOverlay.style.transform = `translateY(${logoOffsetFromPanel}px)`;
           }
