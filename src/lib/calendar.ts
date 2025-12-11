@@ -58,14 +58,15 @@ function renderGrid(
     cell.innerHTML = `
       <div class="calendar__day-header">
         <div class="calendar__day-number">${day}</div>
+        <span class="calendar__day-status ${hasEvents ? 'calendar__day-status--busy' : 'calendar__day-status--free'}">
+          ${hasEvents ? 'Belegt' : 'Frei'}
+        </span>
       </div>
       <div class="calendar__chips" aria-hidden="true"></div>
       <div class="calendar__event-bar ${hasEvents ? 'calendar__event-bar--busy' : ''}" aria-hidden="true"></div>
     `;
 
-    if (hasEvents) {
-      cell.setAttribute('aria-label', `${day}. ${monthFormatter.format(reference)} – Termine vorhanden`);
-    }
+    cell.setAttribute('aria-label', `${day}. ${monthFormatter.format(reference)} – ${hasEvents ? 'Termine vorhanden' : 'keine Termine'}`);
 
     const chipContainer = cell.querySelector('.calendar__chips');
 
