@@ -14,8 +14,11 @@ body {
   --slide-panel-height: 0px;
   /* Default end position overlaps the header by 5vh */
   --slide-panel-final-offset: -5vh;
-  /* Keep in normal document flow so content is pushed down, not overlaid */
-  position: relative;
+  /* Fixed position so it stays in place as background when scrolling */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   /* Lower z-index so content sits on top */
   z-index: 1;
   /* Allow the logo's shadow/glow to render outside the panel bounds while the panel moves. */
@@ -140,8 +143,10 @@ body {
   }
 
   main {
-    margin-top: var(--content-final-offset);
+    margin-top: 0;
     animation: none;
+    opacity: 1;
+    transform: none;
   }
 
   main.content-slide-down {
@@ -157,8 +162,8 @@ main {
   padding-top: var(--space-1);
   background: var(--color-background);
   isolation: isolate;
-  /* Start with negative margin to compensate for panel space, will animate to 0 */
-  margin-top: calc(-1 * var(--slide-panel-height, 0px));
+  /* Panel is now fixed, so content flows normally without negative margin */
+  margin-top: 0;
   /* Default end position overlaps the header by 5vh */
   --content-final-offset: -5vh;
   will-change: margin-top;
@@ -171,10 +176,12 @@ main.content-slide-down {
 
   @keyframes slide-content-down {
     0% {
-      margin-top: calc(-1 * var(--slide-panel-height, 0px));
+      opacity: 0.8;
+      transform: translateY(-2vh);
     }
     100% {
-      margin-top: var(--content-final-offset); /* Content higher so panel overlaps - responsive vh units */
+      opacity: 1;
+      transform: translateY(0);
     }
   }
 
