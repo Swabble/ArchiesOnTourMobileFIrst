@@ -28,9 +28,8 @@ function initDesktopLayout() {
       return;
     }
 
-    const headerHeight = header.offsetHeight;
     const heroHeight = getHeroHeight();
-    const totalOffset = Math.round(headerHeight + heroHeight);
+    const totalOffset = Math.round(heroHeight);
 
     document.documentElement.style.setProperty('--main-offset', `${totalOffset}px`);
   };
