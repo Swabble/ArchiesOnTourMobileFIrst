@@ -1,4 +1,8 @@
 <section id="menu-cta" class="section menu-cta-section">
+  <!-- Burger image that slides down from top as panel scrolls away -->
+  <div class="burger-parallax">
+    <img src="/assets/Burger.jpeg" alt="Archies Burger" class="burger-image" />
+  </div>
   <div class="container">
     <div class="menu-cta">
       <div class="menu-cta__content">
@@ -18,7 +22,28 @@
 
 <style>
   .menu-cta-section {
+    position: relative;
     /* Background removed - using default section background */
+  }
+
+  .burger-parallax {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) translateY(-200vh);
+    width: clamp(300px, 50vw, 600px);
+    height: auto;
+    z-index: 5;
+    pointer-events: none;
+    will-change: transform;
+  }
+
+  .burger-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-soft);
   }
 
   .menu-cta {

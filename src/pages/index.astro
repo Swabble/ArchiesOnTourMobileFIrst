@@ -144,14 +144,68 @@ import Footer from '../components/Footer.astro';
 
         // After panel animation completes (6s), make it fixed so it stays in background while scrolling
         window.setTimeout(() => {
+          // Get the final transform value from CSS variable
+          const finalOffset = getComputedStyle(slideInPanel).getPropertyValue('--slide-panel-final-offset');
+
           // Create a spacer element to maintain layout space where panel was
           const spacer = document.createElement('div');
           spacer.className = 'slide-in-panel-spacer';
           spacer.style.height = `${slideInPanel.offsetHeight}px`;
           slideInPanel.parentNode.insertBefore(spacer, slideInPanel);
 
-          // Now make panel fixed - it becomes background
+          // Set the final transform position before switching to fixed
+          slideInPanel.style.transform = `translateY(${finalOffset})`;
+
+          // Now make panel fixed - it becomes background at its final animated position
           slideInPanel.classList.add('is-fixed');
+
+          // Get references to logo overlay and burger image
+          const logoOverlay = slideInPanel.querySelector('.slide-in-panel__logo-overlay');
+          const burgerImage = document.querySelector('.burger-parallax');
+          const menuSection = document.querySelector('#menu-cta');
+
+          // Add parallax scroll effect with "wobble"
+          let ticking = false;
+          const handleScroll = () => {
+            if (!ticking) {
+              window.requestAnimationFrame(() => {
+                const scrollY = window.scrollY;
+                // Panel moves down slower (40% of scroll speed)
+                const parallaxY = scrollY * 0.4;
+                // Slight horizontal wobble based on scroll
+                const wobbleX = Math.sin(scrollY * 0.01) * 10;
+                // Slight rotation wobble
+                const wobbleRotate = Math.sin(scrollY * 0.008) * 2;
+
+                slideInPanel.style.transform = `translateY(calc(${finalOffset} + ${parallaxY}px)) translateX(${wobbleX}px) rotate(${wobbleRotate}deg)`;
+
+                // Logo disappears faster than panel (80% of scroll speed)
+                if (logoOverlay) {
+                  const logoParallaxY = scrollY * 0.8;
+                  logoOverlay.style.transform = `translateY(calc(var(--logo-overlay-final-offset) + ${logoParallaxY}px))`;
+                }
+
+                // Burger image slides down from top, aligning with menu section center
+                if (burgerImage && menuSection) {
+                  const menuRect = menuSection.getBoundingClientRect();
+                  const menuCenterY = menuRect.top + menuRect.height / 2;
+                  const viewportCenterY = window.innerHeight / 2;
+
+                  // Calculate how much to move burger based on scroll
+                  // When menuCenterY === viewportCenterY, burger should be centered
+                  const targetOffset = viewportCenterY - menuCenterY;
+                  const burgerY = -200 + (scrollY * 0.6); // Adjust multiplier for desired speed
+
+                  burgerImage.style.transform = `translate(-50%, -50%) translateY(${burgerY}vh)`;
+                }
+
+                ticking = false;
+              });
+              ticking = true;
+            }
+          };
+
+          window.addEventListener('scroll', handleScroll, { passive: true });
         }, 6000); // After 6 second animation completes
       }, 100); // Short delay to ensure height is measured first
     });
