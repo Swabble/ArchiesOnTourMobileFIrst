@@ -88,7 +88,35 @@ import Footer from '../components/Footer.astro';
 
       if (!inner) return;
 
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
       const mainElement = document.querySelector('main');
+
+      const setParallaxOffset = () => {
+        if (!inner || prefersReducedMotion.matches) {
+          slideInPanel.style.setProperty('--slide-panel-parallax-offset', '0px');
+          return;
+        }
+
+        const height = inner.getBoundingClientRect().height;
+        const parallaxFactor = 0.65;
+        const rawOffset = window.scrollY * parallaxFactor;
+        const maxOffset = Math.max(height + window.innerHeight, 0);
+        const clampedOffset = Math.min(rawOffset, maxOffset);
+
+        slideInPanel.style.setProperty('--slide-panel-parallax-offset', `${clampedOffset}px`);
+      };
+
+      let isTicking = false;
+      const handleScroll = () => {
+        if (isTicking) return;
+        isTicking = true;
+
+        window.requestAnimationFrame(() => {
+          setParallaxOffset();
+          isTicking = false;
+        });
+      };
 
       const updatePanelHeight = () => {
         const { height } = inner.getBoundingClientRect();
@@ -105,6 +133,7 @@ import Footer from '../components/Footer.astro';
       const resizeObserver = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(updatePanelHeight);
 
       updatePanelHeight();
+      setParallaxOffset();
 
       if (resizeObserver) {
         resizeObserver.observe(inner);
@@ -112,6 +141,11 @@ import Footer from '../components/Footer.astro';
       }
 
       window.addEventListener('resize', updatePanelHeight, { passive: true });
+
+      if (!prefersReducedMotion.matches) {
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        window.addEventListener('beforeunload', () => window.removeEventListener('scroll', handleScroll));
+      }
 
       // Start animation immediately after height is measured (no delay = no pop-in)
       window.setTimeout(() => {
