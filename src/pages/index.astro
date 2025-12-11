@@ -146,35 +146,40 @@ import Footer from '../components/Footer.astro';
         window.setTimeout(() => {
           const logoOverlay = slideInPanel.querySelector('.slide-in-panel__logo-overlay');
 
-          // CRITICAL: Get exact pixel position from viewport top BEFORE changing position
-          const panelRect = slideInPanel.getBoundingClientRect();
-          const exactTopPosition = panelRect.top; // Distance from viewport top in pixels
-
-          const logoRect = logoOverlay ? logoOverlay.getBoundingClientRect() : null;
-          const logoExactTop = logoRect ? logoRect.top : 0;
-
-          // Create a spacer element to maintain layout space where panel was
-          const spacer = document.createElement('div');
-          spacer.className = 'slide-in-panel-spacer';
-          spacer.style.height = `${slideInPanel.offsetHeight}px`;
-          slideInPanel.parentNode.insertBefore(spacer, slideInPanel);
-
-          // Stop CSS animations before switching to fixed (prevents animation conflict)
+          // Stop CSS animations FIRST to freeze current position
           slideInPanel.style.animation = 'none';
           if (logoOverlay) {
             logoOverlay.style.animation = 'none';
           }
 
+          // CRITICAL: Get exact pixel position AFTER stopping animation
+          // This ensures we capture the frozen position, not mid-animation
+          const panelRect = slideInPanel.getBoundingClientRect();
+          const exactTopPosition = panelRect.top;
+
+          const logoRect = logoOverlay ? logoOverlay.getBoundingClientRect() : null;
+          const logoExactTop = logoRect ? logoRect.top : 0;
+
+          // Create a spacer to maintain layout (no horizontal overflow)
+          const spacer = document.createElement('div');
+          spacer.className = 'slide-in-panel-spacer';
+          spacer.style.height = `${slideInPanel.offsetHeight}px`;
+          spacer.style.width = '100%';
+          spacer.style.maxWidth = '100vw';
+          slideInPanel.parentNode.insertBefore(spacer, slideInPanel);
+
           // Switch to fixed position
           slideInPanel.classList.add('is-fixed');
 
-          // Set exact pixel position from top (no transform needed - prevents jump)
+          // Set exact pixel position from top (prevents jump)
           slideInPanel.style.top = `${exactTopPosition}px`;
-          slideInPanel.style.transform = 'none'; // Clear any transform
+          slideInPanel.style.transform = 'none';
 
-          // Set logo exact position relative to panel
+          // Calculate logo offset from panel - this is the FROZEN position
+          const logoOffsetFromPanel = logoExactTop - exactTopPosition;
+
+          // Set logo position (frozen, no jump)
           if (logoOverlay) {
-            const logoOffsetFromPanel = logoExactTop - exactTopPosition;
             logoOverlay.style.transform = `translateY(${logoOffsetFromPanel}px)`;
           }
 
@@ -182,7 +187,7 @@ import Footer from '../components/Footer.astro';
           const burgerImage = document.querySelector('.burger-parallax');
           const menuSection = document.querySelector('#menu-cta');
 
-          // Add parallax scroll effect with "wobble"
+          // Add parallax scroll effect with subtle "wobble"
           let ticking = false;
           const handleScroll = () => {
             if (!ticking) {
@@ -190,10 +195,10 @@ import Footer from '../components/Footer.astro';
                 const scrollY = window.scrollY;
                 // Panel moves down slower (40% of scroll speed)
                 const parallaxY = scrollY * 0.4;
-                // Slight horizontal wobble based on scroll
-                const wobbleX = Math.sin(scrollY * 0.01) * 10;
-                // Slight rotation wobble
-                const wobbleRotate = Math.sin(scrollY * 0.008) * 2;
+                // Subtle horizontal wobble (reduced from 10px to 4px)
+                const wobbleX = Math.sin(scrollY * 0.01) * 4;
+                // Subtle rotation wobble (reduced from 2deg to 0.5deg)
+                const wobbleRotate = Math.sin(scrollY * 0.008) * 0.5;
 
                 // Use exact top position + parallax offset
                 slideInPanel.style.top = `${exactTopPosition + parallaxY}px`;
@@ -202,7 +207,6 @@ import Footer from '../components/Footer.astro';
                 // Logo disappears faster than panel (80% of scroll speed)
                 if (logoOverlay) {
                   const logoParallaxY = scrollY * 0.8;
-                  const logoOffsetFromPanel = logoExactTop - exactTopPosition;
                   logoOverlay.style.transform = `translateY(${logoOffsetFromPanel + logoParallaxY}px)`;
                 }
 

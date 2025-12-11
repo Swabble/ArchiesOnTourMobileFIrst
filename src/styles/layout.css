@@ -23,14 +23,16 @@ body {
   position: relative;
   /* Lower z-index so content sits on top */
   z-index: 1;
-  /* Allow the logo's shadow/glow to render outside the panel bounds while the panel moves. */
-  overflow: visible;
+  /* Prevent horizontal scrollbar from oversized SVG */
+  overflow: hidden;
   /* Match website background for consistency */
   background-color: var(--color-background);
   /* Removed border and backdrop-filter - clean appearance */
   height: var(--slide-panel-height);
   /* Set height immediately (not animated) to avoid layout shifts */
   max-height: var(--slide-panel-height);
+  /* Prevent horizontal overflow */
+  max-width: 100vw;
   /* Start off-screen, will slide down smoothly */
   transform: translateY(-100%);
   will-change: transform;
@@ -43,6 +45,9 @@ body {
   top: 0;
   left: 0;
   right: 0;
+  /* Prevent horizontal overflow from oversized SVG */
+  max-width: 100vw;
+  overflow: hidden;
 }
 
 .slide-in-panel.is-ready {
