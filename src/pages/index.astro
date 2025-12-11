@@ -197,6 +197,11 @@ import Footer from '../components/Footer.astro';
           const menuSection = document.querySelector('#menu-cta');
 
           // Add parallax scroll effect with subtle "wobble"
+          // Desktop gets much weaker wobble than mobile
+          const isDesktop = window.innerWidth >= 768;
+          const wobbleMultiplierX = isDesktop ? 1 : 4;  // Desktop: 1px max, Mobile: 4px max
+          const wobbleMultiplierRotate = isDesktop ? 0.15 : 0.5;  // Desktop: 0.15deg max, Mobile: 0.5deg max
+
           let ticking = false;
           const handleScroll = () => {
             if (!ticking) {
@@ -204,10 +209,9 @@ import Footer from '../components/Footer.astro';
                 const scrollY = window.scrollY;
                 // Panel moves down slower (40% of scroll speed)
                 const parallaxY = scrollY * 0.4;
-                // Subtle horizontal wobble (reduced from 10px to 4px)
-                const wobbleX = Math.sin(scrollY * 0.01) * 4;
-                // Subtle rotation wobble (reduced from 2deg to 0.5deg)
-                const wobbleRotate = Math.sin(scrollY * 0.008) * 0.5;
+                // Responsive wobble: much weaker on desktop
+                const wobbleX = Math.sin(scrollY * 0.01) * wobbleMultiplierX;
+                const wobbleRotate = Math.sin(scrollY * 0.008) * wobbleMultiplierRotate;
 
                 // Use exact top position + parallax offset
                 slideInPanel.style.top = `${exactTopPosition + parallaxY}px`;
