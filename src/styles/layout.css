@@ -42,8 +42,9 @@ body {
   position: relative;
   /* Lower z-index so content sits on top */
   z-index: 1;
-  /* Prevent horizontal scrollbar from oversized SVG */
-  overflow: hidden;
+  /* Allow logo to extend beyond panel bounds (no clipping) */
+  overflow-x: hidden; /* Only hide horizontal overflow */
+  overflow-y: visible; /* Allow logo to extend vertically */
   /* Match website background for consistency */
   background-color: var(--color-background);
   /* Removed border and backdrop-filter - clean appearance */
@@ -66,7 +67,9 @@ body {
   right: 0;
   /* Prevent horizontal overflow from oversized SVG */
   max-width: 100vw;
-  overflow: hidden;
+  /* Allow logo to extend beyond panel bounds */
+  overflow-x: hidden;
+  overflow-y: visible;
 }
 
 .slide-in-panel.is-ready {

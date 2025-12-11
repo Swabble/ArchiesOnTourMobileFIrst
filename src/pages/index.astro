@@ -220,9 +220,9 @@ import Footer from '../components/Footer.astro';
                 slideInPanel.style.top = `${exactTopPosition + parallaxY}px`;
                 slideInPanel.style.transform = `translateX(${wobbleX}px) rotate(${wobbleRotate}deg)`;
 
-                // Logo disappears faster than panel (80% of scroll speed)
+                // Logo disappears faster than panel (55% vs 40%, weaker but still faster)
                 if (logoOverlay) {
-                  const logoParallaxY = scrollY * 0.8;
+                  const logoParallaxY = scrollY * 0.55;
                   logoOverlay.style.transform = `translateY(${logoOffsetFromPanel + logoParallaxY}px)`;
                 }
 
