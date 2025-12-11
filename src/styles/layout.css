@@ -7,6 +7,7 @@
 body {
   position: relative;
   background: var(--color-background);
+  padding-top: var(--header-height);
 }
 
 .slide-in-panel {
