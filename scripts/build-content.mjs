@@ -46,25 +46,55 @@ async function downloadImage(file, apiKey) {
   const extension = resolveExtension(file.name, file.mimeType);
   const filename = `${file.id}${extension}`;
   const outputPath = path.join(GALLERY_ASSET_DIR, filename);
-  const downloadUrl = `https://www.googleapis.com/drive/v3/files/${file.id}?alt=media&supportsAllDrives=true&key=${apiKey}`;
-  try {
-    const response = await fetch(downloadUrl);
-    if (!response.ok) {
-      throw new Error(`Download fehlgeschlagen (${response.status})`);
+
+  // Versuche verschiedene Download-Methoden
+  const downloadUrls = [
+    // Methode 1: Direkt mit webContentLink (falls verfügbar)
+    file.webContentLink,
+    // Methode 2: API Download mit alt=media
+    `https://www.googleapis.com/drive/v3/files/${file.id}?alt=media&supportsAllDrives=true&key=${apiKey}`,
+    // Methode 3: Export-URL für öffentliche Dateien
+    `https://drive.google.com/uc?export=download&id=${file.id}`,
+  ].filter(Boolean); // Entferne undefined Werte
+
+  for (const downloadUrl of downloadUrls) {
+    try {
+      log('info', `Versuche Download von ${file.name}`, { url: downloadUrl.substring(0, 80) + '...' });
+      const response = await fetch(downloadUrl);
+
+      if (!response.ok) {
+        log('warn', `Download-Versuch fehlgeschlagen (${response.status})`, { url: downloadUrl.substring(0, 80) });
+        continue; // Versuche nächste URL
+      }
+
+      const buffer = await response.arrayBuffer();
+
+      // Prüfe ob wir wirklich Bild-Daten bekommen haben (nicht HTML error page)
+      if (buffer.byteLength < 1000) {
+        log('warn', 'Download zu klein, möglicherweise Fehlerseite', { size: buffer.byteLength });
+        continue;
+      }
+
+      await ensureDir(GALLERY_ASSET_DIR);
+      await fs.writeFile(outputPath, Buffer.from(buffer));
+
+      log('info', `✅ Bild erfolgreich heruntergeladen: ${file.name}`, { size: buffer.byteLength });
+
+      return {
+        url: `/assets/gallery/${filename}`,
+        thumbnail: `/assets/gallery/${filename}`
+      };
+    } catch (error) {
+      log('warn', `Download-Fehler bei ${downloadUrl.substring(0, 60)}`, { error: error.message });
+      continue; // Versuche nächste URL
     }
-    const buffer = await response.arrayBuffer();
-    await ensureDir(GALLERY_ASSET_DIR);
-    await fs.writeFile(outputPath, Buffer.from(buffer));
-    return {
-      url: `/assets/gallery/${filename}`,
-      thumbnail: `/assets/gallery/${filename}`
-    };
-  } catch (error) {
-    log('warn', 'Bild-Download fehlgeschlagen, verwende Drive-Links', { id: file.id, error: error.message });
-    const url = `https://drive.google.com/uc?export=view&id=${file.id}`;
-    const thumbnail = `https://drive.google.com/thumbnail?id=${file.id}&sz=w600`;
-    return { url, thumbnail };
   }
+
+  // Alle Download-Versuche fehlgeschlagen, nutze Drive-Links als Fallback
+  log('warn', 'Alle Download-Versuche fehlgeschlagen, verwende Drive-Links', { id: file.id, name: file.name });
+  const url = `https://drive.google.com/uc?export=view&id=${file.id}`;
+  const thumbnail = `https://drive.google.com/thumbnail?id=${file.id}&sz=w600`;
+  return { url, thumbnail };
 }
 
 async function fetchGallery() {
@@ -81,7 +111,7 @@ async function fetchGallery() {
   const listUrl =
     `https://www.googleapis.com/drive/v3/files` +
     `?q=${query}` +
-    `&fields=files(id,name,mimeType,thumbnailLink)` +
+    `&fields=files(id,name,mimeType,thumbnailLink,webContentLink,webViewLink,permissions)` +
     `&supportsAllDrives=true&includeItemsFromAllDrives=true` +
     `&key=${apiKey}`;
 
