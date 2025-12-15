@@ -1,6 +1,6 @@
 ---
-// Binde das Galeriescript als gebündeltes Modul ein, damit es transpiliert wird
-// (ohne ?url, das zuvor rohen TypeScript-Code auslieferte).
+// Binde das Galeriescript als gebündeltes Modul ein, damit es transpiliert wird.
+const galleryScript = '/scripts/gallery.js';
 ---
 <section id="galerie" class="section">
   <div class="container">
@@ -31,6 +31,4 @@
     </div>
   </div>
 </section>
-<script type="module">
-  import '../lib/gallery.ts';
-</script>
+<script type="module" src={galleryScript}></script>

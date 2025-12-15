@@ -1,6 +1,6 @@
 ---
-// Binde das Formular-Skript als gebündeltes Modul ein, damit es transpiliert wird
-// (ohne ?url, das zuvor rohen TypeScript-Code auslieferte).
+// Binde das Formular-Skript als gebündeltes Modul ein, damit es transpiliert wird.
+const inquiryScript = '/scripts/forms.js';
 ---
 <section id="anfrage" class="section">
   <div class="container">
@@ -40,6 +40,4 @@
     </form>
   </div>
 </section>
-<script type="module">
-  import '../lib/forms.ts';
-</script>
+<script type="module" src={inquiryScript}></script>
