@@ -65,7 +65,6 @@ body {
 }
 
 a {
-  color: #1f8bff;
   text-decoration: underline;
   text-decoration-thickness: 2px;
   text-underline-offset: 0.15em;
@@ -75,7 +74,7 @@ a {
 
 a:hover,
 a:focus {
-  color: #8bd6ff;
+  color: var(--color-primary);
   text-decoration-color: currentColor;
   text-decoration-thickness: 2.5px;
 }
