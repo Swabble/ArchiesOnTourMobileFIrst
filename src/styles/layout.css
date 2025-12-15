@@ -14,7 +14,7 @@ body {
   /* The panel itself animates; keep the logo inside so it inherits the movement. */
   --slide-panel-height: 0px;
   /* Default end position overlaps the header by 5vh */
-  --slide-panel-final-offset: -5vh;
+  --slide-panel-final-offset: -10vh;
   /* Scroll-driven offset so the panel can glide out of view behind content. */
   --slide-panel-parallax-offset: 0px;
   /* Keep in normal document flow so content is pushed down, not overlaid */
@@ -87,7 +87,7 @@ body {
   /* Removed drop-shadow for clean appearance */
   pointer-events: auto;
   /* Default end offset keeps overlay higher than base logo */
-  --logo-overlay-final-offset: -12vh;
+  --logo-overlay-final-offset: -18vh;
 }
 
 /* Paths 28-34 use accent color for distinction */
@@ -160,7 +160,6 @@ main {
   /* Minimal top padding - tight to panel */
   padding-top: var(--space-1);
   /* Slight translucency keeps the sliding panel subtly visible behind content surfaces */
-  --content-surface-opacity: 85%;
   background: var(--color-background);
   @supports (background: color-mix(in srgb, black 50%, white 50%)) {
     background: color-mix(in srgb, var(--color-background) var(--content-surface-opacity), transparent);
