@@ -205,29 +205,15 @@ async function loadStaticEvents() {
 
 async function fetchEvents(reference: Date) {
   const staticEvents = await loadStaticEvents();
-  if (staticEvents?.length) {
-    return staticEvents;
+
+  // Return static events or empty array if not available
+  // No client-side API fallback - all data must be fetched at build time
+  if (!staticEvents) {
+    console.warn('Keine Kalender-Daten verfügbar. Build-Prozess muss ausgeführt werden.');
+    return [];
   }
 
-  const apiKey = import.meta.env.PUBLIC_DRIVE_API_KEY;
-  const calendarId = import.meta.env.PUBLIC_CALENDAR_ID;
-  const { start, end } = getDateRange(reference);
-  if (!apiKey || !calendarId) {
-    throw new Error('Calendar configuration fehlt');
-  }
-  const timeMin = start.toISOString();
-  const timeMax = end.toISOString();
-  const url = `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?key=${apiKey}&timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error('Calendar fetch failed');
-  const data = await res.json();
-  return (data.items || []).map((item: any) => ({
-    id: item.id,
-    title: item.summary,
-    location: item.location,
-    start: normalizeDate(item.start),
-    end: normalizeDate(item.end)
-  }));
+  return staticEvents;
 }
 
 function init() {

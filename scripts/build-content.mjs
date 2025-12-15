@@ -203,11 +203,114 @@ async function buildCalendar() {
   }
 }
 
+async function validateBuildResults() {
+  log('info', '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  log('info', 'Build-Zusammenfassung:');
+  log('info', '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
+  const results = {
+    success: [],
+    warnings: [],
+    errors: []
+  };
+
+  // Validate Menu
+  try {
+    const menuData = await readJsonFallback(MENU_OUTPUT_PATH, null);
+    if (menuData?.source === 'missing-config' || menuData?.source === 'sheet-api-error' || menuData?.source === 'sheet-api-exception') {
+      results.warnings.push(`⚠️  Menü: Fallback-Daten verwendet (${menuData.source})`);
+      log('warn', `Menü verwendet Fallback-Daten (${menuData.source})`, { items: menuData?.items?.length || 0 });
+    } else if (menuData?.items?.length > 0) {
+      results.success.push(`✅ Menü: ${menuData.items.length} Items geladen`);
+      log('info', `Menü erfolgreich geladen`, { items: menuData.items.length, source: menuData.source });
+    } else {
+      results.errors.push(`❌ Menü: Keine Daten vorhanden`);
+      log('error', 'Menü hat keine Daten');
+    }
+  } catch (error) {
+    results.errors.push(`❌ Menü: Konnte nicht gelesen werden (${error.message})`);
+  }
+
+  // Validate Gallery
+  try {
+    const galleryData = await readJsonFallback(GALLERY_OUTPUT_PATH, null);
+    const items = Array.isArray(galleryData) ? galleryData : galleryData?.items || [];
+    if (items.length === 0) {
+      results.warnings.push(`⚠️  Galerie: Keine Bilder geladen`);
+      log('warn', 'Galerie hat keine Bilder');
+    } else if (items.some(item => item.url?.includes('unsplash.com'))) {
+      results.warnings.push(`⚠️  Galerie: Verwendet Platzhalter-Bilder (${items.length} Bilder)`);
+      log('warn', `Galerie verwendet Platzhalter-Bilder`, { items: items.length });
+    } else {
+      results.success.push(`✅ Galerie: ${items.length} Bilder geladen`);
+      log('info', `Galerie erfolgreich geladen`, { items: items.length });
+    }
+  } catch (error) {
+    results.errors.push(`❌ Galerie: Konnte nicht gelesen werden (${error.message})`);
+  }
+
+  // Validate Calendar
+  try {
+    const calendarData = await readJsonFallback(CALENDAR_OUTPUT_PATH, null);
+    const events = calendarData?.events || [];
+    if (calendarData?.source === 'calendar-fallback' || calendarData?.source === 'missing-config') {
+      results.warnings.push(`⚠️  Kalender: Fallback-Daten verwendet (${calendarData.source})`);
+      log('warn', `Kalender verwendet Fallback-Daten (${calendarData.source})`, { events: events.length });
+    } else if (events.length === 0 && calendarData?.source === 'calendar-empty') {
+      results.warnings.push(`⚠️  Kalender: Keine Events im Zeitraum gefunden`);
+      log('warn', 'Kalender hat keine Events im Zeitraum');
+    } else if (events.length > 0) {
+      results.success.push(`✅ Kalender: ${events.length} Events geladen`);
+      log('info', `Kalender erfolgreich geladen`, { events: events.length, source: calendarData.source });
+    }
+  } catch (error) {
+    results.errors.push(`❌ Kalender: Konnte nicht gelesen werden (${error.message})`);
+  }
+
+  // Print summary
+  log('info', '');
+  results.success.forEach(msg => log('info', msg));
+  results.warnings.forEach(msg => log('warn', msg));
+  results.errors.forEach(msg => log('error', msg));
+  log('info', '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
+  // Check for strict mode
+  const strictMode = process.env.STRICT_BUILD_MODE === 'true';
+  if (strictMode && (results.warnings.length > 0 || results.errors.length > 0)) {
+    log('error', '');
+    log('error', '🚫 STRICT_BUILD_MODE ist aktiviert - Build fehlgeschlagen wegen Warnungen/Fehlern');
+    log('error', '');
+    log('error', 'Behebe die API-Konfiguration in der .env Datei:');
+    log('error', '  - PUBLIC_DRIVE_API_KEY: Google API Key');
+    log('error', '  - PUBLIC_GALLERY_FOLDER_ID: Google Drive Ordner-ID für Galerie');
+    log('error', '  - MENU_SHEET_ID: Google Sheets ID für Menü');
+    log('error', '  - PUBLIC_CALENDAR_ID: Google Calendar ID');
+    log('error', '');
+    throw new Error('Build validation failed in strict mode');
+  }
+
+  if (results.warnings.length > 0 || results.errors.length > 0) {
+    log('warn', '');
+    log('warn', '⚠️  Hinweis: Build verwendet Fallback-Daten. Für Production sollten echte API-Daten geladen werden.');
+    log('warn', 'Setze STRICT_BUILD_MODE=true in der .env, um den Build bei Fehlern abzubrechen.');
+    log('warn', '');
+  }
+
+  return results;
+}
+
 async function main() {
   log('info', 'Beginne Content-Build');
+  log('info', '');
+
   await buildMenu();
   await Promise.all([buildGallery(), buildCalendar()]);
-  log('info', 'Content-Build abgeschlossen', { menuPath: MENU_OUTPUT_PATH, galleryPath: GALLERY_OUTPUT_PATH, calendarPath: CALENDAR_OUTPUT_PATH });
+
+  log('info', '');
+  log('info', 'Content-Build abgeschlossen');
+  log('info', '');
+
+  await validateBuildResults();
 }
 
 main().catch((error) => {
