@@ -130,7 +130,7 @@ function updateDebugPanel(result) {
 }
 async function fetchRemoteMenu() {
     var _a;
-    const apiUrl = '/menu.json';
+    const apiUrl = '/data/menu.json';
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 8000);
     console.info(LOG_PREFIX, 'Fetching menu from static file', apiUrl);
