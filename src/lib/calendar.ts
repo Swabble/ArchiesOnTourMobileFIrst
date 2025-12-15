@@ -58,9 +58,10 @@ function renderGrid(
     cell.innerHTML = `
       <div class="calendar__day-header">
         <div class="calendar__day-number">${day}</div>
-        <span class="calendar__day-status ${hasEvents ? 'calendar__day-status--busy' : 'calendar__day-status--free'}">
-          ${hasEvents ? 'Belegt' : 'Frei'}
-        </span>
+        <span
+          class="calendar__day-status ${hasEvents ? 'calendar__day-status--busy' : 'calendar__day-status--free'}"
+          aria-label="${hasEvents ? 'Belegt' : 'Frei'}"
+        ></span>
       </div>
       <div class="calendar__chips" aria-hidden="true"></div>
       <div class="calendar__event-bar ${hasEvents ? 'calendar__event-bar--busy' : ''}" aria-hidden="true"></div>
