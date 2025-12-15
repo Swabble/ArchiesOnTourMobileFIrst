@@ -138,8 +138,10 @@ async function buildGallery() {
 
 function getCalendarRange() {
   const now = new Date();
-  const start = new Date(now.getFullYear(), now.getMonth(), 1);
-  const end = new Date(now.getFullYear() + 1, now.getMonth(), 0);
+  // Start: 1. November des aktuellen Jahres
+  const start = new Date(now.getFullYear(), 10, 1); // Monat 10 = November (0-basiert)
+  // End: 2 Jahre in die Zukunft ab jetzt
+  const end = new Date(now.getFullYear() + 2, 11, 31); // Bis Ende Dezember in 2 Jahren
   return { start, end };
 }
 
