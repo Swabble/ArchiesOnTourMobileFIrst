@@ -23,6 +23,8 @@ Die `.env` Datei mit deinen API-Credentials ist bereits im Repository.
 
 ### Schritt 4: Build-Daten generieren
 
+> Hinweis: `npm run dev` führt jetzt automatisch `npm run build:data` als Pre-Step aus. Du kannst den Schritt hier trotzdem manuell laufen lassen, wenn du die Ausgabe prüfen möchtest.
+
 ```bash
 npm run build:data
 ```
@@ -45,6 +47,8 @@ npm run build:data
 ```bash
 npm run dev
 ```
+
+Der Dev-Server baut die Daten vor dem Start automatisch (via `predev`), damit Menü, Galerie und Kalender auch lokal mit den gleichen JSONs/Assets laufen.
 
 Öffne: http://localhost:4321
 

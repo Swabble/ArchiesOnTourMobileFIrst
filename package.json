@@ -4,6 +4,7 @@
   "type": "module",
   "description": "Archie on Tour – mobile-first marketing site built with Astro.",
   "scripts": {
+    "predev": "npm run build:data",
     "dev": "astro dev",
     "build": "npm run build:data && astro build",
     "preview": "astro preview",
