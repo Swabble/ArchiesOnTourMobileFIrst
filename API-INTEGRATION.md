@@ -128,7 +128,7 @@ graph TD
     D --> G[Google Drive API]
     E --> H[Google Calendar API]
 
-    F --> I[public/menu.json]
+    F --> I[public/data/menu.json]
     G --> J[public/data/gallery.json]
     G --> K[public/assets/gallery/*]
     H --> L[public/data/calendar.json]
@@ -151,7 +151,7 @@ graph TD
 ```mermaid
 graph LR
     A[Browser lädt Seite] --> B[fetch /data/gallery.json]
-    A --> C[fetch /menu.json]
+    A --> C[fetch /data/menu.json]
     A --> D[fetch /data/calendar.json]
 
     B --> E[Render Galerie]
@@ -208,7 +208,7 @@ STRICT_BUILD_MODE=false
 
 ## 📦 Generierte Dateien
 
-### 1. Menü: `public/menu.json`
+### 1. Menü: `public/data/menu.json`
 
 ```json
 {

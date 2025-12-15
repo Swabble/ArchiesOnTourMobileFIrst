@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 
 const LOG_PREFIX = '[menu-build]';
-const OUTPUT_PATH = path.resolve('public/menu.json');
+const OUTPUT_PATH = path.resolve('public/data/menu.json');
 
 const FALLBACK_ITEMS = [
   {
