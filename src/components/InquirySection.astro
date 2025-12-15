@@ -1,5 +1,6 @@
 ---
-import inquiryScript from '../lib/forms.ts?url';
+// Binde das Formular-Skript als gebündeltes Modul ein, damit es transpiliert wird
+// (ohne ?url, das zuvor rohen TypeScript-Code auslieferte).
 ---
 <section id="anfrage" class="section">
   <div class="container">
@@ -39,4 +40,6 @@ import inquiryScript from '../lib/forms.ts?url';
     </form>
   </div>
 </section>
-<script type="module" src={inquiryScript} defer></script>
+<script type="module">
+  import '../lib/forms.ts';
+</script>
