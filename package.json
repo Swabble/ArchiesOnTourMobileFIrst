@@ -11,9 +11,9 @@
     "lint": "eslint src --ext .astro,.ts,.js",
     "format": "prettier --write .",
     "test:e2e": "playwright test",
-    "validate:data": "node scripts/validate-data.mjs",
-    "build:menu": "node scripts/build-menu.mjs",
-    "build:data": "node scripts/build-content.mjs"
+    "validate:data": "node --env-file=.env scripts/validate-data.mjs",
+    "build:menu": "node --env-file=.env scripts/build-menu.mjs",
+    "build:data": "node --env-file=.env scripts/build-content.mjs"
   },
   "dependencies": {
     "@astrojs/node": "^8.3.4",

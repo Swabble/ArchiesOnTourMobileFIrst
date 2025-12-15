@@ -22,6 +22,6 @@
       "category": "Getränke"
     }
   ],
-  "source": "missing-config",
-  "fetchedAt": "2025-12-15T12:01:33.857Z"
+  "source": "sheet-api-exception",
+  "fetchedAt": "2025-12-15T12:11:45.358Z"
 }
