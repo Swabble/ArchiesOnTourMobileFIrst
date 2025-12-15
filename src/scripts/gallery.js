@@ -1,0 +1,1 @@
+import '../lib/gallery.ts';
