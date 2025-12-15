@@ -33,11 +33,16 @@ body {
   transform: translateY(calc(-100% + var(--slide-panel-parallax-offset, 0px)));
   will-change: transform;
   pointer-events: none;
+  /* Hide panel initially to prevent jump during height measurement */
+  opacity: 0;
+  transition: opacity 0.15s ease-out;
 }
 
 .slide-in-panel.is-ready {
   /* 6 second animation - slower and more deliberate than content movement */
   animation: slide-panel-in 6000ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  /* Make panel visible once animation starts */
+  opacity: 1;
 }
 
 .slide-in-panel__inner {
@@ -132,10 +137,12 @@ body {
     max-height: none;
     --slide-panel-parallax-offset: 0px;
     transform: translateY(var(--slide-panel-final-offset));
+    opacity: 1;
   }
 
   .slide-in-panel.is-ready {
     animation: none;
+    opacity: 1;
   }
 
   .slide-in-panel__logo-overlay {
