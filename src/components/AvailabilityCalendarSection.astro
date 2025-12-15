@@ -1,5 +1,6 @@
 ---
-import calendarScript from '../lib/calendar.ts?url';
+// Binde das Kalender-Skript als gebündeltes Modul ein, damit es transpiliert wird.
+const calendarScript = '/scripts/calendar.js';
 ---
 <section id="verfuegbarkeit" class="section">
   <div class="container">
@@ -355,4 +356,4 @@ import calendarScript from '../lib/calendar.ts?url';
     }
   }
 </style>
-<script type="module" src={calendarScript} defer></script>
+<script type="module" src={calendarScript}></script>

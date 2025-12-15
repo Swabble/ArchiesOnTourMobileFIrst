@@ -23,6 +23,8 @@ Die `.env` Datei mit deinen API-Credentials ist bereits im Repository.
 
 ### Schritt 4: Build-Daten generieren
 
+> Hinweis: `npm run dev` führt jetzt automatisch `npm run build:data` als Pre-Step aus. Du kannst den Schritt hier trotzdem manuell laufen lassen, wenn du die Ausgabe prüfen möchtest.
+
 ```bash
 npm run build:data
 ```
@@ -46,6 +48,8 @@ npm run build:data
 npm run dev
 ```
 
+Der Dev-Server baut die Daten vor dem Start automatisch (via `predev`), damit Menü, Galerie und Kalender auch lokal mit den gleichen JSONs/Assets laufen.
+
 Öffne: http://localhost:4321
 
 ### Schritt 6: Production Build (optional)
@@ -62,7 +66,7 @@ Dies generiert den `dist/` Ordner mit der fertigen Website.
 
 ### 1. **Menü-Daten** (Google Sheets)
 - Holt Daten aus deinem Google Sheet
-- Speichert in `public/menu.json`
+- Speichert in `public/data/menu.json`
 - Format:
   ```json
   {
@@ -117,7 +121,7 @@ Dies generiert den `dist/` Ordner mit der fertigen Website.
 
 ```bash
 # Menü prüfen
-cat public/menu.json | jq '.source'
+cat public/data/menu.json | jq '.source'
 # Sollte sein: "sheet-api" (nicht "missing-config"!)
 
 # Galerie prüfen
@@ -133,7 +137,7 @@ cat public/data/calendar.json | jq '.events | length'
 
 ```bash
 # Menü prüfen
-grep '"source"' public/menu.json
+grep '"source"' public/data/menu.json
 
 # Galerie prüfen
 ls public/assets/gallery/ | wc -l
@@ -216,7 +220,7 @@ curl "https://www.googleapis.com/calendar/v3/calendars/DEINE_CALENDAR_ID/events?
 Nach erfolgreichem Build, committe die generierten Dateien:
 
 ```bash
-git add public/menu.json public/data/gallery.json public/data/calendar.json public/assets/gallery/
+git add public/data/menu.json public/data/gallery.json public/data/calendar.json public/assets/gallery/
 git commit -m "Update API-Daten"
 git push
 ```

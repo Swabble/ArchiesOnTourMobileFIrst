@@ -1,5 +1,6 @@
 ---
-import menuScript from '../lib/fetchMenu.ts?url';
+// Binde das Menü-Skript als gebündeltes Modul ein, damit der Code transpiliert wird.
+const menuScript = '/scripts/menu.js';
 ---
 <section id="menu" class="section menu-section" aria-live="polite">
   <div class="container">
@@ -58,4 +59,4 @@ import menuScript from '../lib/fetchMenu.ts?url';
     </section>
   </div>
 </section>
-<script type="module" src={menuScript} defer></script>
+<script type="module" src={menuScript}></script>
