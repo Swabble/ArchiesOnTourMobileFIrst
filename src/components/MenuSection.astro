@@ -1,6 +1,8 @@
 ---
 // Binde das Menü-Skript als gebündeltes Modul ein, damit der Code transpiliert wird.
-const menuScript = '/scripts/menu.js';
+// Nutze einen relativen Pfad, damit die Datei sowohl unter /menu als auch lokal
+// (z.B. beim Öffnen aus dem dist-Ordner) gefunden wird.
+const menuScript = '../scripts/menu.js';
 ---
 <section id="menu" class="section menu-section" aria-live="polite">
   <div class="container">

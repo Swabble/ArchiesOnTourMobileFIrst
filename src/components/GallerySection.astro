@@ -1,6 +1,8 @@
 ---
 // Binde das Galeriescript als gebündeltes Modul ein, damit es transpiliert wird.
-const galleryScript = '/scripts/gallery.js';
+// Relativer Pfad stellt sicher, dass das Skript auch auf Unterseiten wie /gallery
+// sowie beim lokalen Öffnen der dist-Dateien geladen wird.
+const galleryScript = '../scripts/gallery.js';
 ---
 <section id="galerie" class="section">
   <div class="container">

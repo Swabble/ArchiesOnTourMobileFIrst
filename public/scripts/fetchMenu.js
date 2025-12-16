@@ -1,5 +1,15 @@
 import { FALLBACK_ITEMS } from './menuParser';
 const LOG_PREFIX = '[menu-fetch]';
+function resolvePublicPath(relativePath) {
+    const trimmed = relativePath.replace(/^\/+/, '');
+    try {
+        return new URL(trimmed, window.location.href).toString();
+    }
+    catch (error) {
+        console.warn('Konnte Pfad nicht relativ zum aktuellen Dokument auflösen, fallback auf Basis-URL', error);
+    }
+    return `/${trimmed}`;
+}
 function formatPrice(price) {
     const numeric = Number(String(price).replace(/[^0-9,.-]/g, '').replace(',', '.'));
     if (Number.isNaN(numeric))
@@ -130,7 +140,7 @@ function updateDebugPanel(result) {
 }
 async function fetchRemoteMenu() {
     var _a;
-    const apiUrl = '/data/menu.json';
+    const apiUrl = resolvePublicPath('data/menu.json');
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 8000);
     console.info(LOG_PREFIX, 'Fetching menu from static file', apiUrl);

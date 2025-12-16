@@ -4,6 +4,16 @@ const lightboxImage = document.getElementById('lightbox-image');
 const lightboxCounter = document.getElementById('lightbox-counter');
 const EAGER_THUMBNAIL_COUNT = 2;
 const AUTO_SCROLL_SPEED = 0.5; // pixels per frame
+function resolvePublicPath(relativePath) {
+    const trimmed = relativePath.replace(/^\/+/, '');
+    try {
+        return new URL(trimmed, window.location.href).toString();
+    }
+    catch (error) {
+        console.warn('Konnte Pfad nicht relativ zum aktuellen Dokument auflösen, fallback auf Basis-URL', error);
+    }
+    return `/${trimmed}`;
+}
 let state = {
     images: [],
     currentIndex: 0
@@ -126,8 +136,9 @@ function closeLightbox() {
     setBodyScroll(false);
 }
 async function loadImages() {
+    const galleryDataUrl = resolvePublicPath('data/gallery.json');
     try {
-        const staticRes = await fetch('/data/gallery.json');
+        const staticRes = await fetch(galleryDataUrl);
         const staticPayload = await staticRes.json();
         const staticItems = Array.isArray(staticPayload?.items)
             ? staticPayload.items
@@ -142,7 +153,7 @@ async function loadImages() {
         schedulePreload();
     }
     catch {
-        const fallback = await fetch('/data/gallery.json');
+        const fallback = await fetch(galleryDataUrl);
         state.images = await fallback.json();
         renderCarousel();
         schedulePreload();

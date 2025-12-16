@@ -1,3 +1,5 @@
+import { resolvePublicPath } from './publicPath';
+
 type CalendarView = 'day' | 'week' | 'month' | 'agenda';
 
 const monthFormatter = new Intl.DateTimeFormat('de-DE', { month: 'long', year: 'numeric' });
@@ -192,7 +194,7 @@ function normalizeEventDates(evt: any) {
 async function loadStaticEvents() {
   if (cachedStaticEvents) return cachedStaticEvents;
   try {
-    const response = await fetch('/data/calendar.json');
+    const response = await fetch(resolvePublicPath('data/calendar.json'));
     if (!response.ok) return null;
     const payload = await response.json();
     const events = Array.isArray(payload?.events) ? payload.events : Array.isArray(payload) ? payload : [];
