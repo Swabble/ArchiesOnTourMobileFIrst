@@ -144,14 +144,14 @@ import Footer from '../components/Footer.astro';
         window.addEventListener('beforeunload', () => window.removeEventListener('scroll', handleScroll));
       }
 
-      // Check if this is a back/forward navigation (not a refresh)
-      const navigationEntries = performance.getEntriesByType('navigation') as PerformanceNavigationTiming[];
-      const navigationType = navigationEntries[0]?.type || 'navigate';
-      const isBackForwardNavigation = navigationType === 'back_forward';
-      const hasPlayedAnimation = sessionStorage.getItem('slide-in-animation-played');
+      // Check if we're returning from an internal page (back navigation)
+      const isReturningFromInternalPage = sessionStorage.getItem('navigated-away') === 'true';
 
-      if (isBackForwardNavigation && hasPlayedAnimation) {
-        // Skip animation on back/forward navigation, set final state immediately
+      // Clear the flag
+      sessionStorage.removeItem('navigated-away');
+
+      if (isReturningFromInternalPage) {
+        // Skip animation when returning from internal pages
         slideInPanel.classList.add('is-ready');
         if (mainElement) {
           mainElement.classList.add('content-slide-down');
@@ -169,10 +169,19 @@ import Footer from '../components/Footer.astro';
           if (mainElement) {
             mainElement.classList.add('content-slide-down');
           }
-          // Mark animation as played in this session
-          sessionStorage.setItem('slide-in-animation-played', 'true');
         }, 100); // Short delay to ensure height is measured first
       }
+
+      // Set flag when navigating to internal pages (but not to home)
+      document.querySelectorAll('a[href^="/"], a[href^="./"], a[href^="../"]').forEach(link => {
+        const href = link.getAttribute('href');
+        // Don't set flag for links back to home
+        if (href !== '/' && href !== './' && href !== '../') {
+          link.addEventListener('click', () => {
+            sessionStorage.setItem('navigated-away', 'true');
+          });
+        }
+      });
     });
   </script>
   <main>
