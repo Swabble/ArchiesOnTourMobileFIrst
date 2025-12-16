@@ -4,11 +4,19 @@ const galleryScript = '/scripts/gallery.js';
 ---
 <section id="galerie" class="section">
   <div class="container">
-    <h2>Impressionen</h2>
-    <p>Highlights unserer Events in Bildern.</p>
-    <div class="carousel-container">
-      <div id="carousel-track" class="carousel-track" aria-live="polite"></div>
+    <div class="gallery-header">
+      <div>
+        <h2>Impressionen</h2>
+        <p>Highlights unserer Events als frei erkundbare Fotowand.</p>
+      </div>
+      <div class="gallery-legend" aria-hidden="true">
+        <span class="legend-dot legend-dot--feature"></span>
+        <span>Signature Shots</span>
+        <span class="legend-dot legend-dot--story"></span>
+        <span>Atmosphäre</span>
+      </div>
     </div>
+    <div class="gallery-grid" id="gallery-grid" aria-live="polite"></div>
   </div>
   <div id="lightbox-overlay" class="lightbox-overlay" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="lightbox-content">
