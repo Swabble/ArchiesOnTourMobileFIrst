@@ -1,3 +1,5 @@
+import { resolvePublicPath } from './publicPath';
+
 const overlay = document.getElementById('lightbox-overlay') as HTMLElement | null;
 const track = document.getElementById('carousel-track') as HTMLElement | null;
 
@@ -174,8 +176,9 @@ function resumeAutoplayAfterDelay() {
 }
 
 async function loadImages() {
+  const galleryDataUrl = resolvePublicPath('data/gallery.json');
   try {
-    const staticRes = await fetch('/data/gallery.json');
+    const staticRes = await fetch(galleryDataUrl);
     const staticPayload = await staticRes.json();
     const staticItems = Array.isArray(staticPayload?.items)
       ? staticPayload.items
@@ -191,7 +194,7 @@ async function loadImages() {
     renderCarousel();
     schedulePreload();
   } catch {
-    const fallback = await fetch('/data/gallery.json');
+    const fallback = await fetch(galleryDataUrl);
     state.images = await fallback.json();
     renderCarousel();
     schedulePreload();
