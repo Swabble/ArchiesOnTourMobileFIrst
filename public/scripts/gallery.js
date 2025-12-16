@@ -27,9 +27,9 @@ function autoScroll() {
     const gap = parseInt(getComputedStyle(track).gap) || 0;
     const totalItemWidth = itemWidth + gap;
     const imageCount = state.images.length;
-    const halfWidth = totalItemWidth * imageCount;
-    // Reset position for seamless loop
-    if (scrollPosition >= halfWidth) {
+    const oneSetWidth = totalItemWidth * imageCount;
+    // Reset position for seamless loop (we have 3 copies, so reset after 1 set)
+    if (scrollPosition >= oneSetWidth) {
         scrollPosition = 0;
     }
     track.style.transform = `translateX(-${scrollPosition}px)`;
@@ -50,8 +50,8 @@ function renderCarousel() {
     if (!track)
         return;
     track.innerHTML = '';
-    // Duplicate images for seamless infinite scroll
-    const duplicatedImages = [...state.images, ...state.images];
+    // Triple images for seamless infinite scroll
+    const duplicatedImages = [...state.images, ...state.images, ...state.images];
     duplicatedImages.forEach((img, index) => {
         const item = document.createElement('div');
         item.className = 'carousel-item';

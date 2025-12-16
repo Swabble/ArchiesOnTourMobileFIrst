@@ -691,10 +691,25 @@ header.site-header::after {
   border-radius: 0;
   overflow: visible;
   box-shadow: none;
-  transition: none;
+  transition: transform 0.3s ease, filter 0.3s ease;
   border: none;
   background: transparent;
   flex-shrink: 0;
+  cursor: pointer;
+}
+
+.carousel-item:hover {
+  transform: scale(1.02);
+  filter: brightness(1.1);
+}
+
+.carousel-item:hover::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border: 2px solid rgba(255, 113, 91, 0.6);
+  pointer-events: none;
+  z-index: 1;
 }
 
 .carousel-item img {
@@ -729,6 +744,14 @@ header.site-header::after {
   .carousel-item {
     min-width: clamp(240px, 88vw, 360px);
     height: clamp(400px, 70vh, 600px);
+  }
+
+  .carousel-item:hover {
+    transform: scale(1.01);
+  }
+
+  .carousel-item:hover::before {
+    border-width: 1px;
   }
 
   .carousel-item img {
