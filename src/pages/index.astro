@@ -79,6 +79,11 @@ import Footer from '../components/Footer.astro';
     </div>
   </div>
   <script>
+    // Enable browser scroll restoration
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+
     window.addEventListener('load', () => {
       const slideInPanel = document.querySelector('.slide-in-panel');
 
@@ -144,14 +149,64 @@ import Footer from '../components/Footer.astro';
         window.addEventListener('beforeunload', () => window.removeEventListener('scroll', handleScroll));
       }
 
-      // Start animation immediately after height is measured (no delay = no pop-in)
-      window.setTimeout(() => {
-        // Trigger the slide-in animations (panel + content move together)
+      // Check if we're returning from an internal page (back navigation)
+      const isReturningFromInternalPage = sessionStorage.getItem('navigated-away') === 'true';
+
+      // Clear the flag
+      sessionStorage.removeItem('navigated-away');
+
+      if (isReturningFromInternalPage) {
+        // Skip animation when returning from internal pages
+        // Set final state immediately without animation
+        slideInPanel.style.animation = 'none';
+        slideInPanel.style.transform = `translateY(var(--slide-panel-final-offset))`;
+
+        if (mainElement) {
+          mainElement.style.animation = 'none';
+          mainElement.style.marginTop = `var(--content-final-offset)`;
+        }
+
+        // Add classes after setting final positions
         slideInPanel.classList.add('is-ready');
         if (mainElement) {
           mainElement.classList.add('content-slide-down');
         }
-      }, 100); // Short delay to ensure height is measured first
+
+        // Also set overlay logo to final position
+        const logoOverlay = slideInPanel.querySelector('.slide-in-panel__logo-overlay') as HTMLElement | null;
+        if (logoOverlay) {
+          logoOverlay.style.animation = 'none';
+          logoOverlay.style.transform = `translateY(var(--logo-overlay-final-offset))`;
+        }
+
+        // Restore scroll position
+        const savedScrollPos = sessionStorage.getItem('scroll-position');
+        if (savedScrollPos) {
+          window.scrollTo(0, parseInt(savedScrollPos, 10));
+          sessionStorage.removeItem('scroll-position');
+        }
+      } else {
+        // Start animation for normal navigation and page refresh
+        window.setTimeout(() => {
+          // Trigger the slide-in animations (panel + content move together)
+          slideInPanel.classList.add('is-ready');
+          if (mainElement) {
+            mainElement.classList.add('content-slide-down');
+          }
+        }, 100); // Short delay to ensure height is measured first
+      }
+
+      // Set flag when navigating to internal pages (but not to home)
+      document.querySelectorAll('a[href^="/"], a[href^="./"], a[href^="../"]').forEach(link => {
+        const href = link.getAttribute('href');
+        // Don't set flag for links back to home
+        if (href !== '/' && href !== './' && href !== '../') {
+          link.addEventListener('click', () => {
+            sessionStorage.setItem('navigated-away', 'true');
+            sessionStorage.setItem('scroll-position', window.scrollY.toString());
+          });
+        }
+      });
     });
   </script>
   <main>

@@ -776,7 +776,6 @@ header.site-header::after {
   .carousel-dots {
     padding-inline: var(--space-4);
     margin-inline: auto;
-    /* Masking removed - windowed dots already limit visible count */
   }
 
   .carousel-dot {

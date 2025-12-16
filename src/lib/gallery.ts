@@ -9,7 +9,9 @@ const EAGER_THUMBNAIL_COUNT = 2;
 
 let state = {
   images: [] as { url: string; thumbnail: string; alt: string }[],
-  currentIndex: 0
+  currentIndex: 0,
+  autoplayInterval: null as ReturnType<typeof setInterval> | null,
+  isAutoplayPaused: false
 };
 
 function setBodyScroll(disable: boolean) {
@@ -71,7 +73,10 @@ function scrollToItem(index: number, smooth = true) {
   if (!track) return;
   const target = track.querySelector(`[data-index="${index}"]`) as HTMLElement | null;
   if (!target) return;
-  const offset = target.offsetLeft - track.offsetLeft;
+  // Center the item in the viewport
+  const trackCenter = track.clientWidth / 2;
+  const itemCenter = target.clientWidth / 2;
+  const offset = target.offsetLeft - track.offsetLeft - trackCenter + itemCenter;
   track.scrollTo({ left: offset, behavior: smooth ? 'smooth' : 'auto' });
 }
 
@@ -176,6 +181,33 @@ function goTo(next: number) {
   }
 }
 
+function startAutoplay() {
+  if (state.autoplayInterval !== null) return;
+  if (state.isAutoplayPaused) return;
+
+  state.autoplayInterval = setInterval(() => {
+    if (!state.isAutoplayPaused) {
+      goTo(state.currentIndex + 1);
+    }
+  }, 4000); // Auto-advance every 4 seconds
+}
+
+function pauseAutoplay() {
+  state.isAutoplayPaused = true;
+  if (state.autoplayInterval !== null) {
+    clearInterval(state.autoplayInterval);
+    state.autoplayInterval = null;
+  }
+}
+
+function resumeAutoplayAfterDelay() {
+  pauseAutoplay();
+  setTimeout(() => {
+    state.isAutoplayPaused = false;
+    startAutoplay();
+  }, 8000); // Resume after 8 seconds of inactivity
+}
+
 async function loadImages() {
   try {
     const staticRes = await fetch('/data/gallery.json');
@@ -202,8 +234,14 @@ async function loadImages() {
 }
 
 function bindControls() {
-  document.querySelector('.carousel-nav-prev')?.addEventListener('click', () => goTo(state.currentIndex - 1));
-  document.querySelector('.carousel-nav-next')?.addEventListener('click', () => goTo(state.currentIndex + 1));
+  document.querySelector('.carousel-nav-prev')?.addEventListener('click', () => {
+    goTo(state.currentIndex - 1);
+    resumeAutoplayAfterDelay();
+  });
+  document.querySelector('.carousel-nav-next')?.addEventListener('click', () => {
+    goTo(state.currentIndex + 1);
+    resumeAutoplayAfterDelay();
+  });
   document.getElementById('lightbox-close')?.addEventListener('click', closeLightbox);
   document.getElementById('lightbox-prev')?.addEventListener('click', () => goTo(state.currentIndex - 1));
   document.getElementById('lightbox-next')?.addEventListener('click', () => goTo(state.currentIndex + 1));
@@ -211,11 +249,34 @@ function bindControls() {
     if (event.target === overlay) closeLightbox();
   });
   window.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') closeLightbox();
+    if (event.key === 'Escape') {
+      closeLightbox();
+    } else if (event.key === 'ArrowLeft') {
+      goTo(state.currentIndex - 1);
+      resumeAutoplayAfterDelay();
+    } else if (event.key === 'ArrowRight') {
+      goTo(state.currentIndex + 1);
+      resumeAutoplayAfterDelay();
+    }
   });
 
+  // Pause autoplay when user manually scrolls
+  let scrollTimeout: ReturnType<typeof setTimeout> | null = null;
   track?.addEventListener('scroll', () => {
     if (!track) return;
+
+    // Pause autoplay when user scrolls
+    pauseAutoplay();
+
+    // Clear previous timeout
+    if (scrollTimeout) clearTimeout(scrollTimeout);
+
+    // Resume autoplay after user stops scrolling
+    scrollTimeout = setTimeout(() => {
+      state.isAutoplayPaused = false;
+      startAutoplay();
+    }, 8000);
+
     const items = Array.from(track.querySelectorAll('.carousel-item')) as HTMLElement[];
     if (!items.length) return;
     const center = track.scrollLeft + track.clientWidth / 2;
@@ -231,11 +292,21 @@ function bindControls() {
       highlightActive(nearestIndex);
     }
   });
+
+  // Pause autoplay when hovering over carousel
+  const carouselContainer = document.querySelector('.carousel-container');
+  carouselContainer?.addEventListener('mouseenter', () => pauseAutoplay());
+  carouselContainer?.addEventListener('mouseleave', () => {
+    state.isAutoplayPaused = false;
+    startAutoplay();
+  });
 }
 
 if (typeof window !== 'undefined') {
   window.addEventListener('DOMContentLoaded', async () => {
     bindControls();
     await loadImages();
+    // Start autoplay after images are loaded
+    startAutoplay();
   });
 }
