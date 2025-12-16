@@ -9,7 +9,9 @@ const AUTO_SCROLL_SPEED = 0.5; // pixels per frame
 
 let state = {
   images: [] as { url: string; thumbnail: string; alt: string }[],
-  currentIndex: 0
+  currentIndex: 0,
+  autoplayInterval: null as ReturnType<typeof setInterval> | null,
+  isAutoplayPaused: false
 };
 
 let scrollPosition = 0;
@@ -144,6 +146,33 @@ function closeLightbox() {
 }
 
 
+function startAutoplay() {
+  if (state.autoplayInterval !== null) return;
+  if (state.isAutoplayPaused) return;
+
+  state.autoplayInterval = setInterval(() => {
+    if (!state.isAutoplayPaused) {
+      goTo(state.currentIndex + 1);
+    }
+  }, 4000); // Auto-advance every 4 seconds
+}
+
+function pauseAutoplay() {
+  state.isAutoplayPaused = true;
+  if (state.autoplayInterval !== null) {
+    clearInterval(state.autoplayInterval);
+    state.autoplayInterval = null;
+  }
+}
+
+function resumeAutoplayAfterDelay() {
+  pauseAutoplay();
+  setTimeout(() => {
+    state.isAutoplayPaused = false;
+    startAutoplay();
+  }, 8000); // Resume after 8 seconds of inactivity
+}
+
 async function loadImages() {
   try {
     const staticRes = await fetch('/data/gallery.json');
@@ -175,7 +204,15 @@ function bindControls() {
     if (event.target === overlay) closeLightbox();
   });
   window.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') closeLightbox();
+    if (event.key === 'Escape') {
+      closeLightbox();
+    } else if (event.key === 'ArrowLeft') {
+      goTo(state.currentIndex - 1);
+      resumeAutoplayAfterDelay();
+    } else if (event.key === 'ArrowRight') {
+      goTo(state.currentIndex + 1);
+      resumeAutoplayAfterDelay();
+    }
   });
 
   // Pause auto-scroll on hover (optional)
@@ -186,11 +223,21 @@ function bindControls() {
   track?.addEventListener('mouseleave', () => {
     startAutoScroll();
   });
+
+  // Pause autoplay when hovering over carousel
+  const carouselContainer = document.querySelector('.carousel-container');
+  carouselContainer?.addEventListener('mouseenter', () => pauseAutoplay());
+  carouselContainer?.addEventListener('mouseleave', () => {
+    state.isAutoplayPaused = false;
+    startAutoplay();
+  });
 }
 
 if (typeof window !== 'undefined') {
   window.addEventListener('DOMContentLoaded', async () => {
     bindControls();
     await loadImages();
+    // Start autoplay after images are loaded
+    startAutoplay();
   });
 }
