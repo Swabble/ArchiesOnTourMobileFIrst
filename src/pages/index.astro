@@ -79,6 +79,11 @@ import Footer from '../components/Footer.astro';
     </div>
   </div>
   <script>
+    // Enable browser scroll restoration
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+
     window.addEventListener('load', () => {
       const slideInPanel = document.querySelector('.slide-in-panel');
 
@@ -173,6 +178,13 @@ import Footer from '../components/Footer.astro';
           logoOverlay.style.animation = 'none';
           logoOverlay.style.transform = `translateY(var(--logo-overlay-final-offset))`;
         }
+
+        // Restore scroll position
+        const savedScrollPos = sessionStorage.getItem('scroll-position');
+        if (savedScrollPos) {
+          window.scrollTo(0, parseInt(savedScrollPos, 10));
+          sessionStorage.removeItem('scroll-position');
+        }
       } else {
         // Start animation for normal navigation and page refresh
         window.setTimeout(() => {
@@ -191,6 +203,7 @@ import Footer from '../components/Footer.astro';
         if (href !== '/' && href !== './' && href !== '../') {
           link.addEventListener('click', () => {
             sessionStorage.setItem('navigated-away', 'true');
+            sessionStorage.setItem('scroll-position', window.scrollY.toString());
           });
         }
       });

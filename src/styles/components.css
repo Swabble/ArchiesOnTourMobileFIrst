@@ -665,18 +665,26 @@ header.site-header::after {
 }
 
 #galerie.section {
-  padding-left: 0;
-  padding-right: 0;
+  padding: 0;
+  margin: 0;
+  background: #000000;
+}
+
+#galerie.section::before {
+  display: none;
 }
 
 #galerie .container > h2,
 #galerie .container > p {
   padding-left: var(--space-4);
   padding-right: var(--space-4);
+  padding-top: var(--space-5);
+  color: #ffffff;
 }
 
 #galerie .container {
   padding: 0;
+  margin: 0;
   max-width: 100%;
 }
 
@@ -692,6 +700,7 @@ header.site-header::after {
   gap: 50px;
   overflow-x: auto;
   padding: 0;
+  margin: 0;
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
   scrollbar-width: none;
@@ -711,6 +720,8 @@ header.site-header::after {
   flex-shrink: 0;
   transition: transform 0.3s ease;
   border-radius: 0;
+  margin: 0;
+  padding: 0;
 }
 
 .carousel-item img {
@@ -719,6 +730,9 @@ header.site-header::after {
   height: 100%;
   object-fit: cover;
   border-radius: 0;
+  margin: 0;
+  padding: 0;
+  vertical-align: top;
   mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
   -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
 }
