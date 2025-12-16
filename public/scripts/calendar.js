@@ -5,6 +5,16 @@ const dayFormatter = new Intl.DateTimeFormat('de-DE', {
     month: 'long',
     year: 'numeric'
 });
+function resolvePublicPath(relativePath) {
+    const trimmed = relativePath.replace(/^\/+/, '');
+    try {
+        return new URL(trimmed, window.location.href).toString();
+    }
+    catch (error) {
+        console.warn('Konnte Pfad nicht relativ zum aktuellen Dokument auflösen, fallback auf Basis-URL', error);
+    }
+    return `/${trimmed}`;
+}
 function formatTimeRange(start, end) {
     return `${start.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })} – ${end.toLocaleTimeString('de-DE', {
         hour: '2-digit',
@@ -159,7 +169,7 @@ async function loadStaticEvents() {
     if (cachedStaticEvents)
         return cachedStaticEvents;
     try {
-        const response = await fetch('/data/calendar.json');
+        const response = await fetch(resolvePublicPath('data/calendar.json'));
         if (!response.ok)
             return null;
         const payload = await response.json();
