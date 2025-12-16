@@ -688,19 +688,20 @@ header.site-header::after {
   height: clamp(400px, 55vh, 550px);
   scroll-snap-align: center;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   flex-shrink: 0;
   transition: transform 0.3s ease;
+  border-radius: 0;
 }
 
 .carousel-item::after {
   content: '';
   position: absolute;
   top: 0;
-  right: -8px;
-  width: 16px;
+  right: -14px;
+  width: 28px;
   height: 100%;
-  background: linear-gradient(to right, transparent, var(--color-background) 30%, var(--color-background) 70%, transparent);
+  background: linear-gradient(to right, transparent 0%, var(--color-background) 50%, transparent 100%);
   pointer-events: none;
   z-index: 1;
 }
@@ -714,6 +715,7 @@ header.site-header::after {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 0;
 }
 
 .carousel-item.center {
@@ -779,14 +781,15 @@ header.site-header::after {
   }
 
   .carousel-item::after {
-    right: -6px;
-    width: 12px;
+    right: -10px;
+    width: 20px;
   }
 
   .carousel-item img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border-radius: 0;
   }
 
   .carousel-dots {

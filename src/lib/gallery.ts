@@ -73,7 +73,10 @@ function scrollToItem(index: number, smooth = true) {
   if (!track) return;
   const target = track.querySelector(`[data-index="${index}"]`) as HTMLElement | null;
   if (!target) return;
-  const offset = target.offsetLeft - track.offsetLeft;
+  // Center the item in the viewport
+  const trackCenter = track.clientWidth / 2;
+  const itemCenter = target.clientWidth / 2;
+  const offset = target.offsetLeft - track.offsetLeft - trackCenter + itemCenter;
   track.scrollTo({ left: offset, behavior: smooth ? 'smooth' : 'auto' });
 }
 

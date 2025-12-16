@@ -144,11 +144,14 @@ import Footer from '../components/Footer.astro';
         window.addEventListener('beforeunload', () => window.removeEventListener('scroll', handleScroll));
       }
 
-      // Check if animation has already been played in this session
+      // Check if this is a back/forward navigation (not a refresh)
+      const navigationEntries = performance.getEntriesByType('navigation') as PerformanceNavigationTiming[];
+      const navigationType = navigationEntries[0]?.type || 'navigate';
+      const isBackForwardNavigation = navigationType === 'back_forward';
       const hasPlayedAnimation = sessionStorage.getItem('slide-in-animation-played');
 
-      if (hasPlayedAnimation) {
-        // Skip animation, set final state immediately
+      if (isBackForwardNavigation && hasPlayedAnimation) {
+        // Skip animation on back/forward navigation, set final state immediately
         slideInPanel.classList.add('is-ready');
         if (mainElement) {
           mainElement.classList.add('content-slide-down');
@@ -159,7 +162,7 @@ import Footer from '../components/Footer.astro';
           mainElement.style.animation = 'none';
         }
       } else {
-        // Start animation immediately after height is measured (no delay = no pop-in)
+        // Start animation for normal navigation and page refresh
         window.setTimeout(() => {
           // Trigger the slide-in animations (panel + content move together)
           slideInPanel.classList.add('is-ready');
