@@ -144,14 +144,32 @@ import Footer from '../components/Footer.astro';
         window.addEventListener('beforeunload', () => window.removeEventListener('scroll', handleScroll));
       }
 
-      // Start animation immediately after height is measured (no delay = no pop-in)
-      window.setTimeout(() => {
-        // Trigger the slide-in animations (panel + content move together)
+      // Check if animation has already been played in this session
+      const hasPlayedAnimation = sessionStorage.getItem('slide-in-animation-played');
+
+      if (hasPlayedAnimation) {
+        // Skip animation, set final state immediately
         slideInPanel.classList.add('is-ready');
         if (mainElement) {
           mainElement.classList.add('content-slide-down');
         }
-      }, 100); // Short delay to ensure height is measured first
+        // Remove animation to prevent replay
+        slideInPanel.style.animation = 'none';
+        if (mainElement) {
+          mainElement.style.animation = 'none';
+        }
+      } else {
+        // Start animation immediately after height is measured (no delay = no pop-in)
+        window.setTimeout(() => {
+          // Trigger the slide-in animations (panel + content move together)
+          slideInPanel.classList.add('is-ready');
+          if (mainElement) {
+            mainElement.classList.add('content-slide-down');
+          }
+          // Mark animation as played in this session
+          sessionStorage.setItem('slide-in-animation-played', 'true');
+        }, 100); // Short delay to ensure height is measured first
+      }
     });
   </script>
   <main>

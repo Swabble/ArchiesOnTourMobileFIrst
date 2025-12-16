@@ -670,7 +670,7 @@ header.site-header::after {
 
 .carousel-track {
   display: flex;
-  gap: var(--space-2);
+  gap: 0;
   overflow-x: auto;
   padding: var(--space-2) var(--space-3);
   scroll-snap-type: x mandatory;
@@ -684,16 +684,29 @@ header.site-header::after {
 }
 
 .carousel-item {
-  min-width: clamp(240px, 65vw, 360px);
-  height: clamp(280px, 40vh, 380px);
+  min-width: clamp(280px, 70vw, 420px);
+  height: clamp(400px, 55vh, 550px);
   scroll-snap-align: center;
   position: relative;
-  border-radius: var(--radius-xl);
   overflow: hidden;
-  box-shadow: var(--shadow-soft);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.carousel-item::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -8px;
+  width: 16px;
+  height: 100%;
+  background: linear-gradient(to right, transparent, var(--color-background) 30%, var(--color-background) 70%, transparent);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.carousel-item:last-child::after {
+  display: none;
 }
 
 .carousel-item img {
@@ -704,8 +717,7 @@ header.site-header::after {
 }
 
 .carousel-item.center {
-  transform: scale(1.02);
-  box-shadow: var(--shadow-strong);
+  transform: scale(1.0);
 }
 
 .carousel-nav {
@@ -762,9 +774,13 @@ header.site-header::after {
 
   /* Fix mobile image scaling - use width-based sizing instead of height */
   .carousel-item {
-    min-width: clamp(240px, 88vw, 360px);
-    height: auto;
-    aspect-ratio: 4/3;
+    min-width: clamp(280px, 90vw, 400px);
+    height: clamp(380px, 50vh, 500px);
+  }
+
+  .carousel-item::after {
+    right: -6px;
+    width: 12px;
   }
 
   .carousel-item img {
