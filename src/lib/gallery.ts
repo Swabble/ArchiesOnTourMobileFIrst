@@ -25,16 +25,22 @@ function autoScroll() {
 
   scrollPosition += AUTO_SCROLL_SPEED;
 
-  // Get total width of all items including gaps
-  const trackWidth = track.scrollWidth;
-  const containerWidth = track.clientWidth;
+  // Get total width of one set of images
+  const firstItem = track.querySelector('.carousel-item') as HTMLElement;
+  if (!firstItem) return;
 
-  // Reset scroll when reaching the end (seamless loop)
-  if (scrollPosition >= trackWidth / 2) {
+  const itemWidth = firstItem.offsetWidth;
+  const gap = parseInt(getComputedStyle(track).gap) || 0;
+  const totalItemWidth = itemWidth + gap;
+  const imageCount = state.images.length;
+  const halfWidth = totalItemWidth * imageCount;
+
+  // Reset position for seamless loop
+  if (scrollPosition >= halfWidth) {
     scrollPosition = 0;
   }
 
-  track.scrollLeft = scrollPosition;
+  track.style.transform = `translateX(-${scrollPosition}px)`;
 
   animationFrameId = requestAnimationFrame(autoScroll);
 }
@@ -70,7 +76,7 @@ function renderCarousel() {
   // Start auto-scroll after images are loaded
   setTimeout(() => {
     startAutoScroll();
-  }, 500);
+  }, 1000);
 }
 
 function preloadSequential(urls: string[]) {

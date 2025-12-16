@@ -1,97 +1,69 @@
 const overlay = document.getElementById('lightbox-overlay');
 const track = document.getElementById('carousel-track');
-const dots = document.getElementById('carousel-dots');
 const lightboxImage = document.getElementById('lightbox-image');
 const lightboxCounter = document.getElementById('lightbox-counter');
 const EAGER_THUMBNAIL_COUNT = 2;
+const AUTO_SCROLL_SPEED = 0.5; // pixels per frame
 let state = {
     images: [],
     currentIndex: 0
 };
+let scrollPosition = 0;
+let animationFrameId = null;
 function setBodyScroll(disable) {
     if (!document.body)
         return;
     document.body.classList.toggle('no-scroll', disable);
 }
-function getVisibleDotRange(currentIndex, totalImages) {
-    const windowSize = 5;
-    if (totalImages <= windowSize) {
-        return { start: 0, end: totalImages - 1 };
-    }
-    // First 3 images: show first 5 dots
-    if (currentIndex < 3) {
-        return { start: 0, end: windowSize - 1 };
-    }
-    // Last 3 images: show last 5 dots
-    if (currentIndex >= totalImages - 3) {
-        return { start: totalImages - windowSize, end: totalImages - 1 };
-    }
-    // Middle images: show windowed dots (current in center)
-    return { start: currentIndex - 2, end: currentIndex + 2 };
-}
-function renderWindowedDots() {
-    if (!dots)
-        return;
-    const total = state.images.length;
-    const range = getVisibleDotRange(state.currentIndex, total);
-    dots.innerHTML = '';
-    for (let i = range.start; i <= range.end; i++) {
-        const dot = document.createElement('button');
-        dot.className = 'carousel-dot';
-        dot.dataset.realIndex = String(i);
-        dot.classList.toggle('active', i === state.currentIndex);
-        dot.setAttribute('aria-label', `Bild ${i + 1} von ${total}`);
-        dot.addEventListener('click', () => setActiveIndex(i));
-        dots.appendChild(dot);
-    }
-}
-function highlightActive(index) {
-    if (!track || !dots)
-        return;
-    const items = Array.from(track.querySelectorAll('.carousel-item'));
-    items.forEach((item, itemIndex) => {
-        item.classList.toggle('center', itemIndex === index);
-    });
-    // Update windowed dots
-    renderWindowedDots();
-}
-function scrollToItem(index, smooth = true) {
+function autoScroll() {
     if (!track)
         return;
-    const target = track.querySelector(`[data-index="${index}"]`);
-    if (!target)
+    scrollPosition += AUTO_SCROLL_SPEED;
+    // Get total width of one set of images
+    const firstItem = track.querySelector('.carousel-item');
+    if (!firstItem)
         return;
-    const offset = target.offsetLeft - track.offsetLeft;
-    track.scrollTo({ left: offset, behavior: smooth ? 'smooth' : 'auto' });
+    const itemWidth = firstItem.offsetWidth;
+    const gap = parseInt(getComputedStyle(track).gap) || 0;
+    const totalItemWidth = itemWidth + gap;
+    const imageCount = state.images.length;
+    const halfWidth = totalItemWidth * imageCount;
+    // Reset position for seamless loop
+    if (scrollPosition >= halfWidth) {
+        scrollPosition = 0;
+    }
+    track.style.transform = `translateX(-${scrollPosition}px)`;
+    animationFrameId = requestAnimationFrame(autoScroll);
 }
-function setActiveIndex(next, smooth = true) {
-    const total = state.images.length;
-    if (!total)
+function startAutoScroll() {
+    if (animationFrameId)
         return;
-    const normalized = ((next % total) + total) % total;
-    state.currentIndex = normalized;
-    highlightActive(normalized);
-    scrollToItem(normalized, smooth);
+    autoScroll();
+}
+function stopAutoScroll() {
+    if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+    }
 }
 function renderCarousel() {
-    if (!track || !dots)
+    if (!track)
         return;
     track.innerHTML = '';
-    dots.innerHTML = '';
-    state.images.forEach((img, index) => {
-        const item = document.createElement('button');
+    // Duplicate images for seamless infinite scroll
+    const duplicatedImages = [...state.images, ...state.images];
+    duplicatedImages.forEach((img, index) => {
+        const item = document.createElement('div');
         item.className = 'carousel-item';
         item.dataset.index = String(index);
         const loading = index < EAGER_THUMBNAIL_COUNT ? 'eager' : 'lazy';
         item.innerHTML = `<img src="${img.thumbnail}" alt="${img.alt}" loading="${loading}" />`;
-        // Lightbox disabled - click does nothing
-        // item.addEventListener('click', () => openLightbox(index));
         track.appendChild(item);
     });
-    // Render windowed dots initially
-    renderWindowedDots();
-    highlightActive(state.currentIndex);
-    scrollToItem(state.currentIndex, false);
+    // Start auto-scroll after images are loaded
+    setTimeout(() => {
+        startAutoScroll();
+    }, 1000);
 }
 function preloadSequential(urls) {
     let index = 0;
@@ -149,21 +121,15 @@ function openLightbox(index) {
     setBodyScroll(true);
 }
 function closeLightbox() {
-    overlay === null || overlay === void 0 ? void 0 : overlay.classList.remove('active');
-    overlay === null || overlay === void 0 ? void 0 : overlay.setAttribute('aria-hidden', 'true');
+    overlay?.classList.remove('active');
+    overlay?.setAttribute('aria-hidden', 'true');
     setBodyScroll(false);
-}
-function goTo(next) {
-    setActiveIndex(next);
-    if (overlay === null || overlay === void 0 ? void 0 : overlay.classList.contains('active')) {
-        updateLightboxDisplay();
-    }
 }
 async function loadImages() {
     try {
         const staticRes = await fetch('/data/gallery.json');
         const staticPayload = await staticRes.json();
-        const staticItems = Array.isArray(staticPayload === null || staticPayload === void 0 ? void 0 : staticPayload.items)
+        const staticItems = Array.isArray(staticPayload?.items)
             ? staticPayload.items
             : Array.isArray(staticPayload)
                 ? staticPayload
@@ -183,13 +149,8 @@ async function loadImages() {
     }
 }
 function bindControls() {
-    var _a, _b, _c, _d, _e;
-    (_a = document.querySelector('.carousel-nav-prev')) === null || _a === void 0 ? void 0 : _a.addEventListener('click', () => goTo(state.currentIndex - 1));
-    (_b = document.querySelector('.carousel-nav-next')) === null || _b === void 0 ? void 0 : _b.addEventListener('click', () => goTo(state.currentIndex + 1));
-    (_c = document.getElementById('lightbox-close')) === null || _c === void 0 ? void 0 : _c.addEventListener('click', closeLightbox);
-    (_d = document.getElementById('lightbox-prev')) === null || _d === void 0 ? void 0 : _d.addEventListener('click', () => goTo(state.currentIndex - 1));
-    (_e = document.getElementById('lightbox-next')) === null || _e === void 0 ? void 0 : _e.addEventListener('click', () => goTo(state.currentIndex + 1));
-    overlay === null || overlay === void 0 ? void 0 : overlay.addEventListener('click', (event) => {
+    document.getElementById('lightbox-close')?.addEventListener('click', closeLightbox);
+    overlay?.addEventListener('click', (event) => {
         if (event.target === overlay)
             closeLightbox();
     });
@@ -197,23 +158,12 @@ function bindControls() {
         if (event.key === 'Escape')
             closeLightbox();
     });
-    track === null || track === void 0 ? void 0 : track.addEventListener('scroll', () => {
-        if (!track)
-            return;
-        const items = Array.from(track.querySelectorAll('.carousel-item'));
-        if (!items.length)
-            return;
-        const center = track.scrollLeft + track.clientWidth / 2;
-        const nearestIndex = items.reduce((bestIndex, item, currentIndex) => {
-            const itemCenter = item.offsetLeft + item.clientWidth / 2;
-            const bestItem = items[bestIndex];
-            const bestCenter = bestItem.offsetLeft + bestItem.clientWidth / 2;
-            return Math.abs(itemCenter - center) < Math.abs(bestCenter - center) ? currentIndex : bestIndex;
-        }, 0);
-        if (nearestIndex !== state.currentIndex) {
-            state.currentIndex = nearestIndex;
-            highlightActive(nearestIndex);
-        }
+    // Pause auto-scroll on hover (optional)
+    track?.addEventListener('mouseenter', () => {
+        stopAutoScroll();
+    });
+    track?.addEventListener('mouseleave', () => {
+        startAutoScroll();
     });
 }
 if (typeof window !== 'undefined') {
