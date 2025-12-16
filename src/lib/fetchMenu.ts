@@ -3,12 +3,6 @@ import type { MenuItem } from './menuTypes';
 
 const LOG_PREFIX = '[menu-fetch]';
 
-function formatPrice(price: string | number) {
-  const numeric = Number(String(price).replace(/[^0-9,.-]/g, '').replace(',', '.'));
-  if (Number.isNaN(numeric)) return 'auf Anfrage';
-  return `${numeric.toLocaleString('de-DE', { minimumFractionDigits: 2 })} €`;
-}
-
 type MenuGroup = {
   title: string;
   categories: Record<string, MenuItem[]>;
@@ -87,7 +81,6 @@ function render(items: MenuItem[], keepErrorVisible = false) {
         card.innerHTML = `
           <div class="menu-card__header">
             <h4 class="menu-card__title">${item.title}</h4>
-            <span class="price-pill" aria-label="Preis">${formatPrice(item.price)}</span>
           </div>
           <p class="menu-card__description">${item.description ?? ''}</p>
           <div class="menu-card__meta">

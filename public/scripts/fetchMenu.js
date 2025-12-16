@@ -1,11 +1,5 @@
 import { FALLBACK_ITEMS } from './menuParser';
 const LOG_PREFIX = '[menu-fetch]';
-function formatPrice(price) {
-    const numeric = Number(String(price).replace(/[^0-9,.-]/g, '').replace(',', '.'));
-    if (Number.isNaN(numeric))
-        return 'auf Anfrage';
-    return `${numeric.toLocaleString('de-DE', { minimumFractionDigits: 2 })} €`;
-}
 function render(items, keepErrorVisible = false) {
     const container = document.getElementById('menu-categories-container');
     const loading = document.getElementById('menu-loading');
@@ -64,7 +58,6 @@ function render(items, keepErrorVisible = false) {
                 card.innerHTML = `
           <div class="menu-card__header">
             <h4 class="menu-card__title">${item.title}</h4>
-            <span class="price-pill" aria-label="Preis">${formatPrice(item.price)}</span>
           </div>
           <p class="menu-card__description">${(_a = item.description) !== null && _a !== void 0 ? _a : ''}</p>
           <div class="menu-card__meta">
