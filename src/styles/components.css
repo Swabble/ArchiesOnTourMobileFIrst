@@ -664,13 +664,32 @@ header.site-header::after {
   color: var(--color-primary);
 }
 
+#galerie.section {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+#galerie .container > h2,
+#galerie .container > p {
+  padding-left: var(--space-4);
+  padding-right: var(--space-4);
+}
+
+#galerie .container {
+  padding: 0;
+  max-width: 100%;
+}
+
 .carousel-container {
   position: relative;
+  background: #000000;
+  padding: 0;
+  margin: 0;
 }
 
 .carousel-track {
   display: flex;
-  gap: 0;
+  gap: 50px;
   overflow-x: auto;
   padding: 0;
   scroll-snap-type: x mandatory;
@@ -746,6 +765,10 @@ header.site-header::after {
     height: 36px;
     padding: var(--space-2);
     font-size: var(--font-size-lg);
+  }
+
+  .carousel-track {
+    gap: 30px;
   }
 
   /* Fix mobile image scaling - use width-based sizing instead of height */

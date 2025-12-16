@@ -152,14 +152,26 @@ import Footer from '../components/Footer.astro';
 
       if (isReturningFromInternalPage) {
         // Skip animation when returning from internal pages
+        // Set final state immediately without animation
+        slideInPanel.style.animation = 'none';
+        slideInPanel.style.transform = `translateY(var(--slide-panel-final-offset))`;
+
+        if (mainElement) {
+          mainElement.style.animation = 'none';
+          mainElement.style.marginTop = `var(--content-final-offset)`;
+        }
+
+        // Add classes after setting final positions
         slideInPanel.classList.add('is-ready');
         if (mainElement) {
           mainElement.classList.add('content-slide-down');
         }
-        // Remove animation to prevent replay
-        slideInPanel.style.animation = 'none';
-        if (mainElement) {
-          mainElement.style.animation = 'none';
+
+        // Also set overlay logo to final position
+        const logoOverlay = slideInPanel.querySelector('.slide-in-panel__logo-overlay') as HTMLElement | null;
+        if (logoOverlay) {
+          logoOverlay.style.animation = 'none';
+          logoOverlay.style.transform = `translateY(var(--logo-overlay-final-offset))`;
         }
       } else {
         // Start animation for normal navigation and page refresh
