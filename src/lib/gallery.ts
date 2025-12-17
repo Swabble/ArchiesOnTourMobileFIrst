@@ -6,8 +6,9 @@ const track = document.getElementById('carousel-track') as HTMLElement | null;
 const lightboxImage = document.getElementById('lightbox-image') as HTMLImageElement | null;
 const lightboxCounter = document.getElementById('lightbox-counter');
 
-const EAGER_THUMBNAIL_COUNT = 2;
+const EAGER_THUMBNAIL_COUNT = 4; // Load first 4 thumbnails immediately
 const AUTO_SCROLL_SPEED = 0.5; // pixels per frame
+const INITIAL_LOAD_DELAY = 100; // Small delay to prioritize animation
 
 let state = {
   images: [] as { url: string; thumbnail: string; alt: string }[],
@@ -72,12 +73,18 @@ function renderCarousel() {
     const item = document.createElement('div');
     item.className = 'carousel-item';
     item.dataset.index = String(index);
+
+    // Only load first 4 eagerly, rest use native lazy loading
     const loading = index < EAGER_THUMBNAIL_COUNT ? 'eager' : 'lazy';
-    item.innerHTML = `<img src="${img.thumbnail}" alt="${img.alt}" loading="${loading}" />`;
+
+    // Add fetchpriority for first few images
+    const fetchPriority = index < EAGER_THUMBNAIL_COUNT ? 'fetchpriority="high"' : '';
+
+    item.innerHTML = `<img src="${img.thumbnail}" alt="${img.alt}" loading="${loading}" ${fetchPriority} />`;
     track.appendChild(item);
   });
 
-  // Start auto-scroll after images are loaded
+  // Start auto-scroll after first images are loaded
   setTimeout(() => {
     startAutoScroll();
   }, 1000);
@@ -105,18 +112,37 @@ function schedulePreload() {
   if (!state.images.length) return;
 
   const startPreload = () => {
+    // Progressive loading strategy:
+    // 1. Remaining thumbnails (after first 4)
     const remainingThumbnails = state.images
       .slice(EAGER_THUMBNAIL_COUNT)
       .map((image) => image.thumbnail);
-    const fullImages = state.images.map((image) => image.url);
-    preloadSequential([...remainingThumbnails, ...fullImages]);
+
+    // 2. First 4 full-size images (priority for lightbox)
+    const priorityFullImages = state.images
+      .slice(0, EAGER_THUMBNAIL_COUNT)
+      .map((image) => image.url);
+
+    // 3. Remaining full-size images
+    const remainingFullImages = state.images
+      .slice(EAGER_THUMBNAIL_COUNT)
+      .map((image) => image.url);
+
+    // Load in stages: thumbnails first, then priority full images, then rest
+    preloadSequential([
+      ...remainingThumbnails,
+      ...priorityFullImages,
+      ...remainingFullImages
+    ]);
   };
 
+  // Use requestIdleCallback to not interfere with critical rendering
   const requestIdle = (window as typeof window & { requestIdleCallback?: (cb: () => void) => number }).requestIdleCallback;
   if (typeof requestIdle === 'function') {
     requestIdle(startPreload);
   } else {
-    setTimeout(startPreload, 0);
+    // Fallback with longer delay to ensure animation starts smoothly
+    setTimeout(startPreload, 500);
   }
 }
 
@@ -183,7 +209,7 @@ function resumeAutoplayAfterDelay() {
 async function loadImages() {
   const galleryDataUrl = resolvePublicPath('data/gallery.json');
   try {
-    const staticRes = await fetch(galleryDataUrl);
+    const staticRes = await fetch(galleryDataUrl, { priority: 'low' } as RequestInit);
     const staticPayload = await staticRes.json();
     const staticItems = Array.isArray(staticPayload?.items)
       ? staticPayload.items
@@ -199,7 +225,7 @@ async function loadImages() {
     renderCarousel();
     schedulePreload();
   } catch {
-    const fallback = await fetch(galleryDataUrl);
+    const fallback = await fetch(galleryDataUrl, { priority: 'low' } as RequestInit);
     state.images = await fallback.json();
     renderCarousel();
     schedulePreload();
@@ -242,10 +268,50 @@ function bindControls() {
 }
 
 if (typeof window !== 'undefined') {
-  window.addEventListener('DOMContentLoaded', async () => {
+  // Delay gallery initialization to prioritize animation
+  window.addEventListener('DOMContentLoaded', () => {
+    // Bind controls immediately for interactivity
     bindControls();
-    await loadImages();
-    // Start autoplay after images are loaded
-    startAutoplay();
+
+    // Use Intersection Observer to only load gallery when it's near viewport
+    const gallerySection = document.getElementById('galerie');
+    if (!gallerySection) {
+      // Fallback: load after delay if section not found
+      setTimeout(async () => {
+        await loadImages();
+        startAutoplay();
+      }, INITIAL_LOAD_DELAY);
+      return;
+    }
+
+    // Check if IntersectionObserver is supported
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              // Gallery is visible or near viewport, start loading
+              observer.disconnect();
+              setTimeout(async () => {
+                await loadImages();
+                startAutoplay();
+              }, INITIAL_LOAD_DELAY);
+            }
+          });
+        },
+        {
+          // Start loading when gallery is 200px before entering viewport
+          rootMargin: '200px'
+        }
+      );
+
+      observer.observe(gallerySection);
+    } else {
+      // Fallback for browsers without IntersectionObserver
+      setTimeout(async () => {
+        await loadImages();
+        startAutoplay();
+      }, INITIAL_LOAD_DELAY);
+    }
   });
 }
