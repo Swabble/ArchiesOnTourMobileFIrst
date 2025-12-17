@@ -76,8 +76,15 @@
         }
       ].map((item) => (
         <article class="card offer-card">
-          <div class="offer-card__icon">{item.icon}</div>
-          <h3 class="offer-card__title">{item.title}</h3>
+          <div class="offer-card__header">
+            <div class="offer-card__icon">{item.icon}</div>
+            <h3 class="offer-card__title">{item.title}</h3>
+            <button class="offer-card__toggle" aria-label="Details anzeigen">
+              <svg class="offer-card__arrow" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
           <ul class="offer-card__features">
             {item.features.map((feature) => (
               <li>{feature}</li>
@@ -88,3 +95,32 @@
     </div>
   </div>
 </section>
+
+<script>
+  // Toggle offer card expansion on mobile
+  if (typeof window !== 'undefined') {
+    const initOfferCards = () => {
+      const cards = document.querySelectorAll('.offer-card');
+
+      cards.forEach((card) => {
+        const toggle = card.querySelector('.offer-card__toggle');
+
+        if (toggle) {
+          toggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            card.classList.toggle('is-expanded');
+
+            const isExpanded = card.classList.contains('is-expanded');
+            toggle.setAttribute('aria-label', isExpanded ? 'Details ausblenden' : 'Details anzeigen');
+          });
+        }
+      });
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initOfferCards);
+    } else {
+      initOfferCards();
+    }
+  }
+</script>

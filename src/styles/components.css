@@ -745,12 +745,14 @@ header.site-header::after {
     height: clamp(400px, 70vh, 600px);
   }
 
+  /* Disable hover effects on mobile - carousel runs continuously */
   .carousel-item:hover {
-    transform: scale(1.01);
+    transform: none;
+    filter: none;
   }
 
   .carousel-item:hover::before {
-    border-width: 1px;
+    content: none;
   }
 
   .carousel-item img {
@@ -1078,9 +1080,16 @@ header.site-header::after {
   background: #fff;
 }
 
+.offer-card__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
 .offer-card__icon {
   font-size: 2.5rem;
   line-height: 1;
+  flex-shrink: 0;
 }
 
 .offer-card__title {
@@ -1088,6 +1097,27 @@ header.site-header::after {
   font-size: var(--font-size-xl);
   font-weight: 700;
   color: #0f1115;
+  flex: 1;
+}
+
+.offer-card__toggle {
+  display: none; /* Hidden on desktop by default */
+  background: none;
+  border: none;
+  padding: var(--space-2);
+  cursor: pointer;
+  color: var(--color-accent);
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+}
+
+.offer-card__arrow {
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.offer-card.is-expanded .offer-card__arrow {
+  transform: rotate(180deg);
 }
 
 .offer-card__features {
@@ -1111,4 +1141,48 @@ header.site-header::after {
   left: 0;
   color: var(--color-accent);
   font-weight: 700;
+}
+
+/* Mobile: Collapsed by default with expand/collapse */
+@media (max-width: 767px) {
+  .offer-card__toggle {
+    display: block;
+  }
+
+  .offer-card__features {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.3s ease, opacity 0.3s ease, margin-top 0.3s ease;
+    margin-top: 0;
+  }
+
+  .offer-card.is-expanded .offer-card__features {
+    max-height: 500px;
+    opacity: 1;
+    margin-top: var(--space-3);
+  }
+
+  .offer-card:hover {
+    transform: none;
+  }
+
+  /* Compact booking flow cards on mobile */
+  #ablauf .card {
+    padding: var(--space-3);
+  }
+
+  #ablauf .card h3 {
+    font-size: var(--font-size-lg);
+    margin: var(--space-2) 0 0;
+  }
+
+  #ablauf .price-pill {
+    padding: var(--space-1) var(--space-2);
+    font-size: var(--font-size-sm);
+  }
+
+  #ablauf .steps {
+    gap: var(--space-3);
+  }
 }
