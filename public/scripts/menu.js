@@ -93,12 +93,7 @@ async function loadMenu() {
   try {
     console.info(LOG_PREFIX, 'Fetching menu from', menuDataUrl);
     const res = await fetch(menuDataUrl);
-
-    // Check if response is ok before parsing JSON (like calendar.js and gallery.js)
-    if (!res.ok) {
-      throw new Error(`HTTP error! status: ${res.status}`);
-    }
-
+    // Parse JSON like gallery.js - no response.ok check to avoid issues with IONOS hosting
     const payload = await res.json();
 
     const items = Array.isArray(payload?.items)
