@@ -31,13 +31,17 @@ body {
   max-height: var(--slide-panel-height);
   /* Start off-screen, will slide down smoothly */
   transform: translateY(calc(-100% + var(--slide-panel-parallax-offset, 0px)));
-  will-change: transform;
+  will-change: transform, opacity;
   pointer-events: none;
+  /* Start invisible to prevent glimpse before animation */
+  opacity: 0;
 }
 
 .slide-in-panel.is-ready {
   /* 6 second animation - slower and more deliberate than content movement */
   animation: slide-panel-in 6000ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  /* Become visible immediately when animation starts */
+  opacity: 1;
 }
 
 .slide-in-panel__inner {
@@ -132,6 +136,8 @@ body {
     max-height: none;
     --slide-panel-parallax-offset: 0px;
     transform: translateY(var(--slide-panel-final-offset));
+    /* Make visible immediately for reduced motion */
+    opacity: 1;
   }
 
   .slide-in-panel.is-ready {
