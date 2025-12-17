@@ -96,10 +96,10 @@
   </div>
 </section>
 
-<script>
+<script is:inline>
   // Toggle offer card expansion on mobile
-  if (typeof window !== 'undefined') {
-    const initOfferCards = () => {
+  (function() {
+    function initOfferCards() {
       const cards = document.querySelectorAll('.offer-card');
 
       cards.forEach((card) => {
@@ -115,12 +115,12 @@
           });
         }
       });
-    };
+    }
 
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', initOfferCards);
     } else {
       initOfferCards();
     }
-  }
+  })();
 </script>

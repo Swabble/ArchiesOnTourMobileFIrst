@@ -1145,6 +1145,14 @@ header.site-header::after {
 
 /* Mobile: Collapsed by default with expand/collapse */
 @media (max-width: 767px) {
+  .offer-card {
+    gap: 0;
+  }
+
+  .offer-card.is-expanded {
+    gap: var(--space-3);
+  }
+
   .offer-card__toggle {
     display: block;
   }
@@ -1153,14 +1161,13 @@ header.site-header::after {
     max-height: 0;
     overflow: hidden;
     opacity: 0;
-    transition: max-height 0.3s ease, opacity 0.3s ease, margin-top 0.3s ease;
-    margin-top: 0;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.3s ease;
   }
 
   .offer-card.is-expanded .offer-card__features {
     max-height: 500px;
     opacity: 1;
-    margin-top: var(--space-3);
   }
 
   .offer-card:hover {
