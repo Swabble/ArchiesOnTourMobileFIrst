@@ -147,6 +147,11 @@ function closeLightbox() {
   setBodyScroll(false);
 }
 
+function goTo(index: number) {
+  const wrappedIndex = ((index % state.images.length) + state.images.length) % state.images.length;
+  state.currentIndex = wrappedIndex;
+  updateLightboxDisplay();
+}
 
 function startAutoplay() {
   if (state.autoplayInterval !== null) return;
