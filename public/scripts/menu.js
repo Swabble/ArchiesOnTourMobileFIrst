@@ -93,7 +93,13 @@ async function loadMenu() {
   try {
     console.info(LOG_PREFIX, 'Fetching menu from', menuDataUrl);
     const res = await fetch(menuDataUrl);
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
     const payload = await res.json();
+    console.info(LOG_PREFIX, 'Payload received:', payload);
 
     const items = Array.isArray(payload?.items)
       ? payload.items
@@ -101,13 +107,16 @@ async function loadMenu() {
         ? payload
         : [];
 
+    console.info(LOG_PREFIX, 'Parsed items count:', items.length);
+
     if (!items.length) {
       throw new Error('Keine Menü-Daten gefunden');
     }
 
+    console.info(LOG_PREFIX, 'Successfully loaded menu items from JSON');
     renderMenuItems(items);
   } catch (err) {
-    console.error(LOG_PREFIX, 'Menu loading failed', err);
+    console.error(LOG_PREFIX, 'Menu loading failed, using fallback items', err);
     error?.classList.remove('is-hidden');
 
     // Fallback items
