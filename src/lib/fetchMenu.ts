@@ -156,6 +156,19 @@ async function fetchRemoteMenu(): Promise<MenuFetchResult> {
   const res = await fetch(apiUrl, { signal: controller.signal });
   clearTimeout(timeout);
 
+  // Check if response is ok before parsing JSON (like calendar.js and gallery.js)
+  if (!res.ok) {
+    console.warn(LOG_PREFIX, `HTTP error! status: ${res.status}`);
+    return {
+      items: FALLBACK_ITEMS,
+      source: 'http-error',
+      fetchedAt: undefined,
+      rawPayload: { error: `HTTP ${res.status}` },
+      ok: false,
+      status: res.status
+    };
+  }
+
   const payload = await res
     .json()
     .catch((err) => {
