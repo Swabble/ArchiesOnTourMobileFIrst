@@ -84,7 +84,7 @@ function renderMenuItems(items) {
 }
 
 async function loadMenu() {
-  const menuDataUrl = resolvePublicPath('data/menu.json');
+  const menuDataUrl = '/data/menu.json';  // Direct absolute path - no resolvePublicPath needed
   const loading = document.getElementById('menu-loading');
   const error = document.getElementById('menu-error');
 

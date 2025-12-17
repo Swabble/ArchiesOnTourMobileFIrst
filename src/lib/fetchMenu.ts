@@ -149,7 +149,7 @@ function updateDebugPanel(result: MenuFetchResult) {
 }
 
 async function fetchRemoteMenu(): Promise<MenuFetchResult> {
-  const apiUrl = resolvePublicPath('data/menu.json');
+  const apiUrl = '/data/menu.json';  // Direct absolute path - no resolvePublicPath needed
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 8000);
   console.info(LOG_PREFIX, 'Fetching menu from static file', apiUrl);
