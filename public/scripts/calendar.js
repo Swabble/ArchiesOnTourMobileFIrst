@@ -8,7 +8,8 @@ const dayFormatter = new Intl.DateTimeFormat('de-DE', {
 function resolvePublicPath(relativePath) {
     const trimmed = relativePath.replace(/^\/+/, '');
     try {
-        return new URL(trimmed, window.location.href).toString();
+        // Use origin instead of href to always resolve from root
+        return new URL(trimmed, window.location.origin + '/').toString();
     }
     catch (error) {
         console.warn('Konnte Pfad nicht relativ zum aktuellen Dokument auflösen, fallback auf Basis-URL', error);
