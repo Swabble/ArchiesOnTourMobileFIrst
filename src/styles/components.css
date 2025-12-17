@@ -1158,19 +1158,30 @@ header.site-header::after {
   }
 
   .offer-card__features {
-    max-height: 0;
-    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: var(--space-2);
+    /* Use transform instead of max-height for better mobile performance */
+    transform-origin: top;
+    transform: scaleY(0);
     opacity: 0;
-    transform: translateY(-8px);
-    transition: max-height 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    /* Only animate transform and opacity - GPU accelerated */
+    transition: transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                opacity 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                height 0s 0.45s;
+    /* Prevent layout shift during animation */
+    height: 0;
+    overflow: hidden;
   }
 
   .offer-card.is-expanded .offer-card__features {
-    max-height: 500px;
+    transform: scaleY(1);
     opacity: 1;
-    transform: translateY(0);
+    height: auto;
+    /* Add will-change only during expanded state for better performance */
+    will-change: transform, opacity;
   }
 
   .offer-card:hover {

@@ -14,6 +14,7 @@ function initMobileParallax() {
   if (!parallaxContainer || !svgLayer || !burgerLayer) return;
 
   let ticking = false;
+  let scrollTimeout: number;
 
   function updateParallax() {
     const scrollY = window.scrollY;
@@ -40,20 +41,29 @@ function initMobileParallax() {
     const svgTranslateY = -easedProgress * 200; // Move up 200px with easing
     svgLayer.style.opacity = svgOpacity.toString();
     svgLayer.style.transform = `translate3d(0, ${svgTranslateY}px, 0)`;
-    svgLayer.style.willChange = 'transform, opacity';
 
     // Burger Layer: Start fading in from 50-100% progress
     const burgerOpacity = progress > 0.5 ? (progress - 0.5) * 2 : 0;
     const burgerTranslateY = progress > 0.5 ? (1 - ((progress - 0.5) * 2)) * window.innerHeight : window.innerHeight;
     burgerLayer.style.opacity = burgerOpacity.toString();
     burgerLayer.style.transform = `translate3d(0, ${burgerTranslateY}px, 0)`;
-    burgerLayer.style.willChange = 'transform, opacity';
 
     ticking = false;
+
+    // Remove will-change after scroll ends (better mobile performance)
+    clearTimeout(scrollTimeout);
+    scrollTimeout = window.setTimeout(() => {
+      svgLayer.style.willChange = 'auto';
+      burgerLayer.style.willChange = 'auto';
+    }, 150);
   }
 
   function requestTick() {
     if (!ticking) {
+      // Set will-change before animation for better performance
+      svgLayer.style.willChange = 'transform, opacity';
+      burgerLayer.style.willChange = 'transform, opacity';
+
       requestAnimationFrame(updateParallax);
       ticking = true;
     }
