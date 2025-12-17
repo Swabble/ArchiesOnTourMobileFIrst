@@ -185,18 +185,30 @@ async function init() {
         updateDebugPanel(result);
     }
     catch (err) {
-        console.warn(LOG_PREFIX, 'Menu fallback after error', err);
-        error === null || error === void 0 ? void 0 : error.classList.remove('is-hidden');
-        const fallbackResult = {
-            items: FALLBACK_ITEMS,
-            source: 'exception',
-            fetchedAt: undefined,
-            rawPayload: { error: err.message },
-            ok: false,
-            status: 500
-        };
-        render(FALLBACK_ITEMS, true);
-        updateDebugPanel(fallbackResult);
+        console.warn(LOG_PREFIX, 'Menu fallback after error, trying second fetch', err);
+        // Second fetch attempt like gallery.js does
+        try {
+            const fallbackResult = await fetchRemoteMenu();
+            render(fallbackResult.items, !fallbackResult.ok);
+            updateDebugPanel(fallbackResult);
+            if (!fallbackResult.items.length) {
+                error === null || error === void 0 ? void 0 : error.classList.remove('is-hidden');
+            }
+        }
+        catch (secondErr) {
+            console.error(LOG_PREFIX, 'Second fetch also failed', secondErr);
+            error === null || error === void 0 ? void 0 : error.classList.remove('is-hidden');
+            const fallbackResult = {
+                items: FALLBACK_ITEMS,
+                source: 'exception',
+                fetchedAt: undefined,
+                rawPayload: { error: secondErr.message },
+                ok: false,
+                status: 500
+            };
+            render(FALLBACK_ITEMS, true);
+            updateDebugPanel(fallbackResult);
+        }
     }
 }
 export function bootstrapMenu() {

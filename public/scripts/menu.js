@@ -93,7 +93,6 @@ async function loadMenu() {
   try {
     console.info(LOG_PREFIX, 'Fetching menu from', menuDataUrl);
     const res = await fetch(menuDataUrl);
-    // Parse JSON like gallery.js - no response.ok check to avoid issues with IONOS hosting
     const payload = await res.json();
 
     const items = Array.isArray(payload?.items)
@@ -106,36 +105,24 @@ async function loadMenu() {
       throw new Error('Keine Menü-Daten gefunden');
     }
 
+    loading.classList.add('is-hidden');
     renderMenuItems(items);
-  } catch (err) {
-    console.error(LOG_PREFIX, 'Menu loading failed', err);
-    error?.classList.remove('is-hidden');
+  } catch {
+    // Second fetch attempt like gallery.js does
+    const fallback = await fetch(menuDataUrl);
+    const fallbackPayload = await fallback.json();
+    const fallbackItems = Array.isArray(fallbackPayload?.items)
+      ? fallbackPayload.items
+      : Array.isArray(fallbackPayload)
+        ? fallbackPayload
+        : [];
 
-    // Fallback items
-    const fallbackItems = [
-      {
-        title: 'Signature Burger',
-        description: 'Rindfleisch-Patty, Cheddar, karamellisierte Zwiebeln, Haus-Sauce',
-        price: '11.90',
-        unit: 'pro Stück',
-        category: 'Burger'
-      },
-      {
-        title: 'Veggie Bowl',
-        description: 'Geröstetes Gemüse, Quinoa, Kräuter-Dip',
-        price: '10.50',
-        unit: 'pro Portion',
-        category: 'Bowls'
-      },
-      {
-        title: 'Hauslimonade',
-        description: 'Zitrone-Ingwer, wenig Zucker',
-        price: '3.90',
-        unit: '0,33l',
-        category: 'Getränke'
-      }
-    ];
-    renderMenuItems(fallbackItems);
+    loading.classList.add('is-hidden');
+    if (fallbackItems.length) {
+      renderMenuItems(fallbackItems);
+    } else {
+      error?.classList.remove('is-hidden');
+    }
   }
 }
 
