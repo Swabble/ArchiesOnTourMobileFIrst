@@ -223,22 +223,27 @@ function bindControls() {
     }
   });
 
-  // Pause auto-scroll on hover (optional)
-  track?.addEventListener('mouseenter', () => {
-    stopAutoScroll();
-  });
+  // Only enable hover pause on non-touch devices (desktop)
+  const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
-  track?.addEventListener('mouseleave', () => {
-    startAutoScroll();
-  });
+  if (!isTouchDevice) {
+    // Pause auto-scroll on hover (desktop only)
+    track?.addEventListener('mouseenter', () => {
+      stopAutoScroll();
+    });
 
-  // Pause autoplay when hovering over carousel
-  const carouselContainer = document.querySelector('.carousel-container');
-  carouselContainer?.addEventListener('mouseenter', () => pauseAutoplay());
-  carouselContainer?.addEventListener('mouseleave', () => {
-    state.isAutoplayPaused = false;
-    startAutoplay();
-  });
+    track?.addEventListener('mouseleave', () => {
+      startAutoScroll();
+    });
+
+    // Pause autoplay when hovering over carousel (desktop only)
+    const carouselContainer = document.querySelector('.carousel-container');
+    carouselContainer?.addEventListener('mouseenter', () => pauseAutoplay());
+    carouselContainer?.addEventListener('mouseleave', () => {
+      state.isAutoplayPaused = false;
+      startAutoplay();
+    });
+  }
 }
 
 if (typeof window !== 'undefined') {
