@@ -21,18 +21,28 @@ const { title = 'Archie on Tour – Foodtruck Catering', description = 'Foodtruc
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://images.unsplash.com" />
 
-    <!-- Load fonts with display=swap for faster initial render -->
+    <!-- Load fonts with display=swap and optional for faster initial render -->
+    <!-- Using font-display: optional means text renders immediately with fallback -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=optional"
       rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
     />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
     <link rel="manifest" href="/site.webmanifest" />
     <link rel="icon" href="/favicon.ico" />
   </head>
   <body>
     <slot />
-    <script type="module" src={scrollRevealScript}></script>
-    <script type="module" src={zoomGuardScript}></script>
-    <script type="module" src={desktopLayoutScript}></script>
+    <!-- Defer non-critical scripts to prevent blocking HTML parsing -->
+    <script type="module" src={scrollRevealScript} defer></script>
+    <script type="module" src={zoomGuardScript} defer></script>
+    <script type="module" src={desktopLayoutScript} defer></script>
   </body>
 </html>

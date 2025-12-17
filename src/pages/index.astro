@@ -84,7 +84,9 @@ import Footer from '../components/Footer.astro';
       window.history.scrollRestoration = 'manual';
     }
 
-    window.addEventListener('load', () => {
+    // Use DOMContentLoaded instead of load for faster animation start
+    // This fires as soon as HTML is parsed, not waiting for all resources
+    window.addEventListener('DOMContentLoaded', () => {
       const slideInPanel = document.querySelector('.slide-in-panel');
 
       if (!slideInPanel) return;
