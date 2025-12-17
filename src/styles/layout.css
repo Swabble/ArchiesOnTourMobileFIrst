@@ -35,6 +35,8 @@ body {
   pointer-events: none;
   /* Start invisible */
   opacity: 0;
+  /* Smooth transition for parallax scrolling */
+  transition: transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .slide-in-panel.is-ready {
@@ -94,6 +96,8 @@ body {
   --logo-overlay-final-offset: -18vh;
   /* Start invisible */
   opacity: 0;
+  /* Smooth transition for parallax movement */
+  transition: transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 /* Paths 28-34 use accent color for distinction */

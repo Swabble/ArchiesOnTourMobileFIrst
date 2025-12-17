@@ -1107,13 +1107,13 @@ header.site-header::after {
   padding: var(--space-2);
   cursor: pointer;
   color: var(--color-accent);
-  transition: transform 0.3s ease;
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   flex-shrink: 0;
 }
 
 .offer-card__arrow {
   display: block;
-  transition: transform 0.3s ease;
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .offer-card.is-expanded .offer-card__arrow {
@@ -1161,13 +1161,16 @@ header.site-header::after {
     max-height: 0;
     overflow: hidden;
     opacity: 0;
-    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-                opacity 0.3s ease;
+    transform: translateY(-8px);
+    transition: max-height 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 
   .offer-card.is-expanded .offer-card__features {
     max-height: 500px;
     opacity: 1;
+    transform: translateY(0);
   }
 
   .offer-card:hover {
