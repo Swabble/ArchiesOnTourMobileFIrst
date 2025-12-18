@@ -215,7 +215,11 @@ async function fetchEvents(reference: Date) {
     return [];
   }
 
-  return staticEvents;
+  const { start, end } = getDateRange(reference);
+  return staticEvents.filter((evt) => {
+    const normalized = normalizeEventDates(evt);
+    return normalized.start >= start && normalized.start <= end;
+  });
 }
 
 function init() {
