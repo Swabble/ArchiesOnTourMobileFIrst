@@ -1,0 +1,134 @@
+---
+// Full gallery page with grid layout
+const galleryScript = '/scripts/gallery-full.js';
+---
+<section id="galerie" class="section full-gallery-section">
+  <div class="container">
+    <a href="/" class="back-button" aria-label="Zurück zur Startseite">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      <span>Zurück</span>
+    </a>
+    <header class="section-header">
+      <h2>Unsere Galerie</h2>
+      <p class="section-lead">
+        Eindrücke von unseren Events und dem Archie on Tour Foodtruck
+      </p>
+    </header>
+
+    <div class="gallery-status" aria-live="polite">
+      <p id="gallery-loading" class="status-pill">Galerie wird geladen …</p>
+      <p id="gallery-error" class="status-pill status-pill--error is-hidden">Fehler beim Laden der Bilder.</p>
+    </div>
+
+    <div id="gallery-grid" class="gallery-grid" aria-live="polite">
+      <p class="gallery-empty">Noch keine Bilder geladen.</p>
+    </div>
+  </div>
+
+  <!-- Lightbox for full-size image viewing -->
+  <div id="lightbox-overlay" class="lightbox-overlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="lightbox-content">
+      <button id="lightbox-close" class="lightbox-close" aria-label="Schließen">×</button>
+      <div class="lightbox-body">
+        <p id="lightbox-counter" class="lightbox-counter" aria-live="polite"></p>
+        <div class="lightbox-frame">
+          <button id="lightbox-prev" class="lightbox-control lightbox-control-prev" aria-label="Vorheriges Bild">
+            <span aria-hidden="true">‹</span>
+          </button>
+          <img id="lightbox-image" class="lightbox-image" alt="" />
+          <button id="lightbox-next" class="lightbox-control lightbox-control-next" aria-label="Nächstes Bild">
+            <span aria-hidden="true">›</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .full-gallery-section {
+    min-height: 80vh;
+  }
+
+  .back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-5);
+    color: var(--color-corporate-white);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s ease, transform 0.2s ease;
+  }
+
+  .back-button:hover {
+    color: var(--color-primary);
+    transform: translateX(-4px);
+  }
+
+  .section-header {
+    margin-bottom: var(--space-6);
+  }
+
+  .gallery-status {
+    margin-bottom: var(--space-4);
+    text-align: center;
+  }
+
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+  }
+
+  .gallery-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: var(--color-muted);
+    padding: var(--space-6);
+  }
+
+  .gallery-item {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .gallery-item:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-strong);
+  }
+
+  .gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .gallery-item:hover img {
+    transform: scale(1.05);
+  }
+
+  @media (min-width: 768px) {
+    .gallery-grid {
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: var(--space-5);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .gallery-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>
+
+<script type="module" src={galleryScript}></script>

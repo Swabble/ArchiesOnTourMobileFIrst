@@ -40,6 +40,15 @@ const galleryScript = '/scripts/gallery.js';
     justify-content: center;
     margin-top: var(--space-5);
   }
+
+  /* Gallery button keeps white text, changes to dark on hover */
+  .gallery-cta__action .btn-primary {
+    color: var(--color-corporate-white);
+  }
+
+  .gallery-cta__action .btn-primary:hover {
+    color: #0f1115;
+  }
 </style>
 
 <script type="module" src={galleryScript}></script>
