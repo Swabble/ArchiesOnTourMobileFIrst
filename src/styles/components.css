@@ -1188,9 +1188,9 @@ header.site-header::after {
     max-height: 0;
     opacity: 0;
     overflow: hidden;
-    /* Smooth easing for natural collapse/expand feel */
+    /* All animations synchronized to same duration and easing for smooth one-flow effect */
     transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-                opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
                 gap 0.5s cubic-bezier(0.4, 0, 0.2, 1),
                 padding-top 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     padding-top: 0;
