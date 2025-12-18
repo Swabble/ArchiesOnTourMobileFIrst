@@ -1,6 +1,7 @@
 /**
  * Mobile Parallax Effect
- * Animates SVG and Burger images with smooth scroll-based transitions
+ * Uses IntersectionObserver for better performance - animations trigger once when in view
+ * instead of continuously calculating during scroll
  */
 
 function initMobileParallax() {
@@ -13,58 +14,74 @@ function initMobileParallax() {
 
   if (!parallaxContainer || !svgLayer || !burgerLayer) return;
 
-  let ticking = false;
+  // Set initial state
+  svgLayer.style.opacity = '1';
+  svgLayer.style.transform = 'translate3d(0, 0, 0)';
+  burgerLayer.style.opacity = '0';
+  burgerLayer.style.transform = `translate3d(0, ${window.innerHeight}px, 0)`;
 
-  function updateParallax() {
-    const scrollY = window.scrollY;
-    const containerTop = (parallaxContainer as HTMLElement).offsetTop;
-    const containerHeight = (parallaxContainer as HTMLElement).offsetHeight;
+  // Track animation state
+  let hasAnimated = false;
 
-    // Calculate relative scroll position within the parallax container
-    const relativeScroll = scrollY - containerTop;
+  // Create IntersectionObserver to trigger animation once when in view
+  const observerOptions = {
+    root: null,
+    rootMargin: '0px',
+    threshold: 0.1 // Trigger when 10% visible
+  };
 
-    // Transition zone: 0vh to 100vh (within container)
-    const transitionStart = 0;
-    const transitionEnd = window.innerHeight; // 100vh
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      // Only animate once when entering viewport
+      if (entry.isIntersecting && !hasAnimated) {
+        hasAnimated = true;
 
-    // Calculate progress (0 to 1) through the transition zone
-    let progress = (relativeScroll - transitionStart) / (transitionEnd - transitionStart);
-    progress = Math.max(0, Math.min(1, progress)); // Clamp between 0 and 1
+        // Add animation classes for CSS-driven animations
+        svgLayer.classList.add('parallax-animate');
+        burgerLayer.classList.add('parallax-animate');
 
-    // SVG Layer: Fade out from 0-50% progress, then stay at 0
-    const svgOpacity = progress < 0.5 ? 1 - (progress * 2) : 0;
-    const svgTranslateY = -progress * 200; // Move up 200px for faster scroll
-    svgLayer.style.opacity = svgOpacity.toString();
-    svgLayer.style.transform = `translate3d(0, ${svgTranslateY}px, 0)`;
+        // Start CSS animations - smoother and more predictable
+        animateParallaxLayers();
+      }
+    });
+  }, observerOptions);
 
-    // Burger Layer: Start fading in from 50-100% progress
-    const burgerOpacity = progress > 0.5 ? (progress - 0.5) * 2 : 0;
-    const burgerTranslateY = progress > 0.5 ? (1 - ((progress - 0.5) * 2)) * window.innerHeight : window.innerHeight;
-    burgerLayer.style.opacity = burgerOpacity.toString();
-    burgerLayer.style.transform = `translate3d(0, ${burgerTranslateY}px, 0)`;
+  // Observe the parallax container
+  observer.observe(parallaxContainer);
 
-    ticking = false;
+  function animateParallaxLayers() {
+    // Use CSS transitions for smooth, GPU-accelerated animations
+    svgLayer.style.transition = 'opacity 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    burgerLayer.style.transition = 'opacity 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s, transform 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s';
+
+    // Set will-change before animation
+    svgLayer.style.willChange = 'transform, opacity';
+    burgerLayer.style.willChange = 'transform, opacity';
+
+    // Trigger animations with RAF for better timing
+    requestAnimationFrame(() => {
+      // SVG fades out and moves up
+      svgLayer.style.opacity = '0';
+      svgLayer.style.transform = 'translate3d(0, -150px, 0)';
+
+      // Burger fades in and moves into position
+      burgerLayer.style.opacity = '1';
+      burgerLayer.style.transform = 'translate3d(0, 0, 0)';
+    });
+
+    // Clean up will-change after animations complete
+    setTimeout(() => {
+      svgLayer.style.willChange = 'auto';
+      burgerLayer.style.willChange = 'auto';
+      svgLayer.style.transition = '';
+      burgerLayer.style.transition = '';
+    }, 2000);
   }
 
-  function requestTick() {
-    if (!ticking) {
-      requestAnimationFrame(updateParallax);
-      ticking = true;
-    }
-  }
-
-  // Use passive event listener for better scroll performance
-  window.addEventListener('scroll', requestTick, { passive: true });
-
-  // Initial update
-  updateParallax();
-
-  // Update on resize (if user rotates device)
+  // Clean up on resize if switching to desktop
   window.addEventListener('resize', () => {
     if (window.innerWidth > 767) {
-      window.removeEventListener('scroll', requestTick);
-    } else {
-      updateParallax();
+      observer.disconnect();
     }
   }, { passive: true });
 }

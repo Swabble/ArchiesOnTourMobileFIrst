@@ -31,10 +31,11 @@ body {
   max-height: var(--slide-panel-height);
   /* Start off-screen, will slide down smoothly */
   transform: translateY(calc(-100% + var(--slide-panel-parallax-offset, 0px)));
-  will-change: transform;
+  /* will-change set dynamically via JS for better performance */
   pointer-events: none;
   /* Start invisible */
   opacity: 0;
+  /* No CSS transition - using requestAnimationFrame for smoother scroll */
 }
 
 .slide-in-panel.is-ready {
@@ -94,6 +95,7 @@ body {
   --logo-overlay-final-offset: -18vh;
   /* Start invisible */
   opacity: 0;
+  /* No CSS transition - controlled by animation keyframes */
 }
 
 /* Paths 28-34 use accent color for distinction */
