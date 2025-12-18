@@ -38,10 +38,12 @@ function renderMenuItems(items) {
     return;
   }
 
-  // Group by category
+  // Group by category, respecting parent categories
   const grouped = {};
   items.forEach((item) => {
-    const categoryName = item.category?.trim() || 'Weitere Highlights';
+    // If item has a parentCategory, use that as the group key
+    // Otherwise use the category field
+    const categoryName = (item.parentCategory?.trim() || item.category?.trim() || 'Weitere Highlights');
     if (!grouped[categoryName]) {
       grouped[categoryName] = [];
     }
@@ -67,7 +69,6 @@ function renderMenuItems(items) {
       card.innerHTML = `
         <div class="menu-card__header">
           <h4 class="menu-card__title">${item.title}</h4>
-          <span class="price-pill" aria-label="Preis">${formatPrice(item.price)}</span>
         </div>
         <p class="menu-card__description">${item.description || ''}</p>
         <div class="menu-card__meta">

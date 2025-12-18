@@ -255,6 +255,12 @@ header.site-header::after {
   text-decoration: none;
   font-weight: 600;
   box-shadow: var(--shadow-soft);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-strong);
 }
 
 .btn-primary {
@@ -262,11 +268,25 @@ header.site-header::after {
   color: var(--color-corporate-white);
 }
 
+.btn-primary:hover {
+  color: #0f1115;
+}
+
 .btn-secondary {
   background: #1f2a37;
   color: var(--color-corporate-white);
   border-color: rgba(255, 255, 255, 0.24);
   box-shadow: 0 10px 26px rgba(0, 0, 0, 0.28);
+}
+
+.btn-secondary:hover {
+  background: #2a3847;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.35);
+}
+
+/* Reset button gets orange text on hover */
+button[type="reset"].btn-secondary:hover {
+  color: var(--color-primary);
 }
 
 .card {
@@ -1151,7 +1171,8 @@ header.site-header::after {
     opacity: 0;
     transform: translateY(20px);
     transition: opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                gap 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   /* Animate in when visible */
@@ -1182,26 +1203,26 @@ header.site-header::after {
     padding: 0;
     list-style: none;
     display: grid;
-    gap: var(--space-2);
-    /* Use transform instead of max-height for better mobile performance */
-    transform-origin: top;
-    transform: scaleY(0);
+    gap: 0;
+    /* Smooth collapse animation using max-height and opacity */
+    max-height: 0;
     opacity: 0;
-    /* Only animate transform and opacity - GPU accelerated */
-    transition: transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                opacity 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                height 0s 0.45s;
-    /* Prevent layout shift during animation */
-    height: 0;
     overflow: hidden;
+    /* All animations synchronized to same duration and easing for smooth one-flow effect */
+    transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                gap 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                padding-top 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    padding-top: 0;
   }
 
   .offer-card.is-expanded .offer-card__features {
-    transform: scaleY(1);
+    max-height: 800px; /* Large enough for content */
     opacity: 1;
-    height: auto;
+    gap: var(--space-2);
+    padding-top: var(--space-1);
     /* Add will-change only during expanded state for better performance */
-    will-change: transform, opacity;
+    will-change: max-height, opacity;
   }
 
   .offer-card:hover {
