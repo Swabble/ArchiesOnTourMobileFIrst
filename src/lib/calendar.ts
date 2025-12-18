@@ -34,8 +34,13 @@ function normalizeDate(dateInput: { date?: string; dateTime?: string }) {
   return new Date();
 }
 
+type EnrichedEvent = ReturnType<typeof normalizeEventDates> & {
+  dateKeys: string[];
+  primaryDateKey?: string;
+};
+
 function renderGrid(
-  events: any[],
+  eventsByDate: Map<string, EnrichedEvent[]>,
   grid: HTMLElement,
   reference: Date,
   onDayHover: (dateKey?: string) => void
@@ -51,7 +56,7 @@ function renderGrid(
     const cell = document.createElement('div');
     const date = new Date(reference.getFullYear(), reference.getMonth(), day);
     const key = formatDateKey(date);
-    const matches = events.filter((evt) => formatDateKey(new Date(evt.start)) === key);
+    const matches = eventsByDate.get(key) ?? [];
     cell.className = `card calendar__day ${matches.length ? 'calendar__day--busy' : 'calendar__day--free'}`;
     cell.dataset.dateKey = key;
 
@@ -92,7 +97,7 @@ function renderGrid(
   }
 }
 
-function renderMonthEvents(events: any[], list: HTMLElement, onEventHover: (dateKey?: string) => void) {
+function renderMonthEvents(events: EnrichedEvent[], list: HTMLElement, onEventHover: (dateKey?: string) => void) {
   list.innerHTML = '';
 
   if (!events.length) {
@@ -109,7 +114,7 @@ function renderMonthEvents(events: any[], list: HTMLElement, onEventHover: (date
     const item = document.createElement('article');
     item.className = 'month-event';
 
-    const eventDateKey = formatDateKey(new Date(evt.start));
+    const eventDateKey = evt.primaryDateKey || formatDateKey(new Date(evt.start));
     item.dataset.dateKey = eventDateKey;
 
     const start = new Date(evt.start);
@@ -171,6 +176,51 @@ function getDateRange(reference: Date) {
   return { start, end };
 }
 
+function indexMonthlyEvents(events: any[], reference: Date) {
+  const { start: monthStart, end: monthEnd } = getDateRange(reference);
+
+  const eventsByDate = new Map<string, EnrichedEvent[]>();
+  const monthlyEvents: EnrichedEvent[] = [];
+
+  events.forEach((raw) => {
+    const evt = normalizeEventDates(raw);
+    const eventStart = evt.start;
+    const eventEnd = evt.end ?? evt.start;
+
+    if (eventEnd < monthStart || eventStart > monthEnd) return;
+
+    const rangeStart = new Date(Math.max(eventStart.getTime(), monthStart.getTime()));
+    const rangeEnd = new Date(Math.min(eventEnd.getTime(), monthEnd.getTime()));
+
+    const dateKeys: string[] = [];
+    const cursor = new Date(rangeStart);
+    cursor.setHours(0, 0, 0, 0);
+
+    while (cursor.getTime() <= rangeEnd.getTime()) {
+      const key = formatDateKey(cursor);
+      dateKeys.push(key);
+      cursor.setDate(cursor.getDate() + 1);
+      cursor.setHours(0, 0, 0, 0);
+    }
+
+    const enriched: EnrichedEvent = {
+      ...evt,
+      dateKeys,
+      primaryDateKey: dateKeys[0]
+    };
+
+    dateKeys.forEach((key) => {
+      const bucket = eventsByDate.get(key) ?? [];
+      bucket.push(enriched);
+      eventsByDate.set(key, bucket);
+    });
+
+    monthlyEvents.push(enriched);
+  });
+
+  return { eventsByDate, monthlyEvents };
+}
+
 function formatLabel(reference: Date) {
   return monthFormatter.format(reference);
 }
@@ -215,7 +265,7 @@ async function fetchEvents(reference: Date) {
     return [];
   }
 
-  return staticEvents;
+  return staticEvents.map((evt) => normalizeEventDates(evt));
 }
 
 function init() {
@@ -239,8 +289,9 @@ function init() {
     monthLabel.textContent = formatLabel(reference);
     try {
       const events = await fetchEvents(reference);
-      renderGrid(events, grid, reference, handleHover);
-      renderMonthEvents(events, monthList, handleHover);
+      const { eventsByDate, monthlyEvents } = indexMonthlyEvents(events, reference);
+      renderGrid(eventsByDate, grid, reference, handleHover);
+      renderMonthEvents(monthlyEvents, monthList, handleHover);
       handleHover(undefined);
       status.textContent = '';
       status.style.display = 'none';

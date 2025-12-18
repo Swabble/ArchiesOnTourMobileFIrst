@@ -74,7 +74,7 @@ function showFeedbackMessage(date) {
         setTimeout(() => message.remove(), 300);
     }, 3000);
 }
-function renderGrid(events, grid, reference, onDayHover) {
+function renderGrid(eventsByDate, grid, reference, onDayHover) {
     grid.innerHTML = '';
     const firstDay = new Date(reference.getFullYear(), reference.getMonth(), 1);
     const offset = (firstDay.getDay() + 6) % 7;
@@ -86,7 +86,7 @@ function renderGrid(events, grid, reference, onDayHover) {
         const cell = document.createElement('div');
         const date = new Date(reference.getFullYear(), reference.getMonth(), day);
         const key = formatDateKey(date);
-        const matches = events.filter((evt) => formatDateKey(new Date(evt.start)) === key);
+        const matches = eventsByDate.get(key) ?? [];
         cell.className = `card calendar__day ${matches.length ? 'calendar__day--busy' : 'calendar__day--free'}`;
         cell.dataset.dateKey = key;
         const hasEvents = matches.length > 0;
@@ -137,7 +137,7 @@ function renderMonthEvents(events, list, onEventHover) {
         const item = document.createElement('article');
         // Add 'card' class for card styling
         item.className = 'card month-event';
-        const eventDateKey = formatDateKey(new Date(evt.start));
+        const eventDateKey = evt.primaryDateKey || formatDateKey(new Date(evt.start));
         item.dataset.dateKey = eventDateKey;
         const start = new Date(evt.start);
         const end = new Date(evt.end);
@@ -189,6 +189,41 @@ function getDateRange(reference) {
     end.setHours(23, 59, 59, 999);
     return { start, end };
 }
+function indexMonthlyEvents(events, reference) {
+    const { start: monthStart, end: monthEnd } = getDateRange(reference);
+    const eventsByDate = new Map();
+    const monthlyEvents = [];
+    events.forEach((raw) => {
+        const evt = normalizeEventDates(raw);
+        const eventStart = evt.start;
+        const eventEnd = evt.end ?? evt.start;
+        if (eventEnd < monthStart || eventStart > monthEnd)
+            return;
+        const rangeStart = new Date(Math.max(eventStart.getTime(), monthStart.getTime()));
+        const rangeEnd = new Date(Math.min(eventEnd.getTime(), monthEnd.getTime()));
+        const dateKeys = [];
+        const cursor = new Date(rangeStart);
+        cursor.setHours(0, 0, 0, 0);
+        while (cursor.getTime() <= rangeEnd.getTime()) {
+            const key = formatDateKey(cursor);
+            dateKeys.push(key);
+            cursor.setDate(cursor.getDate() + 1);
+            cursor.setHours(0, 0, 0, 0);
+        }
+        const enriched = {
+            ...evt,
+            dateKeys,
+            primaryDateKey: dateKeys[0]
+        };
+        dateKeys.forEach((key) => {
+            const bucket = eventsByDate.get(key) ?? [];
+            bucket.push(enriched);
+            eventsByDate.set(key, bucket);
+        });
+        monthlyEvents.push(enriched);
+    });
+    return { eventsByDate, monthlyEvents };
+}
 function formatLabel(reference) {
     return monthFormatter.format(reference);
 }
@@ -231,7 +266,7 @@ async function fetchEvents(reference) {
         console.warn('Keine Kalender-Daten verfügbar. Build-Prozess muss ausgeführt werden.');
         return [];
     }
-    return staticEvents;
+    return staticEvents.map((evt) => normalizeEventDates(evt));
 }
 function init() {
     var _a, _b;
@@ -254,16 +289,9 @@ function init() {
         monthLabel.textContent = formatLabel(reference);
         try {
             const allEvents = await fetchEvents(reference);
-
-            // Filter events for the current month
-            const { start, end } = getDateRange(reference);
-            const filteredEvents = allEvents.filter((evt) => {
-                const eventDate = new Date(evt.start);
-                return eventDate >= start && eventDate <= end;
-            });
-
-            renderGrid(filteredEvents, grid, reference, handleHover);
-            renderMonthEvents(filteredEvents, monthList, handleHover);
+            const { eventsByDate, monthlyEvents } = indexMonthlyEvents(allEvents, reference);
+            renderGrid(eventsByDate, grid, reference, handleHover);
+            renderMonthEvents(monthlyEvents, monthList, handleHover);
             handleHover(undefined);
             status.textContent = '';
             status.style.display = 'none';
