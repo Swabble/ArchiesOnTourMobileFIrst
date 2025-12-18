@@ -160,20 +160,26 @@ const calendarScript = 'scripts/calendar.js';
     transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease, background 0.16s ease;
   }
 
+  /* Override global .card:hover for calendar days - we have custom hover */
+  #verfuegbarkeit .calendar__day.card:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 10px 24px rgba(15, 17, 21, 0.12) !important;
+    border-color: rgba(15, 17, 21, 0.16) !important;
+  }
+
   #verfuegbarkeit .calendar__day--busy {
-    /* Soft red color for busy days - use !important to override .card background */
+    /* Soft red color for ENTIRE card - use !important to override .card background */
     background: #ffe5e5 !important;
     border-color: rgba(255, 59, 48, 0.25) !important;
   }
 
-  /* Hover effect for all calendar days */
-  #verfuegbarkeit .calendar__day:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 24px rgba(15, 17, 21, 0.12);
-    border-color: rgba(15, 17, 21, 0.16);
+  #verfuegbarkeit .calendar__day--busy:hover {
+    /* Keep red on hover */
+    background: #ffd5d5 !important;
   }
 
-  /* Active state (cross-hover) - same as hover */
+  /* Active state (cross-hover) - MUST override .card:hover */
+  #verfuegbarkeit .calendar__day.card.calendar__day--active,
   #verfuegbarkeit .calendar__day--active {
     border-color: rgba(255, 113, 91, 0.5) !important;
     box-shadow: 0 10px 24px rgba(255, 113, 91, 0.16) !important;
@@ -279,13 +285,16 @@ const calendarScript = 'scripts/calendar.js';
     transition: box-shadow 160ms ease, transform 160ms ease, border-color 160ms ease;
   }
 
+  /* Override global .card:hover for event cards */
+  #verfuegbarkeit .month-event.card:hover,
   #verfuegbarkeit .month-event:hover {
-    border-color: rgba(255, 113, 91, 0.35);
-    box-shadow: 0 12px 26px rgba(15, 17, 21, 0.12);
-    transform: translateY(-2px);
+    border-color: rgba(255, 113, 91, 0.35) !important;
+    box-shadow: 0 12px 26px rgba(15, 17, 21, 0.12) !important;
+    transform: translateY(-2px) !important;
   }
 
-  /* Active state (cross-hover) - ensure it overrides any other rules */
+  /* Active state (cross-hover) - MUST override .card:hover and normal :hover */
+  #verfuegbarkeit .month-event.card.month-event--active,
   #verfuegbarkeit .month-event--active {
     border-color: rgba(255, 113, 91, 0.5) !important;
     box-shadow: 0 14px 32px rgba(255, 113, 91, 0.18) !important;
