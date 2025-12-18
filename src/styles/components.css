@@ -255,6 +255,12 @@ header.site-header::after {
   text-decoration: none;
   font-weight: 600;
   box-shadow: var(--shadow-soft);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-strong);
 }
 
 .btn-primary {
@@ -262,11 +268,20 @@ header.site-header::after {
   color: var(--color-corporate-white);
 }
 
+.btn-primary:hover {
+  color: #0f1115;
+}
+
 .btn-secondary {
   background: #1f2a37;
   color: var(--color-corporate-white);
   border-color: rgba(255, 255, 255, 0.24);
   box-shadow: 0 10px 26px rgba(0, 0, 0, 0.28);
+}
+
+.btn-secondary:hover {
+  background: #2a3847;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.35);
 }
 
 .card {
