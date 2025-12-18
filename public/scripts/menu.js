@@ -38,10 +38,12 @@ function renderMenuItems(items) {
     return;
   }
 
-  // Group by category
+  // Group by category, respecting parent categories
   const grouped = {};
   items.forEach((item) => {
-    const categoryName = item.category?.trim() || 'Weitere Highlights';
+    // If item has a parentCategory, use that as the group key
+    // Otherwise use the category field
+    const categoryName = (item.parentCategory?.trim() || item.category?.trim() || 'Weitere Highlights');
     if (!grouped[categoryName]) {
       grouped[categoryName] = [];
     }
