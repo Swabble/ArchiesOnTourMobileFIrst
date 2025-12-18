@@ -157,19 +157,27 @@ const calendarScript = 'scripts/calendar.js';
     display: grid;
     gap: var(--space-1);
     align-content: space-between;
-    transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+    transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease, background 0.16s ease;
   }
 
   #verfuegbarkeit .calendar__day--busy {
-    /* Soft red color for busy days - not too bright */
-    background: #ffe5e5;
-    border-color: rgba(255, 59, 48, 0.25);
+    /* Soft red color for busy days - use !important to override .card background */
+    background: #ffe5e5 !important;
+    border-color: rgba(255, 59, 48, 0.25) !important;
   }
 
-  #verfuegbarkeit .calendar__day--active {
-    border-color: rgba(255, 113, 91, 0.5);
-    box-shadow: 0 10px 24px rgba(255, 113, 91, 0.16);
+  /* Hover effect for all calendar days */
+  #verfuegbarkeit .calendar__day:hover {
     transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(15, 17, 21, 0.12);
+    border-color: rgba(15, 17, 21, 0.16);
+  }
+
+  /* Active state (cross-hover) - same as hover */
+  #verfuegbarkeit .calendar__day--active {
+    border-color: rgba(255, 113, 91, 0.5) !important;
+    box-shadow: 0 10px 24px rgba(255, 113, 91, 0.16) !important;
+    transform: translateY(-2px) !important;
   }
 
   #verfuegbarkeit .calendar__day-header {
@@ -277,10 +285,11 @@ const calendarScript = 'scripts/calendar.js';
     transform: translateY(-2px);
   }
 
+  /* Active state (cross-hover) - ensure it overrides any other rules */
   #verfuegbarkeit .month-event--active {
-    border-color: rgba(255, 113, 91, 0.5);
-    box-shadow: 0 14px 32px rgba(255, 113, 91, 0.18);
-    transform: translateY(-2px);
+    border-color: rgba(255, 113, 91, 0.5) !important;
+    box-shadow: 0 14px 32px rgba(255, 113, 91, 0.18) !important;
+    transform: translateY(-2px) !important;
   }
 
   #verfuegbarkeit .event-date {
