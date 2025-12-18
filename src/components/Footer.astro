@@ -8,9 +8,6 @@
       <h4>Kontakt</h4>
       <p><a href="mailto:hallo@archieontour.de">hallo@archieontour.de</a></p>
       <p><a href="tel:+4922112345678">+49 221 12345678</a></p>
-      <div class="form__actions">
-        <a class="nav__link" href="#start">Nach oben</a>
-      </div>
     </div>
     <div>
       <h4>Rechtliches</h4>
@@ -19,3 +16,44 @@
     </div>
   </div>
 </footer>
+
+<!-- Fixed scroll-to-top button -->
+<a href="#start" class="scroll-to-top btn btn-primary" aria-label="Nach oben scrollen">
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M10 15V5M10 5L5 10M10 5L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <span class="scroll-to-top__text">Nach oben</span>
+</a>
+
+<style>
+  .scroll-to-top {
+    position: fixed;
+    bottom: var(--space-4);
+    right: var(--space-4);
+    z-index: 1000;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .scroll-to-top:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  }
+
+  /* Hide text on mobile, show only icon */
+  @media (max-width: 767px) {
+    .scroll-to-top__text {
+      display: none;
+    }
+
+    .scroll-to-top {
+      padding: var(--space-3);
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      justify-content: center;
+    }
+  }
+</style>

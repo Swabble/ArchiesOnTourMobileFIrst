@@ -284,6 +284,11 @@ header.site-header::after {
   box-shadow: 0 14px 32px rgba(0, 0, 0, 0.35);
 }
 
+/* Reset button gets orange text on hover */
+button[type="reset"].btn-secondary:hover {
+  color: var(--color-primary);
+}
+
 .card {
   padding: var(--space-4);
   border-radius: var(--radius-lg);

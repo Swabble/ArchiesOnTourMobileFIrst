@@ -9,6 +9,11 @@ const galleryScript = '/scripts/gallery.js';
     <div class="carousel-container">
       <div id="carousel-track" class="carousel-track" aria-live="polite"></div>
     </div>
+    <div class="gallery-cta__action">
+      <a href="/gallery" class="btn btn-primary">
+        Zur vollständigen Galerie
+      </a>
+    </div>
   </div>
   <div id="lightbox-overlay" class="lightbox-overlay" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="lightbox-content">
@@ -28,5 +33,13 @@ const galleryScript = '/scripts/gallery.js';
     </div>
   </div>
 </section>
+
+<style>
+  .gallery-cta__action {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--space-5);
+  }
+</style>
 
 <script type="module" src={galleryScript}></script>

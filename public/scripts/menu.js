@@ -67,7 +67,6 @@ function renderMenuItems(items) {
       card.innerHTML = `
         <div class="menu-card__header">
           <h4 class="menu-card__title">${item.title}</h4>
-          <span class="price-pill" aria-label="Preis">${formatPrice(item.price)}</span>
         </div>
         <p class="menu-card__description">${item.description || ''}</p>
         <div class="menu-card__meta">
