@@ -161,8 +161,9 @@ const calendarScript = 'scripts/calendar.js';
   }
 
   #verfuegbarkeit .calendar__day--busy {
-    border-color: rgba(255, 113, 91, 0.3);
-    background: linear-gradient(180deg, rgba(255, 113, 91, 0.06), rgba(255, 255, 255, 0.96));
+    /* Soft red color for busy days - not too bright */
+    background: #ffe5e5;
+    border-color: rgba(255, 59, 48, 0.25);
   }
 
   #verfuegbarkeit .calendar__day--active {
@@ -335,6 +336,38 @@ const calendarScript = 'scripts/calendar.js';
   #verfuegbarkeit .calendar__empty {
     margin: 0;
     color: var(--color-muted);
+  }
+
+  /* Date copy feedback message */
+  .date-copy-feedback {
+    position: fixed;
+    bottom: 100px;
+    right: var(--space-4);
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    color: white;
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 4px 16px rgba(46, 204, 113, 0.3);
+    z-index: 1001;
+    font-weight: 600;
+    animation: slideIn 0.3s ease;
+    max-width: 90vw;
+  }
+
+  .date-copy-feedback.fade-out {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: translateX(400px);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
   }
 
   @media (max-width: 720px) {

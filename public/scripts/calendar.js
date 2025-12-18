@@ -36,6 +36,44 @@ function normalizeDate(dateInput) {
     }
     return new Date();
 }
+function copyDateToForm(date) {
+    const dateInput = document.getElementById('date');
+    if (dateInput) {
+        // Format: YYYY-MM-DD for input[type="date"]
+        const formattedDate = formatDateKey(date);
+        dateInput.value = formattedDate;
+
+        // Show feedback message
+        showFeedbackMessage(date);
+
+        // Scroll to form
+        setTimeout(() => {
+            const form = document.getElementById('inquiry-form');
+            if (form) {
+                form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 100);
+    }
+}
+function showFeedbackMessage(date) {
+    // Remove any existing feedback message
+    const existing = document.querySelector('.date-copy-feedback');
+    if (existing) {
+        existing.remove();
+    }
+
+    const message = document.createElement('div');
+    message.className = 'date-copy-feedback';
+    message.textContent = `✓ ${dayFormatter.format(date)} wurde ins Kontaktformular übernommen`;
+
+    document.body.appendChild(message);
+
+    // Fade out after 3 seconds
+    setTimeout(() => {
+        message.classList.add('fade-out');
+        setTimeout(() => message.remove(), 300);
+    }, 3000);
+}
 function renderGrid(events, grid, reference, onDayHover) {
     grid.innerHTML = '';
     const firstDay = new Date(reference.getFullYear(), reference.getMonth(), 1);
@@ -79,6 +117,9 @@ function renderGrid(events, grid, reference, onDayHover) {
         }
         cell.addEventListener('mouseenter', () => onDayHover(matches.length ? key : undefined));
         cell.addEventListener('mouseleave', () => onDayHover(undefined));
+        // Add click handler to copy date to form
+        cell.addEventListener('click', () => copyDateToForm(date));
+        cell.style.cursor = 'pointer';
         grid.appendChild(cell);
     }
 }
@@ -94,7 +135,8 @@ function renderMonthEvents(events, list, onEventHover) {
     const sorted = [...events].sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
     sorted.forEach((evt) => {
         const item = document.createElement('article');
-        item.className = 'month-event';
+        // Add 'card' class for card styling
+        item.className = 'card month-event';
         const eventDateKey = formatDateKey(new Date(evt.start));
         item.dataset.dateKey = eventDateKey;
         const start = new Date(evt.start);
@@ -211,9 +253,17 @@ function init() {
         status.style.display = 'inline-flex';
         monthLabel.textContent = formatLabel(reference);
         try {
-            const events = await fetchEvents(reference);
-            renderGrid(events, grid, reference, handleHover);
-            renderMonthEvents(events, monthList, handleHover);
+            const allEvents = await fetchEvents(reference);
+
+            // Filter events for the current month
+            const { start, end } = getDateRange(reference);
+            const filteredEvents = allEvents.filter((evt) => {
+                const eventDate = new Date(evt.start);
+                return eventDate >= start && eventDate <= end;
+            });
+
+            renderGrid(filteredEvents, grid, reference, handleHover);
+            renderMonthEvents(filteredEvents, monthList, handleHover);
             handleHover(undefined);
             status.textContent = '';
             status.style.display = 'none';
