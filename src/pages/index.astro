@@ -94,13 +94,16 @@ import Footer from '../components/Footer.astro';
       if (!inner) return;
 
       const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      const isMobile = window.matchMedia('(max-width: 767px)');
 
       const mainElement = document.querySelector('main');
 
       let scrollEndTimer: number;
 
       const setParallaxOffset = () => {
-        if (!inner || prefersReducedMotion.matches) {
+        // Disable panel parallax on mobile for better performance
+        // Mobile Safari has fundamental issues with scroll-based parallax
+        if (!inner || prefersReducedMotion.matches || isMobile.matches) {
           slideInPanel.style.setProperty('--slide-panel-parallax-offset', '0px');
           slideInPanel.style.willChange = 'auto';
           return;
@@ -157,7 +160,8 @@ import Footer from '../components/Footer.astro';
 
       window.addEventListener('resize', updatePanelHeight, { passive: true });
 
-      if (!prefersReducedMotion.matches) {
+      // Only enable scroll-based parallax on desktop
+      if (!prefersReducedMotion.matches && !isMobile.matches) {
         window.addEventListener('scroll', handleScroll, { passive: true });
         window.addEventListener('beforeunload', () => window.removeEventListener('scroll', handleScroll));
       }

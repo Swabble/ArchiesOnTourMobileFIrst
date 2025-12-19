@@ -6,6 +6,7 @@ if (typeof window !== 'undefined') {
   // Store scroll position for RAF updates
   let scrollY = 0;
   let isTicking = false;
+  let scrollHandler: (() => void) | null = null;
 
   const resetParallaxOffsets = () => {
     root.style.setProperty('--parallax-svg-offset', '0px');
@@ -13,25 +14,20 @@ if (typeof window !== 'undefined') {
   };
 
   const updateParallaxOffsets = () => {
-    // Disable parallax when reduced motion is preferred
-    if (prefersReducedMotion.matches) {
+    // Disable parallax when reduced motion is preferred OR on mobile
+    // Mobile Safari has fundamental issues with scroll-based parallax (jank, throttled events)
+    // Industry best practice: disable parallax on mobile for better UX
+    if (prefersReducedMotion.matches || isMobile.matches) {
       resetParallaxOffsets();
       isTicking = false;
       return;
     }
 
-    // Use reduced parallax values on mobile for better performance
-    if (isMobile.matches) {
-      // Reduced parallax effect for mobile (50% of desktop values)
-      root.style.setProperty('--parallax-svg-offset', `${scrollY * 0.125}px`);
-      root.style.setProperty('--parallax-photo-offset', `${scrollY * 0.04}px`);
-    } else {
-      // Full parallax effect for desktop
-      // SVG scrollt schneller nach oben weg (größerer positiver Offset bedeutet Verschiebung nach oben durch calc Subtraktion)
-      root.style.setProperty('--parallax-svg-offset', `${scrollY * 0.25}px`);
-      // Burger scrollt langsamer nach oben und wird sichtbar
-      root.style.setProperty('--parallax-photo-offset', `${scrollY * 0.08}px`);
-    }
+    // Full parallax effect for desktop only
+    // SVG scrollt schneller nach oben weg (größerer positiver Offset bedeutet Verschiebung nach oben durch calc Subtraktion)
+    root.style.setProperty('--parallax-svg-offset', `${scrollY * 0.25}px`);
+    // Burger scrollt langsamer nach oben und wird sichtbar
+    root.style.setProperty('--parallax-photo-offset', `${scrollY * 0.08}px`);
 
     isTicking = false;
   };
@@ -47,20 +43,49 @@ if (typeof window !== 'undefined') {
     }
   };
 
-  // Initial setup
-  scrollY = window.scrollY || 0;
-  updateParallaxOffsets();
+  const enableParallax = () => {
+    // Only enable parallax on desktop (non-mobile, non-reduced-motion)
+    if (!prefersReducedMotion.matches && !isMobile.matches) {
+      scrollY = window.scrollY || 0;
+      updateParallaxOffsets();
 
-  // Use RAF-throttled scroll handler for better performance
-  window.addEventListener('scroll', handleScroll, { passive: true });
+      if (!scrollHandler) {
+        scrollHandler = handleScroll;
+        window.addEventListener('scroll', scrollHandler, { passive: true });
+      }
+    }
+  };
 
-  // Update on media query changes
+  const disableParallax = () => {
+    resetParallaxOffsets();
+
+    if (scrollHandler) {
+      window.removeEventListener('scroll', scrollHandler);
+      scrollHandler = null;
+    }
+  };
+
+  // Initial setup based on current viewport
+  if (isMobile.matches || prefersReducedMotion.matches) {
+    disableParallax();
+  } else {
+    enableParallax();
+  }
+
+  // Update on media query changes - add/remove scroll listener dynamically
   prefersReducedMotion.addEventListener('change', () => {
-    scrollY = window.scrollY || 0;
-    updateParallaxOffsets();
+    if (prefersReducedMotion.matches || isMobile.matches) {
+      disableParallax();
+    } else {
+      enableParallax();
+    }
   });
+
   isMobile.addEventListener('change', () => {
-    scrollY = window.scrollY || 0;
-    updateParallaxOffsets();
+    if (isMobile.matches || prefersReducedMotion.matches) {
+      disableParallax();
+    } else {
+      enableParallax();
+    }
   });
 }
