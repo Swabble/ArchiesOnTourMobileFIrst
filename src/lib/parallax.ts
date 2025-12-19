@@ -3,6 +3,10 @@ if (typeof window !== 'undefined') {
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const isMobile = window.matchMedia('(max-width: 767px)');
 
+  // Store scroll position for RAF updates
+  let scrollY = 0;
+  let isTicking = false;
+
   const resetParallaxOffsets = () => {
     root.style.setProperty('--parallax-svg-offset', '0px');
     root.style.setProperty('--parallax-photo-offset', '0px');
@@ -12,10 +16,9 @@ if (typeof window !== 'undefined') {
     // Disable parallax when reduced motion is preferred
     if (prefersReducedMotion.matches) {
       resetParallaxOffsets();
+      isTicking = false;
       return;
     }
-
-    const scrollY = window.scrollY || 0;
 
     // Use reduced parallax values on mobile for better performance
     if (isMobile.matches) {
@@ -29,11 +32,35 @@ if (typeof window !== 'undefined') {
       // Burger scrollt langsamer nach oben und wird sichtbar
       root.style.setProperty('--parallax-photo-offset', `${scrollY * 0.08}px`);
     }
+
+    isTicking = false;
   };
 
-  updateParallaxOffsets();
-  window.addEventListener('scroll', updateParallaxOffsets, { passive: true });
+  const handleScroll = () => {
+    // Store the latest scroll position
+    scrollY = window.scrollY || 0;
 
-  prefersReducedMotion.addEventListener('change', updateParallaxOffsets);
-  isMobile.addEventListener('change', updateParallaxOffsets);
+    // Only schedule one RAF update at a time
+    if (!isTicking) {
+      requestAnimationFrame(updateParallaxOffsets);
+      isTicking = true;
+    }
+  };
+
+  // Initial setup
+  scrollY = window.scrollY || 0;
+  updateParallaxOffsets();
+
+  // Use RAF-throttled scroll handler for better performance
+  window.addEventListener('scroll', handleScroll, { passive: true });
+
+  // Update on media query changes
+  prefersReducedMotion.addEventListener('change', () => {
+    scrollY = window.scrollY || 0;
+    updateParallaxOffsets();
+  });
+  isMobile.addEventListener('change', () => {
+    scrollY = window.scrollY || 0;
+    updateParallaxOffsets();
+  });
 }

@@ -97,15 +97,20 @@ import Footer from '../components/Footer.astro';
 
       const mainElement = document.querySelector('main');
 
+      let scrollEndTimer: number;
+
       const setParallaxOffset = () => {
         if (!inner || prefersReducedMotion.matches) {
           slideInPanel.style.setProperty('--slide-panel-parallax-offset', '0px');
+          slideInPanel.style.willChange = 'auto';
           return;
         }
 
         const parallaxFactor = 1.35;
         const offset = window.scrollY * parallaxFactor;
 
+        // Enable will-change during scroll for better compositing
+        slideInPanel.style.willChange = 'transform';
         slideInPanel.style.setProperty('--slide-panel-parallax-offset', `${offset}px`);
       };
 
@@ -114,9 +119,17 @@ import Footer from '../components/Footer.astro';
         if (isTicking) return;
         isTicking = true;
 
+        // Clear any existing timer
+        clearTimeout(scrollEndTimer);
+
         window.requestAnimationFrame(() => {
           setParallaxOffset();
           isTicking = false;
+
+          // Remove will-change after scroll ends (150ms idle time)
+          scrollEndTimer = window.setTimeout(() => {
+            slideInPanel.style.willChange = 'auto';
+          }, 150);
         });
       };
 
