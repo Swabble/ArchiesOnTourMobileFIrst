@@ -295,14 +295,14 @@ main.content-slide-down {
 }
 
 /* Content Background with Parallax Effect */
-/* Now coupled to main element instead of viewport */
+/* Fixed positioning - outside main's stacking context */
 .content-background {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 0; /* Behind everything (lowest z-index) */
+  z-index: 1; /* Behind slide-in-panel (5) and main (10), above body background */
   pointer-events: none; /* Allow clicks to pass through */
 
   /* Background image with gradient fade-OUT from top to bottom */
@@ -343,8 +343,7 @@ main.content-slide-down {
   }
 }
 
-/* Ensure main is positioned for absolute child */
 main {
   position: relative;
-  z-index: 10; /* Above slide-in-panel (5), below header (100) */
+  z-index: 10; /* Above background (1) and slide-in-panel (5), below header (100) */
 }
