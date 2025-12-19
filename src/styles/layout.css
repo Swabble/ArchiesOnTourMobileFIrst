@@ -19,8 +19,8 @@ body {
   --slide-panel-parallax-offset: 0px;
   /* Keep in normal document flow so content is pushed down, not overlaid */
   position: relative;
-  /* Lower z-index so content sits on top */
-  z-index: 1;
+  /* Z-index: Above background (0), below content (10) */
+  z-index: 5;
   /* Allow the logo's shadow/glow to render outside the panel bounds while the panel moves. */
   overflow: visible;
   /* Match website background for consistency */
@@ -302,7 +302,7 @@ main.content-slide-down {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: -1; /* Behind main content (main sections have default stacking) */
+  z-index: 0; /* Behind everything (lowest z-index) */
   pointer-events: none; /* Allow clicks to pass through */
 
   /* Background image with gradient fade-OUT from top to bottom */
@@ -346,5 +346,5 @@ main.content-slide-down {
 /* Ensure main is positioned for absolute child */
 main {
   position: relative;
-  z-index: 1; /* Explicit stacking context for background */
+  z-index: 10; /* Above slide-in-panel (5), below header (100) */
 }

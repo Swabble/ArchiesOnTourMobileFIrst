@@ -10,7 +10,7 @@ header.site-header {
   top: 0;
   left: 0;
   right: 0;
-  z-index: 30;
+  z-index: 100; /* Highest layer - above all content */
   width: 100%;
   backdrop-filter: blur(10px);
   background: rgba(6, 7, 9, 0.7);
@@ -58,7 +58,7 @@ header.site-header::after {
   font-size: var(--font-size-xl);
   cursor: pointer;
   transition: all 0.3s ease;
-  z-index: 100;
+  z-index: 110; /* Above header for mobile menu button */
   position: relative;
 }
 
@@ -81,7 +81,7 @@ header.site-header::after {
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s ease, visibility 0.3s ease;
-  z-index: 80;
+  z-index: 105; /* Above header, below menu */
 }
 
 .nav__overlay.active {
@@ -105,7 +105,7 @@ header.site-header::after {
   gap: var(--space-3);
   transform: translateX(100%);
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 90;
+  z-index: 106; /* Above header and overlay */
   overflow-y: auto;
   box-shadow: -4px 0 20px rgba(0, 0, 0, 0.5);
   padding-top: calc(var(--header-height) + var(--space-4));
@@ -808,7 +808,7 @@ button[type="reset"].btn-secondary:hover {
   display: none;
   align-items: center;
   justify-content: center;
-  z-index: 30;
+  z-index: 120; /* Above header - modal overlay */
   padding: var(--space-3);
 }
 
@@ -1019,7 +1019,7 @@ button[type="reset"].btn-secondary:hover {
   align-items: center;
   justify-content: center;
   padding: var(--space-4);
-  z-index: 40;
+  z-index: 130; /* Above header - modal overlay */
 }
 
 .contract-modal-overlay.active {
@@ -1037,6 +1037,7 @@ button[type="reset"].btn-secondary:hover {
 
 .footer {
   position: relative;
+  z-index: 10; /* Same level as main content */
   background: rgba(26, 26, 24, 0.95);
   color: var(--color-corporate-white);
   padding: var(--space-6) var(--space-4);
