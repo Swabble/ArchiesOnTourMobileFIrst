@@ -293,3 +293,65 @@ main.content-slide-down {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
+
+/* Content Background with Parallax Effect */
+.content-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2; /* Above slide-in-panel (z-index: 1), below main (z-index: 10) */
+  pointer-events: none; /* Allow clicks to pass through */
+
+  /* Background image with gradient fade-in at the top */
+  background-image:
+    linear-gradient(
+      to bottom,
+      transparent 0%,
+      transparent calc(var(--header-height, 80px) + var(--slide-panel-height, 0px)),
+      rgba(0, 0, 0, 0) calc(var(--header-height, 80px) + var(--slide-panel-height, 0px)),
+      rgba(0, 0, 0, 1) calc(var(--header-height, 80px) + var(--slide-panel-height, 0px) + 25vh)
+    ),
+    url('/assets/AdobeStock_1771118922.jpeg');
+
+  background-size:
+    100% auto,
+    cover;
+
+  background-position:
+    top center,
+    top center;
+
+  background-repeat:
+    no-repeat,
+    repeat-y;
+
+  /* Transform will be set via JavaScript for parallax on desktop */
+  transform: translate3d(0, 0, 0);
+
+  /* Smooth opacity transition when background becomes visible */
+  opacity: 1;
+}
+
+/* Mobile: No parallax, static background */
+@media (max-width: 767px) {
+  .content-background {
+    /* Simplified gradient for mobile - starts earlier */
+    background-image:
+      linear-gradient(
+        to bottom,
+        transparent 0%,
+        transparent calc(var(--header-height, 80px)),
+        rgba(0, 0, 0, 0) calc(var(--header-height, 80px)),
+        rgba(0, 0, 0, 1) calc(var(--header-height, 80px) + 25vh)
+      ),
+      url('/assets/AdobeStock_1771118922.jpeg');
+  }
+}
+
+/* Ensure main content stays on top */
+main {
+  position: relative;
+  z-index: 10; /* Already set, but making it explicit for the background layer */
+}

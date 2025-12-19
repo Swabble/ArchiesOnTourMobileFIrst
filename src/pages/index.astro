@@ -15,6 +15,8 @@ import Footer from '../components/Footer.astro';
 ---
 <BaseLayout>
   <Header />
+  <!-- Content background with parallax effect (desktop only) -->
+  <div class="content-background" aria-hidden="true"></div>
   <div class="slide-in-panel" aria-hidden="true">
     <div class="slide-in-panel__inner">
       <!-- Use viewBox-driven sizing so the logo can fill the panel width without inheriting the exported pixel dimensions. -->
